@@ -7,10 +7,10 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 export const Route = createFileRoute("/dashboard/_layout/exercise")({
   component: RouteComponent,
   // TODO: figure out why this loader crashes with a Buffer error
-  // loader: async () => {
-  //   const exercises = await getExercisesUseCase();
-  //   return { exercises };
-  // },
+  loader: async () => {
+    const exercises = await getExercisesUseCase();
+    return { exercises };
+  },
 });
 
 const getExercisesFn = createServerFn().handler(async () => {
@@ -19,11 +19,11 @@ const getExercisesFn = createServerFn().handler(async () => {
 });
 
 function RouteComponent() {
-  // const { exercises } = Route.useLoaderData();
-  const { data: exercises } = useSuspenseQuery({
-    queryKey: ["exercises"],
-    queryFn: () => getExercisesFn(),
-  });
+  const { exercises } = Route.useLoaderData();
+  // const { data: exercises } = useSuspenseQuery({
+  //   queryKey: ["exercises"],
+  //   queryFn: () => getExercisesFn(),
+  // });
 
   return (
     <div className="flex-grow">
