@@ -13,7 +13,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { createExerciseUseCase } from "~/use-cases/exercises";
 import { validateRequest } from "~/utils/auth";
 import { authenticatedMiddleware } from "~/lib/auth";

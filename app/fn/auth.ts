@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { validateRequest } from "~/utils/auth";
 
 export const isAuthenticatedFn = createServerFn().handler(async () => {

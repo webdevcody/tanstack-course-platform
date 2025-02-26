@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Button } from "~/components/ui/button";
 import {
@@ -17,7 +17,7 @@ import { Exercise } from "~/db/schema";
 import { TrashIcon } from "lucide-react";
 import { z } from "zod";
 import { validateRequest } from "~/utils/auth";
-import { createMiddleware } from "@tanstack/start";
+import { createMiddleware } from "@tanstack/react-start";
 import { authenticatedMiddleware } from "~/lib/auth";
 
 const getExercisesFn = createServerFn().handler(async () => {

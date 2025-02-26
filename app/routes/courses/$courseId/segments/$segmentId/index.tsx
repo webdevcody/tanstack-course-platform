@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { SidebarProvider, useSidebar } from "~/components/ui/sidebar";
 import { getCourseUseCase, isCourseAdminUseCase } from "~/use-cases/courses";

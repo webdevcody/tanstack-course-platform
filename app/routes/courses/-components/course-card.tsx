@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/card";
 import { Course } from "~/db/schema";
 import { cn } from "~/lib/utils";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { validateRequest } from "~/utils/auth";
 import React from "react";

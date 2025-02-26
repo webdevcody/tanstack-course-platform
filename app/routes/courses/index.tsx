@@ -3,7 +3,7 @@ import { Title } from "~/components/title";
 import { Button } from "~/components/ui/button";
 import { getCoursesUseCase } from "~/use-cases/courses";
 import { CourseCard } from "./-components/course-card";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { Container } from "./-components/container";
 import {
   DropdownMenu,
