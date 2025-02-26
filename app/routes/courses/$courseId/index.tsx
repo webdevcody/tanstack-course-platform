@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getCourseUseCase, isCourseAdminUseCase } from "~/use-cases/courses";
 import { VideoPlayer } from "./-components/video-player";

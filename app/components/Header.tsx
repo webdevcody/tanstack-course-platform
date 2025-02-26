@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getCurrentUser } from "~/utils/session";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./ModeToggle";

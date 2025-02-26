@@ -1,15 +1,19 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { Meta, Scripts } from "@tanstack/start";
-import * as React from "react";
 import { type QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import * as React from "react";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
+import { Header } from "~/components/Header";
 import { NotFound } from "~/components/NotFound";
+import { ThemeProvider } from "~/components/ThemeProvider";
 import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
-import { Header } from "~/components/Header";
-import { ThemeProvider } from "~/components/ThemeProvider";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -75,7 +79,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning>
       <head>
-        <Meta />
+        <HeadContent />
         <script
           dangerouslySetInnerHTML={{
             __html: `

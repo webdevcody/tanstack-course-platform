@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { authenticatedMiddleware } from "~/lib/auth";
 import { Button } from "~/components/ui/button";
 import { ChevronRight, GraduationCap } from "lucide-react";

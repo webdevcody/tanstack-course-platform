@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { authenticatedMiddleware } from "~/lib/auth";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { env } from "~/utils/env";

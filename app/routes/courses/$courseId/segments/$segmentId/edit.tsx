@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Title } from "~/components/title";
 import { useForm } from "react-hook-form";

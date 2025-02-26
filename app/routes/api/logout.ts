@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { invalidateSession, validateRequest } from "~/utils/auth";
 import { deleteSessionTokenCookie } from "~/utils/session";
 
