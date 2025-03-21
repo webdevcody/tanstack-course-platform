@@ -72,6 +72,7 @@ export const segments = tableCreator(
     title: text("title").notNull(),
     content: text("content").notNull(),
     order: integer("order").notNull(),
+    length: text("length"),
     isPremium: boolean("isPremium").notNull().default(false),
     moduleId: text("moduleId").notNull(),
     videoKey: text("videoKey"),

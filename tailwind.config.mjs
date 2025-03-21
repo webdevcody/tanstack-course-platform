@@ -1,5 +1,7 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ["class"],
   content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
   theme: {
@@ -61,44 +63,22 @@ module.exports = {
             color: "hsl(var(--foreground))",
             a: {
               color: "hsl(var(--primary))",
-              "&:hover": {
-                color: "hsl(var(--primary))",
-              },
+              "&:hover": { color: "hsl(var(--primary))" },
             },
-            '[class~="lead"]': {
-              color: "hsl(var(--foreground))",
-            },
-            strong: {
-              color: "hsl(var(--foreground))",
-            },
-            "ol > li::marker": {
-              color: "hsl(var(--foreground))",
-            },
-            "ul > li::marker": {
-              color: "hsl(var(--foreground))",
-            },
-            hr: {
-              borderColor: "hsl(var(--border))",
-            },
+            '[class~="lead"]': { color: "hsl(var(--foreground))" },
+            strong: { color: "hsl(var(--foreground))" },
+            "ol > li::marker": { color: "hsl(var(--foreground))" },
+            "ul > li::marker": { color: "hsl(var(--foreground))" },
+            hr: { borderColor: "hsl(var(--border))" },
             blockquote: {
               borderLeftColor: "hsl(var(--border))",
               color: "hsl(var(--foreground))",
             },
-            h1: {
-              color: "hsl(var(--foreground))",
-            },
-            h2: {
-              color: "hsl(var(--foreground))",
-            },
-            h3: {
-              color: "hsl(var(--foreground))",
-            },
-            h4: {
-              color: "hsl(var(--foreground))",
-            },
-            "figure figcaption": {
-              color: "hsl(var(--muted-foreground))",
-            },
+            h1: { color: "hsl(var(--foreground))" },
+            h2: { color: "hsl(var(--foreground))" },
+            h3: { color: "hsl(var(--foreground))" },
+            h4: { color: "hsl(var(--foreground))" },
+            "figure figcaption": { color: "hsl(var(--muted-foreground))" },
             code: {
               color: "hsl(var(--foreground))",
               backgroundColor: "hsl(var(--muted))",
@@ -106,9 +86,7 @@ module.exports = {
               borderRadius: "0.25rem",
               fontWeight: "400",
             },
-            "a code": {
-              color: "hsl(var(--primary))",
-            },
+            "a code": { color: "hsl(var(--primary))" },
             pre: {
               backgroundColor: "hsl(var(--muted))",
               color: "hsl(var(--foreground))",
@@ -117,12 +95,19 @@ module.exports = {
               color: "hsl(var(--foreground))",
               borderBottomColor: "hsl(var(--border))",
             },
-            "tbody tr": {
-              borderBottomColor: "hsl(var(--border))",
-            },
+            "tbody tr": { borderBottomColor: "hsl(var(--border))" },
           },
         },
       },
+      fontFamily: { sans: ["var(--font-sans)", ...fontFamily.sans] },
+      keyframes: {
+        tilt: {
+          "0%, 50%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(0.5deg)" },
+          "75%": { transform: "rotate(-0.5deg)" },
+        },
+      },
+      animation: { tilt: "tilt 10s infinite linear" },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],

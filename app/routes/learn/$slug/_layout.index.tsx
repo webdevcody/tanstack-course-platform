@@ -164,7 +164,7 @@ function ViewSegment({
             your account to unlock all premium content and enhance your learning
             experience.
           </p>
-          <Link to="/about" className={buttonVariants({ size: "lg" })}>
+          <Link to="/purchase" className={buttonVariants({ size: "lg" })}>
             Buy Now
           </Link>
         </div>

@@ -10,6 +10,7 @@ import {
 } from "~/data-access/segments";
 import type { Segment, SegmentCreate, User } from "~/db/schema";
 import { deleteFile } from "~/storage";
+import { eq } from "drizzle-orm";
 
 export async function getSegmentsUseCase() {
   return getSegments();
@@ -38,32 +39,23 @@ export async function removeSegmentUseCase(id: number) {
   return deleteSegment(id);
 }
 
+export type SegmentUpdate = Partial<
+  Omit<Segment, "id" | "createdAt" | "updatedAt">
+>;
+
 export async function updateSegmentUseCase(
   segmentId: number,
-  data: {
-    title: string;
-    content: string;
-    videoKey?: string;
-    moduleId: string;
-    slug: string;
-  }
+  data: SegmentUpdate
 ) {
-  const { title, content, videoKey, moduleId, slug } = data;
-
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
 
-  if (segment.videoKey && videoKey) {
+  // Handle video deletion if updating video
+  if (segment.videoKey && data.videoKey) {
     await deleteFile(segment.videoKey);
   }
 
-  return await updateSegment(segmentId, {
-    title,
-    content,
-    videoKey,
-    moduleId,
-    slug,
-  });
+  return await updateSegment(segmentId, data);
 }
 
 export async function deleteSegmentUseCase(segmentId: number) {

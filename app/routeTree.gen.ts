@@ -15,7 +15,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as UnauthorizedImport } from './routes/unauthorized'
 import { Route as UnauthenticatedImport } from './routes/unauthenticated'
+import { Route as SuccessImport } from './routes/success'
+import { Route as PurchaseImport } from './routes/purchase'
 import { Route as LoginImport } from './routes/login'
+import { Route as CancelImport } from './routes/cancel'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as LearnNotFoundImport } from './routes/learn/not-found'
@@ -43,9 +46,27 @@ const UnauthenticatedRoute = UnauthenticatedImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const SuccessRoute = SuccessImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PurchaseRoute = PurchaseImport.update({
+  id: '/purchase',
+  path: '/purchase',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CancelRoute = CancelImport.update({
+  id: '/cancel',
+  path: '/cancel',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -120,11 +141,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/cancel': {
+      id: '/cancel'
+      path: '/cancel'
+      fullPath: '/cancel'
+      preLoaderRoute: typeof CancelImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/purchase': {
+      id: '/purchase'
+      path: '/purchase'
+      fullPath: '/purchase'
+      preLoaderRoute: typeof PurchaseImport
+      parentRoute: typeof rootRoute
+    }
+    '/success': {
+      id: '/success'
+      path: '/success'
+      fullPath: '/success'
+      preLoaderRoute: typeof SuccessImport
       parentRoute: typeof rootRoute
     }
     '/unauthenticated': {
@@ -224,7 +266,10 @@ const LearnSlugRouteWithChildren = LearnSlugRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/purchase': typeof PurchaseRoute
+  '/success': typeof SuccessRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -238,7 +283,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/purchase': typeof PurchaseRoute
+  '/success': typeof SuccessRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -252,7 +300,10 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/purchase': typeof PurchaseRoute
+  '/success': typeof SuccessRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -269,7 +320,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/cancel'
     | '/login'
+    | '/purchase'
+    | '/success'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -282,7 +336,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/cancel'
     | '/login'
+    | '/purchase'
+    | '/success'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -294,7 +351,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/cancel'
     | '/login'
+    | '/purchase'
+    | '/success'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -310,7 +370,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  CancelRoute: typeof CancelRoute
   LoginRoute: typeof LoginRoute
+  PurchaseRoute: typeof PurchaseRoute
+  SuccessRoute: typeof SuccessRoute
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   LearnAddRoute: typeof LearnAddRoute
@@ -322,7 +385,10 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  CancelRoute: CancelRoute,
   LoginRoute: LoginRoute,
+  PurchaseRoute: PurchaseRoute,
+  SuccessRoute: SuccessRoute,
   UnauthenticatedRoute: UnauthenticatedRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   LearnAddRoute: LearnAddRoute,
@@ -343,7 +409,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/cancel",
         "/login",
+        "/purchase",
+        "/success",
         "/unauthenticated",
         "/unauthorized",
         "/learn/add",
@@ -358,8 +427,17 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
+    "/cancel": {
+      "filePath": "cancel.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/purchase": {
+      "filePath": "purchase.tsx"
+    },
+    "/success": {
+      "filePath": "success.tsx"
     },
     "/unauthenticated": {
       "filePath": "unauthenticated.tsx"

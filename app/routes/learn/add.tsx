@@ -28,6 +28,8 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { uploadFile } from "~/utils/storage";
 import { Container } from "./-components/container";
+import { Combobox } from "~/components/ui/combobox";
+import { AutoComplete } from "~/components/ui/autocomplete";
 
 function generateRandomUUID() {
   return uuidv4();
@@ -42,6 +44,7 @@ const formSchema = z.object({
   video: z.instanceof(File).optional(),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
   moduleId: z.string().min(1, "Module ID is required"),
+  length: z.string().optional(),
 });
 
 const createSegmentFn = createServerFn()
@@ -54,6 +57,7 @@ const createSegmentFn = createServerFn()
         videoKey: z.string().optional(),
         slug: z.string(),
         moduleId: z.string(),
+        length: z.string().optional(),
       }),
     })
   )
@@ -73,22 +77,35 @@ const createSegmentFn = createServerFn()
       order: nextOrder,
       moduleId: data.data.moduleId,
       videoKey: data.data.videoKey,
+      length: data.data.length,
     });
 
     return segment;
+  });
+
+const getUniqueModuleNamesFn = createServerFn()
+  .middleware([authenticatedMiddleware])
+  .handler(async () => {
+    const segments = await getSegments();
+    const uniqueModuleNames = Array.from(
+      new Set(segments.map((segment) => segment.moduleId))
+    );
+    return uniqueModuleNames;
   });
 
 export const Route = createFileRoute("/learn/add")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
   loader: async () => {
-    return false;
+    const moduleNames = await getUniqueModuleNamesFn();
+    return { moduleNames };
   },
 });
 
 function RouteComponent() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { moduleNames } = Route.useLoaderData();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -97,7 +114,8 @@ function RouteComponent() {
       content: "",
       video: undefined,
       slug: "",
-      moduleId: "default",
+      moduleId: "",
+      length: "",
     },
   });
 
@@ -118,6 +136,7 @@ function RouteComponent() {
             videoKey: videoKey,
             slug: values.title.toLowerCase().replace(/ /g, "-"),
             moduleId: values.moduleId,
+            length: values.length || undefined,
           },
         },
       });
@@ -229,10 +248,46 @@ function RouteComponent() {
               <FormItem>
                 <FormLabel>Module Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter module name" {...field} />
+                  <AutoComplete
+                    selectedValue={field.value}
+                    onSelectedValueChange={field.onChange}
+                    searchValue={field.value}
+                    onSearchValueChange={field.onChange}
+                    items={moduleNames.map((name) => ({
+                      value: name,
+                      label: name,
+                    }))}
+                    isLoading={false}
+                    placeholder="Search or enter a module name"
+                    emptyMessage="No modules found."
+                  />
+
+                  {/* <Combobox
+                    options={moduleNames}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Select or enter a module name"
+                  /> */}
                 </FormControl>
                 <FormDescription>
-                  Specify which module this content belongs to.
+                  Select an existing module or enter a new one.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="length"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Length (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. 5 minutes" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Estimated length of the segment (e.g. "5 minutes", "2 hours")
                 </FormDescription>
                 <FormMessage />
               </FormItem>

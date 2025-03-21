@@ -42,6 +42,7 @@ const formSchema = z.object({
   video: z.instanceof(File).optional(),
   moduleId: z.string().min(1, "Module ID is required"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
+  length: z.string().optional(),
 });
 
 const updateSegmentFn = createServerFn()
@@ -55,6 +56,7 @@ const updateSegmentFn = createServerFn()
         videoKey: z.string().optional(),
         moduleId: z.string(),
         slug: z.string(),
+        length: z.string().optional(),
       }),
     })
   )
@@ -101,6 +103,7 @@ function RouteComponent() {
       video: undefined,
       moduleId: segment.moduleId,
       slug: segment.slug,
+      length: segment.length || "",
     },
   });
 
@@ -122,6 +125,7 @@ function RouteComponent() {
             videoKey: videoKey,
             moduleId: values.moduleId,
             slug: values.slug,
+            length: values.length || undefined,
           },
         },
       });
@@ -240,6 +244,24 @@ function RouteComponent() {
                   </FormControl>
                   <FormDescription>
                     Upload a video file for your segment (optional)
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="length"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Length (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 5 minutes" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Estimated length of the segment (e.g. "5 minutes", "2
+                    hours")
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

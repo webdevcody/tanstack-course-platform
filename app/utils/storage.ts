@@ -1,16 +1,13 @@
 import { getPresignedPostUrlFn } from "~/fn/storage";
-import { env } from "./env";
+import { publicEnv } from "./env-public";
 
 export function getStorageUrl(key: string) {
-  return `${import.meta.env.VITE_FILE_URL}/${key}`;
+  return `${publicEnv.VITE_FILE_URL}/${key}`;
 }
 
 export async function uploadFile(key: string, file: File) {
   const presignedPost = await getPresignedPostUrlFn({
-    data: {
-      key,
-      contentType: file.type,
-    },
+    data: { key, contentType: file.type },
   });
 
   const formData = new FormData();

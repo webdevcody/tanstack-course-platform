@@ -64,15 +64,17 @@ export function Header() {
                 <a href="/api/login/google">
                   <Button
                     variant="outline"
-                    className="border-primary hover:bg-primary/10"
+                    className="rounded-lg border-primary hover:bg-primary/10"
                   >
                     Login
                   </Button>
                 </a>
               )}
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                Buy Now
-              </Button>
+              <Link to="/purchase">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  Buy Now
+                </Button>
+              </Link>
               <ModeToggle />
             </div>
           </div>
@@ -95,13 +97,6 @@ export function Header() {
                   >
                     Home
                   </Link>
-                  <Link
-                    to="/about"
-                    className="flex items-center py-2 text-lg"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Articles
-                  </Link>
                   {userInfo.data.user ? (
                     <a href="/api/logout" className="py-2 text-lg">
                       Logout
@@ -111,9 +106,11 @@ export function Header() {
                       Login
                     </a>
                   )}
-                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    Buy Now
-                  </Button>
+                  <Link to="/purchase">
+                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      Buy Now
+                    </Button>
+                  </Link>
                   <div className="pt-2">
                     <ModeToggle />
                   </div>

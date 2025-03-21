@@ -16,12 +16,7 @@ export async function getUser(userId: UserId) {
 }
 
 export async function createUser(email: string) {
-  const [user] = await database
-    .insert(users)
-    .values({
-      email,
-    })
-    .returning();
+  const [user] = await database.insert(users).values({ email }).returning();
   return user;
 }
 
@@ -36,12 +31,17 @@ export async function getUserByEmail(email: string) {
 export async function setEmailVerified(userId: UserId) {
   await database
     .update(users)
-    .set({
-      emailVerified: new Date(),
-    })
+    .set({ emailVerified: new Date() })
     .where(eq(users.id, userId));
 }
 
 export async function updateUser(userId: UserId, updatedUser: Partial<User>) {
   await database.update(users).set(updatedUser).where(eq(users.id, userId));
+}
+
+export async function updateUserToPremium(userId: UserId) {
+  await database
+    .update(users)
+    .set({ isPremium: true })
+    .where(eq(users.id, userId));
 }

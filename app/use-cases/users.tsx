@@ -1,4 +1,9 @@
-import { createUser, deleteUser, getUserByEmail } from "~/data-access/users";
+import {
+  createUser,
+  deleteUser,
+  getUserByEmail,
+  updateUserToPremium,
+} from "~/data-access/users";
 import { PublicError } from "./errors";
 import { GoogleUser, UserId, UserSession } from "./types";
 import { createProfile, getProfile } from "~/data-access/profiles";
@@ -47,4 +52,8 @@ export async function isAdminUseCase() {
     return false;
   }
   return isAdmin(user);
+}
+
+export async function updateUserToPremiumUseCase(userId: UserId) {
+  await updateUserToPremium(userId);
 }
