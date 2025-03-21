@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgTableCreator,
@@ -16,6 +17,7 @@ export const users = tableCreator("user", {
   id: serial("id").primaryKey(),
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
+  isPremium: boolean("isPremium").notNull().default(false),
 });
 
 export const accounts = tableCreator(
@@ -70,6 +72,7 @@ export const segments = tableCreator(
     title: text("title").notNull(),
     content: text("content").notNull(),
     order: integer("order").notNull(),
+    isPremium: boolean("isPremium").notNull().default(false),
     moduleId: text("moduleId").notNull(),
     videoKey: text("videoKey"),
     createdAt: timestamp("created_at").notNull().defaultNow(),

@@ -15,6 +15,20 @@
       "when": 1742527853040,
       "tag": "0001_military_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742531993457,
+      "tag": "0002_neat_mole_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742532086395,
+      "tag": "0003_lively_invisible_woman",
+      "breakpoints": true
     }
   ]
 }

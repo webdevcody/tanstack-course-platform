@@ -36,8 +36,9 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { adminMiddleware, unauthenticatedMiddleware } from "~/lib/auth";
+import { isUserPremiumFn } from "~/fn/auth";
 
-const getSegmentInfoFn = createServerFn()
+export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .validator(z.object({ segmentId: z.coerce.number() }))
   .handler(async ({ data }) => {
@@ -77,12 +78,14 @@ export const deleteSegmentFn = createServerFn()
     await deleteSegmentUseCase(data.segmentId);
   });
 
-export const Route = createFileRoute("/learn/$segmentId/")({
+export const Route = createFileRoute("/learn/$segmentId/_layout/")({
   component: RouteComponent,
   loader: async ({ params }) => {
     const { segment, segments, attachments } = await getSegmentInfoFn({
       data: { segmentId: Number(params.segmentId) },
     });
+
+    const isPremium = await isUserPremiumFn();
 
     if (segments.length === 0) {
       throw redirect({ to: "/learn/no-segments" });
@@ -92,7 +95,7 @@ export const Route = createFileRoute("/learn/$segmentId/")({
       throw redirect({ to: "/learn/not-found" });
     }
 
-    return { segment, segments, attachments };
+    return { segment, segments, attachments, isPremium };
   },
 });
 
@@ -138,16 +141,36 @@ function ViewSegment({
   currentSegment,
   currentSegmentId,
   attachments,
+  isPremium,
 }: {
   segments: Segment[];
   currentSegment: Segment;
   currentSegmentId: number;
   attachments: Attachment[];
+  isPremium: boolean;
 }) {
-  const { isMobile, openMobile, setOpenMobile } = useSidebar();
-  const router = useRouter();
   const { toast } = useToast();
+  const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+
+  // Show upgrade placeholder for premium segments if user is not premium
+  if (currentSegment.isPremium && !isPremium) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+        <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
+        <div className="max-w-md space-y-4">
+          <p className="text-muted-foreground">
+            This content is available exclusively for premium members. Upgrade
+            your account to unlock all premium content and enhance your learning
+            experience.
+          </p>
+          <Link to="/about" className={buttonVariants({ size: "lg" })}>
+            Buy Now
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleFileSelect = async (file: File) => {
     try {
@@ -214,52 +237,85 @@ function ViewSegment({
   };
 
   return (
-    <div className="flex w-full">
-      {/* Desktop Navigation */}
-      <div className="hidden md:block w-80 flex-shrink-0">
-        <DesktopNavigation
-          segments={segments}
-          currentSegmentId={currentSegmentId}
-          isAdmin={true}
-        />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
+        <div className="flex gap-2">
+          <Link
+            to="/learn/$segmentId/edit"
+            params={{ segmentId: currentSegment.id.toString() }}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            <Edit className="mr-2 h-4 w-4" /> Edit Content
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Content
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this content and all its associated files and attachments.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteSegment}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </div>
 
-      <div className="flex-1 w-full">
-        {/* Mobile Navigation */}
-        <MobileNavigation
-          segments={segments}
-          currentSegmentId={currentSegmentId}
-          isOpen={openMobile}
-          onClose={() => setOpenMobile(false)}
-          isAdmin={true}
-        />
+      {currentSegment.videoKey && (
+        <div className="w-full">
+          <VideoPlayer url={getStorageUrl(currentSegment.videoKey)} />
+        </div>
+      )}
 
-        <main className="w-full p-6 pt-4">
-          {/* Mobile Sidebar Toggle */}
-          <div className="space-y-6">
-            <Button
-              size="icon"
-              className="z-50 md:hidden hover:bg-accent"
-              onClick={() => setOpenMobile(true)}
-            >
-              <Menu />
-              <span className="sr-only">Toggle navigation</span>
-            </Button>
+      <h2 className="text-xl font-bold">Content</h2>
+      <MarkdownContent content={currentSegment.content} />
 
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
-              <div className="flex gap-2">
-                <Link
-                  to="/learn/$segmentId/edit"
-                  params={{ segmentId: currentSegment.id.toString() }}
-                  className={buttonVariants({ variant: "outline" })}
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold">Documents</h2>
+
+        <div className="space-y-4">
+          <FileDropzone onDrop={handleFileSelect} />
+          {isUploading && (
+            <p className="text-center text-muted-foreground">
+              Uploading file...
+            </p>
+          )}
+        </div>
+
+        {attachments.length > 0 ? (
+          <div className="space-y-2">
+            {attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between p-4 rounded-lg border"
+              >
+                <a
+                  href={getStorageUrl(attachment.fileKey)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
                 >
-                  <Edit className="mr-2 h-4 w-4" /> Edit Content
-                </Link>
+                  {attachment.fileName}
+                </a>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
-                      <Trash2 className="mr-2 h-4 w-4" /> Delete Content
+                    <Button variant={"destructive"} size="icon">
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -269,14 +325,13 @@ function ViewSegment({
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action cannot be undone. This will permanently
-                        delete this content and all its associated files and
-                        attachments.
+                        delete this attachment.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={handleDeleteSegment}
+                        onClick={() => handleDeleteAttachment(attachment.id)}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
                         Delete
@@ -285,103 +340,33 @@ function ViewSegment({
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-            </div>
-
-            {currentSegment.videoKey && (
-              <div className="w-full">
-                <VideoPlayer url={getStorageUrl(currentSegment.videoKey)} />
-              </div>
-            )}
-
-            <h2 className="text-xl font-bold">Content</h2>
-            <MarkdownContent content={currentSegment.content} />
-
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold">Documents</h2>
-
-              <div className="space-y-4">
-                <FileDropzone onDrop={handleFileSelect} />
-                {isUploading && (
-                  <p className="text-center text-muted-foreground">
-                    Uploading file...
-                  </p>
-                )}
-              </div>
-
-              {attachments.length > 0 ? (
-                <div className="space-y-2">
-                  {attachments.map((attachment) => (
-                    <div
-                      key={attachment.id}
-                      className="flex items-center justify-between p-4 rounded-lg border"
-                    >
-                      <a
-                        href={getStorageUrl(attachment.fileKey)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        {attachment.fileName}
-                      </a>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant={"destructive"} size="icon">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete this attachment.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                handleDeleteAttachment(attachment.id)
-                              }
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground">
-                  No documents have been uploaded yet.
-                </p>
-              )}
-            </div>
-
-            <Navigation prevSegment={null} nextSegment={null} />
+            ))}
           </div>
-        </main>
+        ) : (
+          <p className="text-muted-foreground">
+            No documents have been uploaded yet.
+          </p>
+        )}
       </div>
+
+      <Navigation prevSegment={null} nextSegment={null} />
     </div>
   );
 }
 
 function RouteComponent() {
-  const { segment, segments, attachments } = Route.useLoaderData();
+  const { segment, segments, attachments, isPremium } = Route.useLoaderData();
 
   return (
-    <SidebarProvider>
+    <>
       <ViewSegment
         segments={segments}
         currentSegment={segment}
         currentSegmentId={segment.id}
         attachments={attachments}
+        isPremium={isPremium}
       />
       <Toaster />
-    </SidebarProvider>
+    </>
   );
 }

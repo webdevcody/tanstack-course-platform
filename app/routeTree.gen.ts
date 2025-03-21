@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
@@ -19,8 +21,13 @@ import { Route as IndexImport } from './routes/index'
 import { Route as LearnNotFoundImport } from './routes/learn/not-found'
 import { Route as LearnNoSegmentsImport } from './routes/learn/no-segments'
 import { Route as LearnAddImport } from './routes/learn/add'
-import { Route as LearnSegmentIdIndexImport } from './routes/learn/$segmentId/index'
 import { Route as LearnSegmentIdEditImport } from './routes/learn/$segmentId/edit'
+import { Route as LearnSegmentIdLayoutImport } from './routes/learn/$segmentId/_layout'
+import { Route as LearnSegmentIdLayoutIndexImport } from './routes/learn/$segmentId/_layout.index'
+
+// Create Virtual Routes
+
+const LearnSegmentIdImport = createFileRoute('/learn/$segmentId')()
 
 // Create/Update Routes
 
@@ -54,6 +61,12 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const LearnSegmentIdRoute = LearnSegmentIdImport.update({
+  id: '/learn/$segmentId',
+  path: '/learn/$segmentId',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const LearnNotFoundRoute = LearnNotFoundImport.update({
   id: '/learn/not-found',
   path: '/learn/not-found',
@@ -72,16 +85,21 @@ const LearnAddRoute = LearnAddImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LearnSegmentIdIndexRoute = LearnSegmentIdIndexImport.update({
-  id: '/learn/$segmentId/',
-  path: '/learn/$segmentId/',
-  getParentRoute: () => rootRoute,
+const LearnSegmentIdEditRoute = LearnSegmentIdEditImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => LearnSegmentIdRoute,
 } as any)
 
-const LearnSegmentIdEditRoute = LearnSegmentIdEditImport.update({
-  id: '/learn/$segmentId/edit',
-  path: '/learn/$segmentId/edit',
-  getParentRoute: () => rootRoute,
+const LearnSegmentIdLayoutRoute = LearnSegmentIdLayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => LearnSegmentIdRoute,
+} as any)
+
+const LearnSegmentIdLayoutIndexRoute = LearnSegmentIdLayoutIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LearnSegmentIdLayoutRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -144,24 +162,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnNotFoundImport
       parentRoute: typeof rootRoute
     }
-    '/learn/$segmentId/edit': {
-      id: '/learn/$segmentId/edit'
-      path: '/learn/$segmentId/edit'
-      fullPath: '/learn/$segmentId/edit'
-      preLoaderRoute: typeof LearnSegmentIdEditImport
-      parentRoute: typeof rootRoute
-    }
-    '/learn/$segmentId/': {
-      id: '/learn/$segmentId/'
+    '/learn/$segmentId': {
+      id: '/learn/$segmentId'
       path: '/learn/$segmentId'
       fullPath: '/learn/$segmentId'
-      preLoaderRoute: typeof LearnSegmentIdIndexImport
+      preLoaderRoute: typeof LearnSegmentIdImport
       parentRoute: typeof rootRoute
+    }
+    '/learn/$segmentId/_layout': {
+      id: '/learn/$segmentId/_layout'
+      path: '/learn/$segmentId'
+      fullPath: '/learn/$segmentId'
+      preLoaderRoute: typeof LearnSegmentIdLayoutImport
+      parentRoute: typeof LearnSegmentIdRoute
+    }
+    '/learn/$segmentId/edit': {
+      id: '/learn/$segmentId/edit'
+      path: '/edit'
+      fullPath: '/learn/$segmentId/edit'
+      preLoaderRoute: typeof LearnSegmentIdEditImport
+      parentRoute: typeof LearnSegmentIdImport
+    }
+    '/learn/$segmentId/_layout/': {
+      id: '/learn/$segmentId/_layout/'
+      path: '/'
+      fullPath: '/learn/$segmentId/'
+      preLoaderRoute: typeof LearnSegmentIdLayoutIndexImport
+      parentRoute: typeof LearnSegmentIdLayoutImport
     }
   }
 }
 
 // Create and export the route tree
+
+interface LearnSegmentIdLayoutRouteChildren {
+  LearnSegmentIdLayoutIndexRoute: typeof LearnSegmentIdLayoutIndexRoute
+}
+
+const LearnSegmentIdLayoutRouteChildren: LearnSegmentIdLayoutRouteChildren = {
+  LearnSegmentIdLayoutIndexRoute: LearnSegmentIdLayoutIndexRoute,
+}
+
+const LearnSegmentIdLayoutRouteWithChildren =
+  LearnSegmentIdLayoutRoute._addFileChildren(LearnSegmentIdLayoutRouteChildren)
+
+interface LearnSegmentIdRouteChildren {
+  LearnSegmentIdLayoutRoute: typeof LearnSegmentIdLayoutRouteWithChildren
+  LearnSegmentIdEditRoute: typeof LearnSegmentIdEditRoute
+}
+
+const LearnSegmentIdRouteChildren: LearnSegmentIdRouteChildren = {
+  LearnSegmentIdLayoutRoute: LearnSegmentIdLayoutRouteWithChildren,
+  LearnSegmentIdEditRoute: LearnSegmentIdEditRoute,
+}
+
+const LearnSegmentIdRouteWithChildren = LearnSegmentIdRoute._addFileChildren(
+  LearnSegmentIdRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,8 +229,9 @@ export interface FileRoutesByFullPath {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn/$segmentId': typeof LearnSegmentIdLayoutRouteWithChildren
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
-  '/learn/$segmentId': typeof LearnSegmentIdIndexRoute
+  '/learn/$segmentId/': typeof LearnSegmentIdLayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -185,8 +243,8 @@ export interface FileRoutesByTo {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn/$segmentId': typeof LearnSegmentIdLayoutIndexRoute
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
-  '/learn/$segmentId': typeof LearnSegmentIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -199,8 +257,10 @@ export interface FileRoutesById {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn/$segmentId': typeof LearnSegmentIdRouteWithChildren
+  '/learn/$segmentId/_layout': typeof LearnSegmentIdLayoutRouteWithChildren
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
-  '/learn/$segmentId/': typeof LearnSegmentIdIndexRoute
+  '/learn/$segmentId/_layout/': typeof LearnSegmentIdLayoutIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -214,8 +274,9 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
-    | '/learn/$segmentId/edit'
     | '/learn/$segmentId'
+    | '/learn/$segmentId/edit'
+    | '/learn/$segmentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -226,8 +287,8 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
-    | '/learn/$segmentId/edit'
     | '/learn/$segmentId'
+    | '/learn/$segmentId/edit'
   id:
     | '__root__'
     | '/'
@@ -238,8 +299,10 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
+    | '/learn/$segmentId'
+    | '/learn/$segmentId/_layout'
     | '/learn/$segmentId/edit'
-    | '/learn/$segmentId/'
+    | '/learn/$segmentId/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -252,8 +315,7 @@ export interface RootRouteChildren {
   LearnAddRoute: typeof LearnAddRoute
   LearnNoSegmentsRoute: typeof LearnNoSegmentsRoute
   LearnNotFoundRoute: typeof LearnNotFoundRoute
-  LearnSegmentIdEditRoute: typeof LearnSegmentIdEditRoute
-  LearnSegmentIdIndexRoute: typeof LearnSegmentIdIndexRoute
+  LearnSegmentIdRoute: typeof LearnSegmentIdRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -265,8 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnAddRoute: LearnAddRoute,
   LearnNoSegmentsRoute: LearnNoSegmentsRoute,
   LearnNotFoundRoute: LearnNotFoundRoute,
-  LearnSegmentIdEditRoute: LearnSegmentIdEditRoute,
-  LearnSegmentIdIndexRoute: LearnSegmentIdIndexRoute,
+  LearnSegmentIdRoute: LearnSegmentIdRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -287,8 +348,7 @@ export const routeTree = rootRoute
         "/learn/add",
         "/learn/no-segments",
         "/learn/not-found",
-        "/learn/$segmentId/edit",
-        "/learn/$segmentId/"
+        "/learn/$segmentId"
       ]
     },
     "/": {
@@ -315,11 +375,27 @@ export const routeTree = rootRoute
     "/learn/not-found": {
       "filePath": "learn/not-found.tsx"
     },
-    "/learn/$segmentId/edit": {
-      "filePath": "learn/$segmentId/edit.tsx"
+    "/learn/$segmentId": {
+      "filePath": "learn/$segmentId",
+      "children": [
+        "/learn/$segmentId/_layout",
+        "/learn/$segmentId/edit"
+      ]
     },
-    "/learn/$segmentId/": {
-      "filePath": "learn/$segmentId/index.tsx"
+    "/learn/$segmentId/_layout": {
+      "filePath": "learn/$segmentId/_layout.tsx",
+      "parent": "/learn/$segmentId",
+      "children": [
+        "/learn/$segmentId/_layout/"
+      ]
+    },
+    "/learn/$segmentId/edit": {
+      "filePath": "learn/$segmentId/edit.tsx",
+      "parent": "/learn/$segmentId"
+    },
+    "/learn/$segmentId/_layout/": {
+      "filePath": "learn/$segmentId/_layout.index.tsx",
+      "parent": "/learn/$segmentId/_layout"
     }
   }
 }

@@ -2,6 +2,7 @@ import { Sheet, SheetContent } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { X, Plus } from "lucide-react";
 import { Segment } from "~/db/schema";
+import { NavigationItems } from "./navigation-items";
 
 interface MobileNavigationProps {
   segments: Segment[];
@@ -9,6 +10,7 @@ interface MobileNavigationProps {
   isOpen: boolean;
   onClose: () => void;
   isAdmin: boolean;
+  isPremium: boolean;
 }
 
 export function MobileNavigation({
@@ -17,6 +19,7 @@ export function MobileNavigation({
   isOpen,
   onClose,
   isAdmin,
+  isPremium,
 }: MobileNavigationProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -39,20 +42,13 @@ export function MobileNavigation({
           </Button>
         </div>
         <div className="divide-y divide-border overflow-y-auto flex-1">
-          {segments.map((segment, index) => (
-            <a
-              key={segment.id}
-              href={`/learn/${segment.id}`}
-              className={`flex items-center gap-6 p-4 hover:bg-accent/50 transition-colors ${
-                segment.id === currentSegmentId ? "bg-accent/50" : ""
-              }`}
-            >
-              <div className="flex-shrink-0 size-10 flex items-center justify-center rounded-full bg-background border text-lg font-medium">
-                {index + 1}
-              </div>
-              <span className="text-lg">{segment.title}</span>
-            </a>
-          ))}
+          <NavigationItems
+            segments={segments}
+            currentSegmentId={currentSegmentId}
+            isAdmin={isAdmin}
+            isPremium={isPremium}
+            onItemClick={onClose}
+          />
         </div>
 
         {isAdmin && (

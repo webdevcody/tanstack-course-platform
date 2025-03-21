@@ -1,0 +1,1 @@
+ALTER TABLE "app_user" ADD COLUMN "isPremium" boolean DEFAULT false NOT NULL;
