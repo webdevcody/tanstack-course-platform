@@ -16,14 +16,12 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { authenticatedMiddleware } from "~/lib/auth";
-import { isCourseAdminUseCase } from "~/use-cases/courses";
+import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";
 import { getSegmentUseCase, updateSegmentUseCase } from "~/use-cases/segments";
 import { assertAuthenticatedFn } from "~/fn/auth";
 import { ChevronLeft, Loader2 } from "lucide-react";
-import { Container } from "~/routes/courses/-components/container";
+import { Container } from "~/routes/learn/-components/container";
 import { v4 as uuidv4 } from "uuid";
-import { getPresignedPostUrlFn } from "~/fn/storage";
 import { useState } from "react";
 import { uploadFile } from "~/utils/storage";
 
@@ -56,41 +54,26 @@ const updateSegmentFn = createServerFn()
     const segment = await getSegmentUseCase(data.segmentId);
     if (!segment) throw new Error("Segment not found");
 
-    const isAdmin = await isCourseAdminUseCase(
-      context.userId,
-      segment.courseId
-    );
-    if (!isAdmin) throw new Error("Not authorized");
+    if (!context.isAdmin) throw new Error("Not authorized");
 
     return await updateSegmentUseCase(data.segmentId, data.data);
   });
 
 const loaderFn = createServerFn()
-  .middleware([authenticatedMiddleware])
+  .middleware([adminMiddleware])
   .validator(z.object({ segmentId: z.number() }))
   .handler(async ({ data, context }) => {
     const segment = await getSegmentUseCase(data.segmentId);
     if (!segment) throw new Error("Segment not found");
-
-    const isAdmin = await isCourseAdminUseCase(
-      context.userId,
-      segment.courseId
-    );
-    if (!isAdmin) throw new Error("Not authorized");
-
     return segment;
   });
 
-export const Route = createFileRoute(
-  "/courses/$courseId/segments/$segmentId/edit"
-)({
+export const Route = createFileRoute("/learn/$segmentId/edit")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
   loader: async ({ params, context }) => {
     const segment = await loaderFn({
-      data: {
-        segmentId: parseInt(params.segmentId),
-      },
+      data: { segmentId: parseInt(params.segmentId) },
     });
 
     return segment;
@@ -100,7 +83,6 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const params = Route.useParams();
   const navigate = useNavigate();
-  const courseId = parseInt(params.courseId);
   const segmentId = parseInt(params.segmentId);
   const segment = Route.useLoaderData();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -136,11 +118,8 @@ function RouteComponent() {
 
       // Navigate back to the segment
       navigate({
-        to: "/courses/$courseId/segments/$segmentId",
-        params: {
-          courseId: courseId.toString(),
-          segmentId: segmentId.toString(),
-        },
+        to: "/learn/$segmentId",
+        params: { segmentId: segmentId.toString() },
       });
     } catch (error) {
       console.error("Failed to update segment:", error);
@@ -157,8 +136,8 @@ function RouteComponent() {
           variant="ghost"
           onClick={() =>
             navigate({
-              to: "/courses/$courseId",
-              params: { courseId: courseId.toString() },
+              to: "/learn/$segmentId",
+              params: { segmentId: segmentId.toString() },
             })
           }
           className="flex items-center gap-2"

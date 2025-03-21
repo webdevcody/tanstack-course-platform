@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1738599209233,
-      "tag": "0000_deep_war_machine",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1738735235966,
-      "tag": "0001_yellow_maestro",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1738735655329,
-      "tag": "0002_solid_metal_master",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1738984749685,
-      "tag": "0003_woozy_black_crow",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1739243242521,
-      "tag": "0004_material_dreadnoughts",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1739247433267,
-      "tag": "0005_real_absorbing_man",
+      "when": 1742522864908,
+      "tag": "0000_complex_harrier",
       "breakpoints": true
     }
   ]

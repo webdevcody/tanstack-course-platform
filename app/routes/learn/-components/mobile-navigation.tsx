@@ -1,11 +1,10 @@
 import { Sheet, SheetContent } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { X, Plus } from "lucide-react";
-import { Course, Segment } from "~/db/schema";
+import { Segment } from "~/db/schema";
 
 interface MobileNavigationProps {
   segments: Segment[];
-  courseId: Course["id"];
   currentSegmentId: Segment["id"];
   isOpen: boolean;
   onClose: () => void;
@@ -14,7 +13,6 @@ interface MobileNavigationProps {
 
 export function MobileNavigation({
   segments,
-  courseId,
   currentSegmentId,
   isOpen,
   onClose,
@@ -28,7 +26,7 @@ export function MobileNavigation({
       >
         <div className="sticky top-0 right-0 flex items-center justify-between p-6 bg-background border-b z-10">
           <div className="flex items-center gap-4">
-            <h2 className="text-lg font-semibold">Course Navigation</h2>
+            <h2 className="text-lg font-semibold">Content Navigation</h2>
           </div>
           <Button
             variant="ghost"
@@ -44,7 +42,7 @@ export function MobileNavigation({
           {segments.map((segment, index) => (
             <a
               key={segment.id}
-              href={`/courses/${courseId}/segments/${segment.id}`}
+              href={`/learn/${segment.id}`}
               className={`flex items-center gap-6 p-4 hover:bg-accent/50 transition-colors ${
                 segment.id === currentSegmentId ? "bg-accent/50" : ""
               }`}
@@ -59,9 +57,9 @@ export function MobileNavigation({
 
         {isAdmin && (
           <Button variant="secondary" className="py-8" asChild>
-            <a href={`/courses/${courseId}/segments/add`}>
-              <Plus className="h-4 w-4" /> Add Segment
-              <span className="sr-only">Create new segment</span>
+            <a href="/learn/add">
+              <Plus className="h-4 w-4" /> Add Content
+              <span className="sr-only">Create new content</span>
             </a>
           </Button>
         )}

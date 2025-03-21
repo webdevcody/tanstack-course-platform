@@ -1,99 +1,69 @@
-import { and, desc, eq, gt, lt } from "drizzle-orm";
 import { database } from "~/db";
-import {
-  Segment,
-  segments,
-  type SegmentCreate,
-  attachments,
-  type AttachmentCreate,
-} from "~/db/schema";
+import { segments, attachments } from "~/db/schema";
+import { eq } from "drizzle-orm";
+import type { Segment, SegmentCreate } from "~/db/schema";
 
-export async function getSegmentsByCourseId(courseId: number) {
-  return database.query.segments.findMany({
-    where: eq(segments.courseId, courseId),
-    orderBy: segments.order,
-  });
+export async function getSegments() {
+  return database.select().from(segments).orderBy(segments.order);
 }
 
-export async function getSegmentById(id: number) {
-  return database.query.segments.findFirst({
-    where: eq(segments.id, id),
-  });
+export async function getSegmentById(segmentId: Segment["id"]) {
+  const result = await database
+    .select()
+    .from(segments)
+    .where(eq(segments.id, segmentId))
+    .limit(1);
+  return result[0];
 }
 
 export async function createSegment(segment: SegmentCreate) {
-  const [createdSegment] = await database
-    .insert(segments)
-    .values(segment)
-    .returning();
-  return createdSegment;
+  const result = await database.insert(segments).values(segment).returning();
+  return result[0];
 }
 
 export async function updateSegment(
-  id: Segment["id"],
-  data: {
-    title: string;
-    content: string;
-    videoKey?: string;
-  }
+  id: number,
+  segment: Partial<SegmentCreate>
 ) {
-  return await database
+  const result = await database
     .update(segments)
-    .set({ ...data, updatedAt: new Date() })
+    .set(segment)
     .where(eq(segments.id, id))
     .returning();
+  return result[0];
 }
 
 export async function deleteSegment(id: number) {
-  const [deletedSegment] = await database
+  const result = await database
     .delete(segments)
     .where(eq(segments.id, id))
     .returning();
-  return deletedSegment;
+  return result[0];
 }
 
-export async function getNextSegment(courseId: number, currentOrder: number) {
-  return database.query.segments.findFirst({
-    where: and(
-      eq(segments.courseId, courseId),
-      gt(segments.order, currentOrder)
-    ),
-    orderBy: segments.order,
-  });
+export async function getSegmentAttachments(segmentId: Segment["id"]) {
+  return database
+    .select()
+    .from(attachments)
+    .where(eq(attachments.segmentId, segmentId));
 }
 
-export async function getPreviousSegment(
-  courseId: number,
-  currentOrder: number
-) {
-  return database.query.segments.findFirst({
-    where: and(
-      eq(segments.courseId, courseId),
-      lt(segments.order, currentOrder)
-    ),
-    orderBy: desc(segments.order),
-  });
-}
-
-export async function getSegmentAttachments(segmentId: number) {
-  return await database.query.attachments.findMany({
-    where: eq(attachments.segmentId, segmentId),
-    orderBy: (attachments) => attachments.createdAt,
-  });
-}
-
-export async function createAttachment(attachment: AttachmentCreate) {
-  const [created] = await database
+export async function createAttachment(attachment: {
+  segmentId: Segment["id"];
+  fileName: string;
+  fileKey: string;
+}) {
+  const result = await database
     .insert(attachments)
     .values(attachment)
     .returning();
-  return created;
+  return result[0];
 }
 
 export async function deleteAttachment(id: number) {
-  const [deleted] = await database
+  const result = await database
     .delete(attachments)
     .where(eq(attachments.id, id))
     .returning();
-  return deleted;
+  return result[0];
 }

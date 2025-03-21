@@ -8,20 +8,18 @@ import {
   Sidebar,
   SidebarContent,
 } from "~/components/ui/sidebar";
-import { Course, Segment } from "~/db/schema";
+import { Segment } from "~/db/schema";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 
 interface DesktopNavigationProps {
   segments: Segment[];
-  courseId: Course["id"];
   currentSegmentId: Segment["id"];
   isAdmin: boolean;
 }
 
 export function DesktopNavigation({
   segments,
-  courseId,
   currentSegmentId,
   isAdmin,
 }: DesktopNavigationProps) {
@@ -45,7 +43,7 @@ export function DesktopNavigation({
                       className="rounded-md transition-colors w-full py-2 px-2 hover:bg-accent text-sm data-[active=true]:bg-accent data-[active=true]:font-medium"
                     >
                       <a
-                        href={`/courses/${courseId}/segments/${segment.id}`}
+                        href={`/learn/${segment.id}`}
                         className="flex items-center gap-2 w-full"
                       >
                         <span className="flex-shrink-0 size-5 flex items-center justify-center rounded-full bg-muted font-medium text-xs">
@@ -59,9 +57,9 @@ export function DesktopNavigation({
 
                 {isAdmin && (
                   <Button variant="secondary" asChild>
-                    <a href={`/courses/${courseId}/segments/add`}>
-                      <Plus className="h-4 w-4" /> Add Segment
-                      <span className="sr-only">Create new segment</span>
+                    <a href="/learn/add">
+                      <Plus className="h-4 w-4" /> Add Content
+                      <span className="sr-only">Create new content</span>
                     </a>
                   </Button>
                 )}

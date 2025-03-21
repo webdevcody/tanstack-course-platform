@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   wdc-tanstack-starter-kit-db:
-    image: postgres
+    image: postgres:17
     restart: always
     container_name: wdc-tanstack-starter-kit-db
     ports:

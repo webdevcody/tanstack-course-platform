@@ -29,6 +29,7 @@
 - a student shall easily be able to switch between segments
 - a student shall be able to skip or continue to the next segment
 - a student shall be able to navigate to the previous segment
+- a student shall be able to leave a review of the course
 
 # Stretch Goals
 
