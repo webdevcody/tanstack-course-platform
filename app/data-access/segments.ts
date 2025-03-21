@@ -7,6 +7,14 @@ export async function getSegments() {
   return database.select().from(segments).orderBy(segments.order);
 }
 
+export async function getSegmentBySlug(slug: Segment["slug"]) {
+  const result = await database
+    .select()
+    .from(segments)
+    .where(eq(segments.slug, slug))
+    .limit(1);
+  return result[0];
+}
 export async function getSegmentById(segmentId: Segment["id"]) {
   const result = await database
     .select()

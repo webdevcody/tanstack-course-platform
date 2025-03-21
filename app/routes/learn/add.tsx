@@ -1,12 +1,10 @@
 import {
   createFileRoute,
-  useCanGoBack,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
-import { Title } from "~/components/title";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -125,10 +123,7 @@ function RouteComponent() {
       });
 
       // Navigate to the new segment
-      navigate({
-        to: "/learn/$segmentId",
-        params: { segmentId: segment.id.toString() },
-      });
+      navigate({ to: "/learn/$slug", params: { slug: segment.slug } });
     } catch (error) {
       console.error("Failed to create segment:", error);
       // TODO: Show error toast

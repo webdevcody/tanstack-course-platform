@@ -63,7 +63,7 @@ export function NavigationItems({
                   expandedModules[moduleId] && "rotate-90"
                 )}
               />
-              <span>Module {moduleId}</span>
+              <span>{moduleId}</span>
             </div>
           </button>
           {expandedModules[moduleId] && (
@@ -77,7 +77,7 @@ export function NavigationItems({
                       <div className="absolute left-0 top-0 bottom-0 w-px bg-foreground" />
                     )}
                     <a
-                      href={`/learn/${segment.id}`}
+                      href={`/learn/${segment.slug}`}
                       onClick={onItemClick}
                       className={cn(
                         "flex items-center gap-2 pl-6 pr-4 py-3 text-base hover:text-foreground transition-colors group relative",

@@ -6,6 +6,7 @@ import {
   updateSegment,
   getSegmentAttachments,
   deleteAttachment,
+  getSegmentBySlug,
 } from "~/data-access/segments";
 import type { Segment, SegmentCreate, User } from "~/db/schema";
 import { deleteFile } from "~/storage";
@@ -14,8 +15,12 @@ export async function getSegmentsUseCase() {
   return getSegments();
 }
 
-export async function getSegmentUseCase(segmentId: Segment["id"]) {
-  return getSegmentById(segmentId);
+export async function getSegmentBySlugUseCase(slug: Segment["slug"]) {
+  return getSegmentBySlug(slug);
+}
+
+export async function getSegmentByIdUseCase(id: Segment["id"]) {
+  return getSegmentById(id);
 }
 
 export async function addSegmentUseCase(segment: SegmentCreate) {
@@ -35,9 +40,15 @@ export async function removeSegmentUseCase(id: number) {
 
 export async function updateSegmentUseCase(
   segmentId: number,
-  data: { title: string; content: string; videoKey?: string }
+  data: {
+    title: string;
+    content: string;
+    videoKey?: string;
+    moduleId: string;
+    slug: string;
+  }
 ) {
-  const { title, content, videoKey } = data;
+  const { title, content, videoKey, moduleId, slug } = data;
 
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
@@ -46,7 +57,13 @@ export async function updateSegmentUseCase(
     await deleteFile(segment.videoKey);
   }
 
-  return await updateSegment(segmentId, { title, content, videoKey });
+  return await updateSegment(segmentId, {
+    title,
+    content,
+    videoKey,
+    moduleId,
+    slug,
+  });
 }
 
 export async function deleteSegmentUseCase(segmentId: number) {

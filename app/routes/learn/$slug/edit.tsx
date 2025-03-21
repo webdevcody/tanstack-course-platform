@@ -17,7 +17,11 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";
-import { getSegmentUseCase, updateSegmentUseCase } from "~/use-cases/segments";
+import {
+  getSegmentBySlugUseCase,
+  getSegmentByIdUseCase,
+  updateSegmentUseCase,
+} from "~/use-cases/segments";
 import { assertAuthenticatedFn } from "~/fn/auth";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { Container } from "~/routes/learn/-components/container";
@@ -55,7 +59,7 @@ const updateSegmentFn = createServerFn()
     })
   )
   .handler(async ({ data, context }) => {
-    const segment = await getSegmentUseCase(data.segmentId);
+    const segment = await getSegmentByIdUseCase(data.segmentId);
     if (!segment) throw new Error("Segment not found");
 
     if (!context.isAdmin) throw new Error("Not authorized");
@@ -65,20 +69,18 @@ const updateSegmentFn = createServerFn()
 
 const loaderFn = createServerFn()
   .middleware([adminMiddleware])
-  .validator(z.object({ segmentId: z.number() }))
+  .validator(z.object({ slug: z.string() }))
   .handler(async ({ data, context }) => {
-    const segment = await getSegmentUseCase(data.segmentId);
+    const segment = await getSegmentBySlugUseCase(data.slug);
     if (!segment) throw new Error("Segment not found");
     return segment;
   });
 
-export const Route = createFileRoute("/learn/$segmentId/edit")({
+export const Route = createFileRoute("/learn/$slug/edit")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
   loader: async ({ params, context }) => {
-    const segment = await loaderFn({
-      data: { segmentId: parseInt(params.segmentId) },
-    });
+    const segment = await loaderFn({ data: { slug: params.slug } });
 
     return segment;
   },
@@ -87,7 +89,7 @@ export const Route = createFileRoute("/learn/$segmentId/edit")({
 function RouteComponent() {
   const params = Route.useParams();
   const navigate = useNavigate();
-  const segmentId = parseInt(params.segmentId);
+  const slug = params.slug;
   const segment = Route.useLoaderData();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -113,7 +115,7 @@ function RouteComponent() {
 
       await updateSegmentFn({
         data: {
-          segmentId,
+          segmentId: segment.id,
           data: {
             title: values.title,
             content: values.content,
@@ -125,10 +127,7 @@ function RouteComponent() {
       });
 
       // Navigate back to the segment
-      navigate({
-        to: "/learn/$segmentId",
-        params: { segmentId: segmentId.toString() },
-      });
+      navigate({ to: "/learn/$slug", params: { slug } });
     } catch (error) {
       console.error("Failed to update segment:", error);
       // TODO: Show error toast
@@ -143,10 +142,7 @@ function RouteComponent() {
         <Button
           variant="ghost"
           onClick={() =>
-            navigate({
-              to: "/learn/$segmentId",
-              params: { segmentId: segmentId.toString() },
-            })
+            navigate({ to: "/learn/$slug", params: { slug: segment.slug } })
           }
           className="flex items-center gap-2"
         >

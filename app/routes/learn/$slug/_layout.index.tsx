@@ -1,17 +1,17 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
-import { SidebarProvider, useSidebar } from "~/components/ui/sidebar";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { Edit, Menu, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import React, { useState } from "react";
-import { getSegmentUseCase, deleteSegmentUseCase } from "~/use-cases/segments";
+import {
+  deleteSegmentUseCase,
+  getSegmentBySlugUseCase,
+} from "~/use-cases/segments";
 import { getSegmentAttachments, getSegments } from "~/data-access/segments";
 import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
-import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
-import { DesktopNavigation } from "~/routes/learn/-components/desktop-navigation";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
 import { getStorageUrl, uploadFile } from "~/utils/storage";
 import { useDropzone } from "react-dropzone";
@@ -40,12 +40,12 @@ import { isUserPremiumFn } from "~/fn/auth";
 
 export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
-  .validator(z.object({ segmentId: z.coerce.number() }))
+  .validator(z.object({ slug: z.string() }))
   .handler(async ({ data }) => {
-    const [segment, segments, attachments] = await Promise.all([
-      getSegmentUseCase(data.segmentId),
+    const segment = await getSegmentBySlugUseCase(data.slug);
+    const [segments, attachments] = await Promise.all([
       getSegments(),
-      getSegmentAttachments(data.segmentId),
+      getSegmentAttachments(segment.id),
     ]);
 
     return { segment, segments, attachments };
@@ -78,11 +78,11 @@ export const deleteSegmentFn = createServerFn()
     await deleteSegmentUseCase(data.segmentId);
   });
 
-export const Route = createFileRoute("/learn/$segmentId/_layout/")({
+export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
   loader: async ({ params }) => {
     const { segment, segments, attachments } = await getSegmentInfoFn({
-      data: { segmentId: Number(params.segmentId) },
+      data: { slug: params.slug },
     });
 
     const isPremium = await isUserPremiumFn();
@@ -242,16 +242,16 @@ function ViewSegment({
         <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
         <div className="flex gap-2">
           <Link
-            to="/learn/$segmentId/edit"
-            params={{ segmentId: currentSegment.id.toString() }}
+            to="/learn/$slug/edit"
+            params={{ slug: currentSegment.slug }}
             className={buttonVariants({ variant: "outline" })}
           >
-            <Edit className="mr-2 h-4 w-4" /> Edit Content
+            <Edit className="mr-2 h-4 w-4" /> Edit Segment
           </Link>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Content
+                <Trash2 className="mr-2 h-4 w-4" /> Delete Segment
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

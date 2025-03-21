@@ -55,10 +55,7 @@ export function HeroSection() {
               Buy Now
             </Button>
           </a>
-          <Link
-            to="/learn/$segmentId"
-            params={{ segmentId: firstSegment.data.id.toString() }}
-          >
+          <Link to="/learn/$slug" params={{ slug: firstSegment.data.slug }}>
             <Button
               size="lg"
               variant="outline"

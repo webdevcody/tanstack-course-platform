@@ -52,11 +52,11 @@ function LayoutContent() {
   );
 }
 
-export const Route = createFileRoute("/learn/$segmentId/_layout")({
+export const Route = createFileRoute("/learn/$slug/_layout")({
   component: RouteComponent,
   loader: async ({ params }) => {
     const { segment, segments, attachments } = await getSegmentInfoFn({
-      data: { segmentId: Number(params.segmentId) },
+      data: { slug: params.slug },
     });
 
     const isPremium = await isUserPremiumFn();

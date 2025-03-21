@@ -21,13 +21,13 @@ import { Route as IndexImport } from './routes/index'
 import { Route as LearnNotFoundImport } from './routes/learn/not-found'
 import { Route as LearnNoSegmentsImport } from './routes/learn/no-segments'
 import { Route as LearnAddImport } from './routes/learn/add'
-import { Route as LearnSegmentIdEditImport } from './routes/learn/$segmentId/edit'
-import { Route as LearnSegmentIdLayoutImport } from './routes/learn/$segmentId/_layout'
-import { Route as LearnSegmentIdLayoutIndexImport } from './routes/learn/$segmentId/_layout.index'
+import { Route as LearnSlugEditImport } from './routes/learn/$slug/edit'
+import { Route as LearnSlugLayoutImport } from './routes/learn/$slug/_layout'
+import { Route as LearnSlugLayoutIndexImport } from './routes/learn/$slug/_layout.index'
 
 // Create Virtual Routes
 
-const LearnSegmentIdImport = createFileRoute('/learn/$segmentId')()
+const LearnSlugImport = createFileRoute('/learn/$slug')()
 
 // Create/Update Routes
 
@@ -61,9 +61,9 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LearnSegmentIdRoute = LearnSegmentIdImport.update({
-  id: '/learn/$segmentId',
-  path: '/learn/$segmentId',
+const LearnSlugRoute = LearnSlugImport.update({
+  id: '/learn/$slug',
+  path: '/learn/$slug',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -85,21 +85,21 @@ const LearnAddRoute = LearnAddImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LearnSegmentIdEditRoute = LearnSegmentIdEditImport.update({
+const LearnSlugEditRoute = LearnSlugEditImport.update({
   id: '/edit',
   path: '/edit',
-  getParentRoute: () => LearnSegmentIdRoute,
+  getParentRoute: () => LearnSlugRoute,
 } as any)
 
-const LearnSegmentIdLayoutRoute = LearnSegmentIdLayoutImport.update({
+const LearnSlugLayoutRoute = LearnSlugLayoutImport.update({
   id: '/_layout',
-  getParentRoute: () => LearnSegmentIdRoute,
+  getParentRoute: () => LearnSlugRoute,
 } as any)
 
-const LearnSegmentIdLayoutIndexRoute = LearnSegmentIdLayoutIndexImport.update({
+const LearnSlugLayoutIndexRoute = LearnSlugLayoutIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => LearnSegmentIdLayoutRoute,
+  getParentRoute: () => LearnSlugLayoutRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -162,62 +162,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnNotFoundImport
       parentRoute: typeof rootRoute
     }
-    '/learn/$segmentId': {
-      id: '/learn/$segmentId'
-      path: '/learn/$segmentId'
-      fullPath: '/learn/$segmentId'
-      preLoaderRoute: typeof LearnSegmentIdImport
+    '/learn/$slug': {
+      id: '/learn/$slug'
+      path: '/learn/$slug'
+      fullPath: '/learn/$slug'
+      preLoaderRoute: typeof LearnSlugImport
       parentRoute: typeof rootRoute
     }
-    '/learn/$segmentId/_layout': {
-      id: '/learn/$segmentId/_layout'
-      path: '/learn/$segmentId'
-      fullPath: '/learn/$segmentId'
-      preLoaderRoute: typeof LearnSegmentIdLayoutImport
-      parentRoute: typeof LearnSegmentIdRoute
+    '/learn/$slug/_layout': {
+      id: '/learn/$slug/_layout'
+      path: '/learn/$slug'
+      fullPath: '/learn/$slug'
+      preLoaderRoute: typeof LearnSlugLayoutImport
+      parentRoute: typeof LearnSlugRoute
     }
-    '/learn/$segmentId/edit': {
-      id: '/learn/$segmentId/edit'
+    '/learn/$slug/edit': {
+      id: '/learn/$slug/edit'
       path: '/edit'
-      fullPath: '/learn/$segmentId/edit'
-      preLoaderRoute: typeof LearnSegmentIdEditImport
-      parentRoute: typeof LearnSegmentIdImport
+      fullPath: '/learn/$slug/edit'
+      preLoaderRoute: typeof LearnSlugEditImport
+      parentRoute: typeof LearnSlugImport
     }
-    '/learn/$segmentId/_layout/': {
-      id: '/learn/$segmentId/_layout/'
+    '/learn/$slug/_layout/': {
+      id: '/learn/$slug/_layout/'
       path: '/'
-      fullPath: '/learn/$segmentId/'
-      preLoaderRoute: typeof LearnSegmentIdLayoutIndexImport
-      parentRoute: typeof LearnSegmentIdLayoutImport
+      fullPath: '/learn/$slug/'
+      preLoaderRoute: typeof LearnSlugLayoutIndexImport
+      parentRoute: typeof LearnSlugLayoutImport
     }
   }
 }
 
 // Create and export the route tree
 
-interface LearnSegmentIdLayoutRouteChildren {
-  LearnSegmentIdLayoutIndexRoute: typeof LearnSegmentIdLayoutIndexRoute
+interface LearnSlugLayoutRouteChildren {
+  LearnSlugLayoutIndexRoute: typeof LearnSlugLayoutIndexRoute
 }
 
-const LearnSegmentIdLayoutRouteChildren: LearnSegmentIdLayoutRouteChildren = {
-  LearnSegmentIdLayoutIndexRoute: LearnSegmentIdLayoutIndexRoute,
+const LearnSlugLayoutRouteChildren: LearnSlugLayoutRouteChildren = {
+  LearnSlugLayoutIndexRoute: LearnSlugLayoutIndexRoute,
 }
 
-const LearnSegmentIdLayoutRouteWithChildren =
-  LearnSegmentIdLayoutRoute._addFileChildren(LearnSegmentIdLayoutRouteChildren)
+const LearnSlugLayoutRouteWithChildren = LearnSlugLayoutRoute._addFileChildren(
+  LearnSlugLayoutRouteChildren,
+)
 
-interface LearnSegmentIdRouteChildren {
-  LearnSegmentIdLayoutRoute: typeof LearnSegmentIdLayoutRouteWithChildren
-  LearnSegmentIdEditRoute: typeof LearnSegmentIdEditRoute
+interface LearnSlugRouteChildren {
+  LearnSlugLayoutRoute: typeof LearnSlugLayoutRouteWithChildren
+  LearnSlugEditRoute: typeof LearnSlugEditRoute
 }
 
-const LearnSegmentIdRouteChildren: LearnSegmentIdRouteChildren = {
-  LearnSegmentIdLayoutRoute: LearnSegmentIdLayoutRouteWithChildren,
-  LearnSegmentIdEditRoute: LearnSegmentIdEditRoute,
+const LearnSlugRouteChildren: LearnSlugRouteChildren = {
+  LearnSlugLayoutRoute: LearnSlugLayoutRouteWithChildren,
+  LearnSlugEditRoute: LearnSlugEditRoute,
 }
 
-const LearnSegmentIdRouteWithChildren = LearnSegmentIdRoute._addFileChildren(
-  LearnSegmentIdRouteChildren,
+const LearnSlugRouteWithChildren = LearnSlugRoute._addFileChildren(
+  LearnSlugRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
@@ -229,9 +230,9 @@ export interface FileRoutesByFullPath {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
-  '/learn/$segmentId': typeof LearnSegmentIdLayoutRouteWithChildren
-  '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
-  '/learn/$segmentId/': typeof LearnSegmentIdLayoutIndexRoute
+  '/learn/$slug': typeof LearnSlugLayoutRouteWithChildren
+  '/learn/$slug/edit': typeof LearnSlugEditRoute
+  '/learn/$slug/': typeof LearnSlugLayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -243,8 +244,8 @@ export interface FileRoutesByTo {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
-  '/learn/$segmentId': typeof LearnSegmentIdLayoutIndexRoute
-  '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
+  '/learn/$slug': typeof LearnSlugLayoutIndexRoute
+  '/learn/$slug/edit': typeof LearnSlugEditRoute
 }
 
 export interface FileRoutesById {
@@ -257,10 +258,10 @@ export interface FileRoutesById {
   '/learn/add': typeof LearnAddRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
-  '/learn/$segmentId': typeof LearnSegmentIdRouteWithChildren
-  '/learn/$segmentId/_layout': typeof LearnSegmentIdLayoutRouteWithChildren
-  '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
-  '/learn/$segmentId/_layout/': typeof LearnSegmentIdLayoutIndexRoute
+  '/learn/$slug': typeof LearnSlugRouteWithChildren
+  '/learn/$slug/_layout': typeof LearnSlugLayoutRouteWithChildren
+  '/learn/$slug/edit': typeof LearnSlugEditRoute
+  '/learn/$slug/_layout/': typeof LearnSlugLayoutIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -274,9 +275,9 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
-    | '/learn/$segmentId'
-    | '/learn/$segmentId/edit'
-    | '/learn/$segmentId/'
+    | '/learn/$slug'
+    | '/learn/$slug/edit'
+    | '/learn/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -287,8 +288,8 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
-    | '/learn/$segmentId'
-    | '/learn/$segmentId/edit'
+    | '/learn/$slug'
+    | '/learn/$slug/edit'
   id:
     | '__root__'
     | '/'
@@ -299,10 +300,10 @@ export interface FileRouteTypes {
     | '/learn/add'
     | '/learn/no-segments'
     | '/learn/not-found'
-    | '/learn/$segmentId'
-    | '/learn/$segmentId/_layout'
-    | '/learn/$segmentId/edit'
-    | '/learn/$segmentId/_layout/'
+    | '/learn/$slug'
+    | '/learn/$slug/_layout'
+    | '/learn/$slug/edit'
+    | '/learn/$slug/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -315,7 +316,7 @@ export interface RootRouteChildren {
   LearnAddRoute: typeof LearnAddRoute
   LearnNoSegmentsRoute: typeof LearnNoSegmentsRoute
   LearnNotFoundRoute: typeof LearnNotFoundRoute
-  LearnSegmentIdRoute: typeof LearnSegmentIdRouteWithChildren
+  LearnSlugRoute: typeof LearnSlugRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -327,7 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnAddRoute: LearnAddRoute,
   LearnNoSegmentsRoute: LearnNoSegmentsRoute,
   LearnNotFoundRoute: LearnNotFoundRoute,
-  LearnSegmentIdRoute: LearnSegmentIdRouteWithChildren,
+  LearnSlugRoute: LearnSlugRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -348,7 +349,7 @@ export const routeTree = rootRoute
         "/learn/add",
         "/learn/no-segments",
         "/learn/not-found",
-        "/learn/$segmentId"
+        "/learn/$slug"
       ]
     },
     "/": {
@@ -375,27 +376,27 @@ export const routeTree = rootRoute
     "/learn/not-found": {
       "filePath": "learn/not-found.tsx"
     },
-    "/learn/$segmentId": {
-      "filePath": "learn/$segmentId",
+    "/learn/$slug": {
+      "filePath": "learn/$slug",
       "children": [
-        "/learn/$segmentId/_layout",
-        "/learn/$segmentId/edit"
+        "/learn/$slug/_layout",
+        "/learn/$slug/edit"
       ]
     },
-    "/learn/$segmentId/_layout": {
-      "filePath": "learn/$segmentId/_layout.tsx",
-      "parent": "/learn/$segmentId",
+    "/learn/$slug/_layout": {
+      "filePath": "learn/$slug/_layout.tsx",
+      "parent": "/learn/$slug",
       "children": [
-        "/learn/$segmentId/_layout/"
+        "/learn/$slug/_layout/"
       ]
     },
-    "/learn/$segmentId/edit": {
-      "filePath": "learn/$segmentId/edit.tsx",
-      "parent": "/learn/$segmentId"
+    "/learn/$slug/edit": {
+      "filePath": "learn/$slug/edit.tsx",
+      "parent": "/learn/$slug"
     },
-    "/learn/$segmentId/_layout/": {
-      "filePath": "learn/$segmentId/_layout.index.tsx",
-      "parent": "/learn/$segmentId/_layout"
+    "/learn/$slug/_layout/": {
+      "filePath": "learn/$slug/_layout.index.tsx",
+      "parent": "/learn/$slug/_layout"
     }
   }
 }
