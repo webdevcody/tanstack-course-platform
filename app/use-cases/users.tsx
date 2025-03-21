@@ -3,6 +3,8 @@ import { PublicError } from "./errors";
 import { GoogleUser, UserId, UserSession } from "./types";
 import { createProfile, getProfile } from "~/data-access/profiles";
 import { createAccountViaGoogle } from "~/data-access/accounts";
+import { getCurrentUser } from "~/utils/session";
+import { isAdmin } from "~/lib/auth";
 
 export async function deleteUserUseCase(
   authenticatedUser: UserSession,
@@ -37,4 +39,12 @@ export async function createGoogleUserUseCase(googleUser: GoogleUser) {
   await createProfile(existingUser.id, googleUser.name, googleUser.picture);
 
   return existingUser.id;
+}
+
+export async function isAdminUseCase() {
+  const user = await getCurrentUser();
+  if (!user) {
+    return false;
+  }
+  return isAdmin(user);
 }

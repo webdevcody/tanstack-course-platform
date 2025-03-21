@@ -1,15 +1,28 @@
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { createServerFn } from "@tanstack/start";
+import { getSegments } from "~/data-access/segments";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+const getFirstSegmentFn = createServerFn().handler(async () => {
+  const segments = await getSegments();
+  return segments[0];
+});
 
 export function HeroSection() {
+  const firstSegment = useSuspenseQuery({
+    queryKey: ["first-segment"],
+    queryFn: getFirstSegmentFn,
+  });
+
   return (
     <section className="pt-32 pb-16 px-6">
       <div className="max-w-4xl mx-auto text-center">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
           className="text-gray-500 dark:text-gray-400 text-xl mb-4"
         >
           Simple. Practical. Complete.
@@ -17,7 +30,7 @@ export function HeroSection() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
           className="text-5xl sm:text-6xl font-bold mb-8"
         >
           Master React from scratch.
@@ -25,7 +38,7 @@ export function HeroSection() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
           className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto"
         >
           React Mastery is a comprehensive video course by WebDevCody. Learn
@@ -34,7 +47,7 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <a href="/api/login/google">
@@ -42,7 +55,10 @@ export function HeroSection() {
               Buy Now
             </Button>
           </a>
-          <Link to="/learn">
+          <Link
+            to="/learn/$segmentId"
+            params={{ segmentId: firstSegment.data.id.toString() }}
+          >
             <Button
               size="lg"
               variant="outline"

@@ -16,7 +16,8 @@ import { Route as UnauthenticatedImport } from './routes/unauthenticated'
 import { Route as LoginImport } from './routes/login'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
-import { Route as LearnIndexImport } from './routes/learn/index'
+import { Route as LearnNotFoundImport } from './routes/learn/not-found'
+import { Route as LearnNoSegmentsImport } from './routes/learn/no-segments'
 import { Route as LearnAddImport } from './routes/learn/add'
 import { Route as LearnSegmentIdIndexImport } from './routes/learn/$segmentId/index'
 import { Route as LearnSegmentIdEditImport } from './routes/learn/$segmentId/edit'
@@ -53,9 +54,15 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LearnIndexRoute = LearnIndexImport.update({
-  id: '/learn/',
-  path: '/learn/',
+const LearnNotFoundRoute = LearnNotFoundImport.update({
+  id: '/learn/not-found',
+  path: '/learn/not-found',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnNoSegmentsRoute = LearnNoSegmentsImport.update({
+  id: '/learn/no-segments',
+  path: '/learn/no-segments',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -123,11 +130,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnAddImport
       parentRoute: typeof rootRoute
     }
-    '/learn/': {
-      id: '/learn/'
-      path: '/learn'
-      fullPath: '/learn'
-      preLoaderRoute: typeof LearnIndexImport
+    '/learn/no-segments': {
+      id: '/learn/no-segments'
+      path: '/learn/no-segments'
+      fullPath: '/learn/no-segments'
+      preLoaderRoute: typeof LearnNoSegmentsImport
+      parentRoute: typeof rootRoute
+    }
+    '/learn/not-found': {
+      id: '/learn/not-found'
+      path: '/learn/not-found'
+      fullPath: '/learn/not-found'
+      preLoaderRoute: typeof LearnNotFoundImport
       parentRoute: typeof rootRoute
     }
     '/learn/$segmentId/edit': {
@@ -156,7 +170,8 @@ export interface FileRoutesByFullPath {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
-  '/learn': typeof LearnIndexRoute
+  '/learn/no-segments': typeof LearnNoSegmentsRoute
+  '/learn/not-found': typeof LearnNotFoundRoute
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
   '/learn/$segmentId': typeof LearnSegmentIdIndexRoute
 }
@@ -168,7 +183,8 @@ export interface FileRoutesByTo {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
-  '/learn': typeof LearnIndexRoute
+  '/learn/no-segments': typeof LearnNoSegmentsRoute
+  '/learn/not-found': typeof LearnNotFoundRoute
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
   '/learn/$segmentId': typeof LearnSegmentIdIndexRoute
 }
@@ -181,7 +197,8 @@ export interface FileRoutesById {
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
-  '/learn/': typeof LearnIndexRoute
+  '/learn/no-segments': typeof LearnNoSegmentsRoute
+  '/learn/not-found': typeof LearnNotFoundRoute
   '/learn/$segmentId/edit': typeof LearnSegmentIdEditRoute
   '/learn/$segmentId/': typeof LearnSegmentIdIndexRoute
 }
@@ -195,7 +212,8 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
-    | '/learn'
+    | '/learn/no-segments'
+    | '/learn/not-found'
     | '/learn/$segmentId/edit'
     | '/learn/$segmentId'
   fileRoutesByTo: FileRoutesByTo
@@ -206,7 +224,8 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
-    | '/learn'
+    | '/learn/no-segments'
+    | '/learn/not-found'
     | '/learn/$segmentId/edit'
     | '/learn/$segmentId'
   id:
@@ -217,7 +236,8 @@ export interface FileRouteTypes {
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
-    | '/learn/'
+    | '/learn/no-segments'
+    | '/learn/not-found'
     | '/learn/$segmentId/edit'
     | '/learn/$segmentId/'
   fileRoutesById: FileRoutesById
@@ -230,7 +250,8 @@ export interface RootRouteChildren {
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   LearnAddRoute: typeof LearnAddRoute
-  LearnIndexRoute: typeof LearnIndexRoute
+  LearnNoSegmentsRoute: typeof LearnNoSegmentsRoute
+  LearnNotFoundRoute: typeof LearnNotFoundRoute
   LearnSegmentIdEditRoute: typeof LearnSegmentIdEditRoute
   LearnSegmentIdIndexRoute: typeof LearnSegmentIdIndexRoute
 }
@@ -242,7 +263,8 @@ const rootRouteChildren: RootRouteChildren = {
   UnauthenticatedRoute: UnauthenticatedRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   LearnAddRoute: LearnAddRoute,
-  LearnIndexRoute: LearnIndexRoute,
+  LearnNoSegmentsRoute: LearnNoSegmentsRoute,
+  LearnNotFoundRoute: LearnNotFoundRoute,
   LearnSegmentIdEditRoute: LearnSegmentIdEditRoute,
   LearnSegmentIdIndexRoute: LearnSegmentIdIndexRoute,
 }
@@ -263,7 +285,8 @@ export const routeTree = rootRoute
         "/unauthenticated",
         "/unauthorized",
         "/learn/add",
-        "/learn/",
+        "/learn/no-segments",
+        "/learn/not-found",
         "/learn/$segmentId/edit",
         "/learn/$segmentId/"
       ]
@@ -286,8 +309,11 @@ export const routeTree = rootRoute
     "/learn/add": {
       "filePath": "learn/add.tsx"
     },
-    "/learn/": {
-      "filePath": "learn/index.tsx"
+    "/learn/no-segments": {
+      "filePath": "learn/no-segments.tsx"
+    },
+    "/learn/not-found": {
+      "filePath": "learn/not-found.tsx"
     },
     "/learn/$segmentId/edit": {
       "filePath": "learn/$segmentId/edit.tsx"

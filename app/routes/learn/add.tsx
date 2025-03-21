@@ -1,4 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useCanGoBack,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Title } from "~/components/title";
@@ -22,7 +27,6 @@ import { assertAuthenticatedFn } from "~/fn/auth";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { getSegments } from "~/data-access/segments";
 import { v4 as uuidv4 } from "uuid";
-import { getPresignedPostUrlFn } from "~/fn/storage";
 import { useState } from "react";
 import { uploadFile } from "~/utils/storage";
 import { Container } from "./-components/container";
@@ -38,6 +42,8 @@ const formSchema = z.object({
     .max(100, "Title must be less than 100 characters"),
   content: z.string().min(10, "Content must be at least 10 characters"),
   video: z.instanceof(File).optional(),
+  slug: z.string().min(2, "Slug must be at least 2 characters"),
+  moduleId: z.string().min(1, "Module ID is required"),
 });
 
 const createSegmentFn = createServerFn()
@@ -48,6 +54,8 @@ const createSegmentFn = createServerFn()
         title: z.string(),
         content: z.string(),
         videoKey: z.string().optional(),
+        slug: z.string(),
+        moduleId: z.string(),
       }),
     })
   )
@@ -63,8 +71,9 @@ const createSegmentFn = createServerFn()
     const segment = await addSegmentUseCase({
       title: data.data.title,
       content: data.data.content,
+      slug: data.data.slug,
       order: nextOrder,
-      moduleId: "default",
+      moduleId: data.data.moduleId,
       videoKey: data.data.videoKey,
     });
 
@@ -85,7 +94,13 @@ function RouteComponent() {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { title: "", content: "", video: undefined },
+    defaultValues: {
+      title: "",
+      content: "",
+      video: undefined,
+      slug: "",
+      moduleId: "default",
+    },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -103,6 +118,8 @@ function RouteComponent() {
             title: values.title,
             content: values.content,
             videoKey: videoKey,
+            slug: values.title.toLowerCase().replace(/ /g, "-"),
+            moduleId: values.moduleId,
           },
         },
       });
@@ -120,17 +137,15 @@ function RouteComponent() {
     }
   };
 
+  const router = useRouter();
+
   return (
     <Container>
       <div className="flex items-center gap-4 mb-8">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate({ to: "/learn" })}
-        >
-          <ChevronLeft className="h-4 w-4" />
+        <Button variant="ghost" onClick={() => router.history.back()}>
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Back to Course
         </Button>
-        <Title title="Add New Content" />
       </div>
 
       <Form {...form}>
@@ -146,6 +161,23 @@ function RouteComponent() {
                 </FormControl>
                 <FormDescription>
                   Give your content a clear and concise title.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="slug"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Slug</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter a slug" {...field} />
+                </FormControl>
+                <FormDescription>
+                  The slug is used to generate the URL for your content.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -189,6 +221,23 @@ function RouteComponent() {
                 </FormControl>
                 <FormDescription>
                   Upload a video to accompany your content.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="moduleId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Module Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter module name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Specify which module this content belongs to.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

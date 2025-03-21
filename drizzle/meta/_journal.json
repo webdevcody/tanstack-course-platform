@@ -8,6 +8,13 @@
       "when": 1742522864908,
       "tag": "0000_complex_harrier",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1742527853040,
+      "tag": "0001_military_silver_samurai",
+      "breakpoints": true
     }
   ]
 }

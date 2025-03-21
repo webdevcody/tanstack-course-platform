@@ -3,8 +3,8 @@ import { validateRequest } from "~/utils/auth";
 import { redirect } from "@tanstack/react-router";
 import { type User } from "~/db/schema";
 
-function isAdmin(user: User) {
-  return user.email === process.env.ADMIN_EMAIL;
+export function isAdmin(user: User | null) {
+  return user?.email === process.env.ADMIN_EMAIL;
 }
 
 export const authenticatedMiddleware = createMiddleware().server(
@@ -38,3 +38,11 @@ export const userIdMiddleware = createMiddleware().server(async ({ next }) => {
 
   return next({ context: { userId: user?.id } });
 });
+
+export const unauthenticatedMiddleware = createMiddleware().server(
+  async ({ next }) => {
+    const { user } = await validateRequest();
+
+    return next({ context: { userId: user?.id, isAdmin: isAdmin(user) } });
+  }
+);

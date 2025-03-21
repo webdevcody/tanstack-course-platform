@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { getSegmentUseCase, deleteSegmentUseCase } from "~/use-cases/segments";
 import { getSegmentAttachments, getSegments } from "~/data-access/segments";
 import { type Segment, type Attachment } from "~/db/schema";
-import { validateRequest } from "~/utils/auth";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
 import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
@@ -36,24 +35,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";
+import { adminMiddleware, unauthenticatedMiddleware } from "~/lib/auth";
 
 const getSegmentInfoFn = createServerFn()
-  .middleware([authenticatedMiddleware])
+  .middleware([unauthenticatedMiddleware])
   .validator(z.object({ segmentId: z.coerce.number() }))
   .handler(async ({ data }) => {
-    const { user } = await validateRequest();
-    if (!user) {
-      throw redirect({ to: "/unauthenticated" });
-    }
-
     const [segment, segments, attachments] = await Promise.all([
       getSegmentUseCase(data.segmentId),
       getSegments(),
       getSegmentAttachments(data.segmentId),
     ]);
 
-    return { segment, segments, attachments, userId: user.id };
+    return { segment, segments, attachments };
   });
 
 export const createAttachmentFn = createServerFn()
@@ -86,15 +80,19 @@ export const deleteSegmentFn = createServerFn()
 export const Route = createFileRoute("/learn/$segmentId/")({
   component: RouteComponent,
   loader: async ({ params }) => {
-    const { segment, segments, attachments, userId } = await getSegmentInfoFn({
+    const { segment, segments, attachments } = await getSegmentInfoFn({
       data: { segmentId: Number(params.segmentId) },
     });
 
-    if (!segment) {
-      throw redirect({ to: "/" });
+    if (segments.length === 0) {
+      throw redirect({ to: "/learn/no-segments" });
     }
 
-    return { segment, segments, attachments, userId };
+    if (!segment) {
+      throw redirect({ to: "/learn/not-found" });
+    }
+
+    return { segment, segments, attachments };
   },
 });
 
@@ -140,13 +138,11 @@ function ViewSegment({
   currentSegment,
   currentSegmentId,
   attachments,
-  userId,
 }: {
   segments: Segment[];
   currentSegment: Segment;
   currentSegmentId: number;
   attachments: Attachment[];
-  userId: number;
 }) {
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
@@ -206,7 +202,7 @@ function ViewSegment({
         title: "Content deleted successfully!",
         description: "You will be redirected to the content list.",
       });
-      router.navigate({ to: "/learn" });
+      router.navigate({ to: "/" });
     } catch (error) {
       console.error("Failed to delete content:", error);
       toast({
@@ -375,7 +371,7 @@ function ViewSegment({
 }
 
 function RouteComponent() {
-  const { segment, segments, attachments, userId } = Route.useLoaderData();
+  const { segment, segments, attachments } = Route.useLoaderData();
 
   return (
     <SidebarProvider>
@@ -384,7 +380,6 @@ function RouteComponent() {
         currentSegment={segment}
         currentSegmentId={segment.id}
         attachments={attachments}
-        userId={userId}
       />
       <Toaster />
     </SidebarProvider>

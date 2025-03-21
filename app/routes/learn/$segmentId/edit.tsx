@@ -36,6 +36,8 @@ const formSchema = z.object({
     .max(100, "Title must be less than 100 characters"),
   content: z.string().min(10, "Content must be at least 10 characters"),
   video: z.instanceof(File).optional(),
+  moduleId: z.string().min(1, "Module ID is required"),
+  slug: z.string().min(2, "Slug must be at least 2 characters"),
 });
 
 const updateSegmentFn = createServerFn()
@@ -47,6 +49,8 @@ const updateSegmentFn = createServerFn()
         title: z.string(),
         content: z.string(),
         videoKey: z.string().optional(),
+        moduleId: z.string(),
+        slug: z.string(),
       }),
     })
   )
@@ -93,6 +97,8 @@ function RouteComponent() {
       title: segment.title,
       content: segment.content,
       video: undefined,
+      moduleId: segment.moduleId,
+      slug: segment.slug,
     },
   });
 
@@ -112,6 +118,8 @@ function RouteComponent() {
             title: values.title,
             content: values.content,
             videoKey: videoKey,
+            moduleId: values.moduleId,
+            slug: values.slug,
           },
         },
       });
@@ -161,6 +169,40 @@ function RouteComponent() {
                   <FormControl>
                     <Input placeholder="Enter segment title" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Slug</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter segment slug" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    The slug is used to generate the URL for your content.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="moduleId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Module Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter module name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Specify which module this content belongs to.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

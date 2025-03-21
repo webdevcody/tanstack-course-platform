@@ -62,16 +62,21 @@ export const sessions = tableCreator(
   (table) => ({ userIdIdx: index("sessions_user_id_idx").on(table.userId) })
 );
 
-export const segments = tableCreator("segment", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
-  order: integer("order").notNull(),
-  moduleId: text("moduleId").notNull(),
-  videoKey: text("videoKey"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const segments = tableCreator(
+  "segment",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    content: text("content").notNull(),
+    order: integer("order").notNull(),
+    moduleId: text("moduleId").notNull(),
+    videoKey: text("videoKey"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({ slugIdx: index("segments_slug_idx").on(table.slug) })
+);
 
 export const segmentsRelations = relations(segments, ({ many }) => ({
   attachments: many(attachments),
