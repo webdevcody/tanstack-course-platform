@@ -1,10 +1,34 @@
 import { database } from "~/db";
-import { segments, attachments } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import type { Segment, SegmentCreate } from "~/db/schema";
+import { segments, attachments, progress } from "~/db/schema";
+import { and, eq } from "drizzle-orm";
+import type { Progress, Segment, SegmentCreate } from "~/db/schema";
 
 export async function getSegments() {
   return database.select().from(segments).orderBy(segments.order);
+}
+
+export type SegmentWithProgress = Segment & { progress: Progress | null };
+export type GetSegmentsWithProgressResult = SegmentWithProgress[] | Segment[];
+
+export async function getSegmentsWithProgress(
+  userId?: number
+): Promise<GetSegmentsWithProgressResult> {
+  if (!userId) {
+    return getSegments();
+  }
+  const result = await database
+    .select()
+    .from(segments)
+    .leftJoin(
+      progress,
+      and(eq(segments.id, progress.segmentId), eq(progress.userId, userId))
+    )
+    .orderBy(segments.order);
+
+  return result.map((segment) => ({
+    ...segment.segment,
+    progress: segment.progress,
+  }));
 }
 
 export async function getSegmentBySlug(slug: Segment["slug"]) {

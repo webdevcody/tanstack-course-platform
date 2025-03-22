@@ -9,9 +9,10 @@ import { Segment } from "~/db/schema";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
+import { GetSegmentsWithProgressResult } from "~/data-access/segments";
 
 interface DesktopNavigationProps {
-  segments: Segment[];
+  segments: GetSegmentsWithProgressResult;
   currentSegmentId: Segment["id"];
   isAdmin: boolean;
   isPremium: boolean;

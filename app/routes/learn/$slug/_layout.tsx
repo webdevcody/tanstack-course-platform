@@ -13,6 +13,19 @@ import {
 import { useEffect } from "react";
 import { setLastWatchedSegment } from "~/utils/local-storage";
 
+export const Route = createFileRoute("/learn/$slug/_layout")({
+  component: RouteComponent,
+  loader: async ({ params }) => {
+    const { segment, segments, attachments } = await getSegmentInfoFn({
+      data: { slug: params.slug },
+    });
+
+    const isPremium = await isUserPremiumFn();
+
+    return { segment, segments, attachments, isPremium };
+  },
+});
+
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
   const { segments, segment, isPremium } = Route.useLoaderData();
@@ -76,19 +89,6 @@ function LayoutContent() {
     </div>
   );
 }
-
-export const Route = createFileRoute("/learn/$slug/_layout")({
-  component: RouteComponent,
-  loader: async ({ params }) => {
-    const { segment, segments, attachments } = await getSegmentInfoFn({
-      data: { slug: params.slug },
-    });
-
-    const isPremium = await isUserPremiumFn();
-
-    return { segment, segments, attachments, isPremium };
-  },
-});
 
 function RouteComponent() {
   return (

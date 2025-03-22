@@ -2,13 +2,17 @@ import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { ArrowRight, Edit, Trash2 } from "lucide-react";
+import React, { useMemo, useState } from "react";
 import {
   deleteSegmentUseCase,
   getSegmentBySlugUseCase,
 } from "~/use-cases/segments";
-import { getSegmentAttachments, getSegments } from "~/data-access/segments";
+import {
+  getSegmentAttachments,
+  getSegments,
+  getSegmentsWithProgress,
+} from "~/data-access/segments";
 import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
@@ -35,17 +39,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { adminMiddleware, unauthenticatedMiddleware } from "~/lib/auth";
+import {
+  adminMiddleware,
+  authenticatedMiddleware,
+  unauthenticatedMiddleware,
+} from "~/lib/auth";
 import { isUserPremiumFn } from "~/fn/auth";
+import { markAsWatchedUseCase } from "~/use-cases/progress";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getUserInfoFn } from "~/routes/-components/header";
+import { useSegment } from "../-components/segment-context";
 
 export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .validator(z.object({ slug: z.string() }))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const segment = await getSegmentBySlugUseCase(data.slug);
     const [segments, attachments] = await Promise.all([
-      getSegments(),
-      getSegmentAttachments(segment.id),
+      getSegmentsWithProgress(context.userId), // todo should a use case
+      getSegmentAttachments(segment.id), // todo should a use case
     ]);
 
     return { segment, segments, attachments };
@@ -62,6 +74,13 @@ export const createAttachmentFn = createServerFn()
   )
   .handler(async ({ data }) => {
     await createAttachmentUseCase(data);
+  });
+
+export const markedAsWatchedFn = createServerFn()
+  .middleware([authenticatedMiddleware])
+  .validator(z.object({ segmentId: z.coerce.number() }))
+  .handler(async ({ data, context }) => {
+    await markAsWatchedUseCase(context.userId, data.segmentId);
   });
 
 export const deleteAttachmentFn = createServerFn()
@@ -152,6 +171,20 @@ function ViewSegment({
   const { toast } = useToast();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const { setCurrentSegmentId } = useSegment();
+
+  const userInfo = useSuspenseQuery({
+    queryKey: ["userInfo"],
+    queryFn: () => getUserInfoFn(),
+  });
+  const isLoggedIn = userInfo.data?.user?.id;
+
+  const nextSegment = useMemo(() => {
+    const currentIndex = segments.findIndex(
+      (segment) => segment.id === currentSegmentId
+    );
+    return segments[currentIndex + 1];
+  }, [currentSegmentId, segments]);
 
   // Show upgrade placeholder for premium segments if user is not premium
   if (currentSegment.isPremium && !isPremium) {
@@ -237,7 +270,7 @@ function ViewSegment({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
         <div className="flex gap-2">
@@ -279,6 +312,21 @@ function ViewSegment({
       {currentSegment.videoKey && (
         <div className="w-full">
           <VideoPlayer url={getStorageUrl(currentSegment.videoKey)} />
+        </div>
+      )}
+
+      {nextSegment && isLoggedIn && (
+        <div className="flex justify-end">
+          <Button
+            onClick={async () => {
+              await markedAsWatchedFn({
+                data: { segmentId: currentSegmentId },
+              });
+              setCurrentSegmentId(nextSegment.id);
+            }}
+          >
+            Next Video <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       )}
 

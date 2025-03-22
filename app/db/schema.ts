@@ -77,6 +77,21 @@ export const segments = tableCreator(
   (table) => [index("segments_slug_idx").on(table.slug)]
 );
 
+export const progress = tableCreator(
+  "progress",
+  {
+    id: serial("id").primaryKey(),
+    userId: serial("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    segmentId: serial("segmentId"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("progress_user_id_segment_id_idx").on(table.userId, table.segmentId),
+  ]
+);
+
 export const segmentsRelations = relations(segments, ({ many }) => ({
   attachments: many(attachments),
 }));
@@ -105,3 +120,5 @@ export type Segment = typeof segments.$inferSelect;
 export type SegmentCreate = typeof segments.$inferInsert;
 export type Attachment = typeof attachments.$inferSelect;
 export type AttachmentCreate = typeof attachments.$inferInsert;
+export type Progress = typeof progress.$inferSelect;
+export type ProgressCreate = typeof progress.$inferInsert;
