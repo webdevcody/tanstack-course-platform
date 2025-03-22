@@ -43,7 +43,7 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="w-full sm:w-auto px-8"
+              className="w-full sm:w-auto px-8 rounded-md"
             >
               Continue Learning
             </Button>

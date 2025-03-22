@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Title } from "~/components/title";
@@ -28,6 +32,8 @@ import { Container } from "~/routes/learn/-components/container";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { uploadFile } from "~/utils/storage";
+import { AutoComplete } from "~/components/ui/autocomplete";
+import { getSegments } from "~/data-access/segments";
 
 function generateRandomUUID() {
   return uuidv4();
@@ -78,13 +84,26 @@ const loaderFn = createServerFn()
     return segment;
   });
 
+const getUniqueModuleNamesFn = createServerFn()
+  .middleware([authenticatedMiddleware])
+  .handler(async () => {
+    const segments = await getSegments();
+    const uniqueModuleNames = Array.from(
+      new Set(segments.map((segment) => segment.moduleId))
+    );
+    return uniqueModuleNames;
+  });
+
 export const Route = createFileRoute("/learn/$slug/edit")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
   loader: async ({ params, context }) => {
-    const segment = await loaderFn({ data: { slug: params.slug } });
+    const [segment, moduleNames] = await Promise.all([
+      loaderFn({ data: { slug: params.slug } }),
+      getUniqueModuleNamesFn(),
+    ]);
 
-    return segment;
+    return { segment, moduleNames };
   },
 });
 
@@ -92,7 +111,7 @@ function RouteComponent() {
   const params = Route.useParams();
   const navigate = useNavigate();
   const slug = params.slug;
-  const segment = Route.useLoaderData();
+  const { segment, moduleNames } = Route.useLoaderData();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm({
@@ -144,7 +163,7 @@ function RouteComponent() {
     <Container>
       <div className="mb-6">
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={() =>
             navigate({ to: "/learn/$slug", params: { slug: segment.slug } })
           }
@@ -198,10 +217,22 @@ function RouteComponent() {
                 <FormItem>
                   <FormLabel>Module Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter module name" {...field} />
+                    <AutoComplete
+                      selectedValue={field.value}
+                      onSelectedValueChange={field.onChange}
+                      searchValue={field.value}
+                      onSearchValueChange={field.onChange}
+                      items={moduleNames.map((name) => ({
+                        value: name,
+                        label: name,
+                      }))}
+                      isLoading={false}
+                      placeholder="Search or enter a module name"
+                      emptyMessage="No modules found."
+                    />
                   </FormControl>
                   <FormDescription>
-                    Specify which module this content belongs to.
+                    Select an existing module or enter a new one.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -257,7 +288,7 @@ function RouteComponent() {
                 <FormItem>
                   <FormLabel>Length (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. 5 minutes" {...field} />
+                    <Input placeholder="2:54" {...field} />
                   </FormControl>
                   <FormDescription>
                     Estimated length of the segment (e.g. "5 minutes", "2

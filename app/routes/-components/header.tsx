@@ -73,7 +73,7 @@ export function Header() {
                 <a href="/api/login/google">
                   <Button
                     variant="outline"
-                    className="rounded-lg border-primary hover:bg-primary/10"
+                    className="border-primary hover:bg-primary/10"
                   >
                     Login
                   </Button>

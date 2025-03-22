@@ -156,7 +156,7 @@ function RouteComponent() {
   return (
     <Container>
       <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" onClick={() => router.history.back()}>
+        <Button variant="outline" onClick={() => router.history.back()}>
           <ChevronLeft className="h-4 w-4 mr-2" />
           Back to Course
         </Button>
@@ -261,13 +261,6 @@ function RouteComponent() {
                     placeholder="Search or enter a module name"
                     emptyMessage="No modules found."
                   />
-
-                  {/* <Combobox
-                    options={moduleNames}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Select or enter a module name"
-                  /> */}
                 </FormControl>
                 <FormDescription>
                   Select an existing module or enter a new one.
@@ -284,7 +277,7 @@ function RouteComponent() {
               <FormItem>
                 <FormLabel>Length (Optional)</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. 5 minutes" {...field} />
+                  <Input placeholder="2:54" {...field} />
                 </FormControl>
                 <FormDescription>
                   Estimated length of the segment (e.g. "5 minutes", "2 hours")
