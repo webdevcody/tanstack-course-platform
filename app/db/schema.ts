@@ -29,12 +29,7 @@ export const accounts = tableCreator(
       .references(() => users.id, { onDelete: "cascade" }),
     googleId: text("googleId").unique(),
   },
-  (table) => ({
-    userIdGoogleIdIdx: index("user_id_google_id_idx").on(
-      table.userId,
-      table.googleId
-    ),
-  })
+  (table) => [index("user_id_google_id_idx").on(table.userId, table.googleId)]
 );
 
 export const profiles = tableCreator("profile", {
@@ -61,7 +56,7 @@ export const sessions = tableCreator(
       mode: "date",
     }).notNull(),
   },
-  (table) => ({ userIdIdx: index("sessions_user_id_idx").on(table.userId) })
+  (table) => [index("sessions_user_id_idx").on(table.userId)]
 );
 
 export const segments = tableCreator(
@@ -79,7 +74,7 @@ export const segments = tableCreator(
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
-  (table) => ({ slugIdx: index("segments_slug_idx").on(table.slug) })
+  (table) => [index("segments_slug_idx").on(table.slug)]
 );
 
 export const segmentsRelations = relations(segments, ({ many }) => ({
