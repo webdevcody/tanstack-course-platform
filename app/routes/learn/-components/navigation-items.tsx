@@ -2,6 +2,7 @@ import { ChevronRight, Lock } from "lucide-react";
 import { Segment } from "~/db/schema";
 import { cn } from "~/lib/utils";
 import { useState } from "react";
+import { useSegment } from "./segment-context";
 
 interface NavigationItemsProps {
   segments: Segment[];
@@ -20,6 +21,8 @@ export function NavigationItems({
   className,
   onItemClick,
 }: NavigationItemsProps) {
+  const { setCurrentSegmentId } = useSegment();
+
   // Group segments by moduleId
   const groupedSegments = segments.reduce(
     (acc, segment) => {
@@ -40,12 +43,16 @@ export function NavigationItems({
   const [expandedModules, setExpandedModules] = useState<
     Record<string, boolean>
   >(() => {
-    // Initialize with current module expanded
     return currentModuleId ? { [currentModuleId]: true } : {};
   });
 
   const toggleModule = (moduleId: string) => {
     setExpandedModules((prev) => ({ ...prev, [moduleId]: !prev[moduleId] }));
+  };
+
+  const handleSegmentClick = (segment: Segment) => {
+    setCurrentSegmentId(segment.id);
+    onItemClick?.();
   };
 
   return (
@@ -76,11 +83,10 @@ export function NavigationItems({
                     {isActive && (
                       <div className="absolute left-0 top-0 bottom-0 w-px bg-foreground" />
                     )}
-                    <a
-                      href={`/learn/${segment.slug}`}
-                      onClick={onItemClick}
+                    <button
+                      onClick={() => handleSegmentClick(segment)}
                       className={cn(
-                        "flex items-center gap-2 pl-6 pr-4 py-3 text-base hover:text-foreground transition-colors group relative",
+                        "flex items-center gap-2 w-full pl-6 pr-4 py-3 text-base hover:text-foreground transition-colors group relative text-left",
                         isActive ? "text-foreground" : "text-muted-foreground"
                       )}
                     >
@@ -88,7 +94,7 @@ export function NavigationItems({
                       {segment.isPremium && !isPremium && (
                         <Lock className="h-4 w-4" />
                       )}
-                    </a>
+                    </button>
                   </div>
                 );
               })}

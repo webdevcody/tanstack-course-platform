@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { SidebarProvider, useSidebar } from "~/components/ui/sidebar";
 import { Button } from "~/components/ui/button";
 import { Menu } from "lucide-react";
@@ -6,10 +6,32 @@ import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
 import { DesktopNavigation } from "~/routes/learn/-components/desktop-navigation";
 import { getSegmentInfoFn } from "./_layout.index";
 import { isUserPremiumFn } from "~/fn/auth";
+import {
+  SegmentProvider,
+  useSegment,
+} from "~/routes/learn/-components/segment-context";
+import { useEffect } from "react";
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
   const { segments, segment, isPremium } = Route.useLoaderData();
+  const navigate = useNavigate();
+  const { currentSegmentId, setCurrentSegmentId } = useSegment();
+
+  // Initialize the current segment ID when the component mounts
+  useEffect(() => {
+    setCurrentSegmentId(segment.id);
+  }, [segment.id, setCurrentSegmentId]);
+
+  // Handle segment changes
+  useEffect(() => {
+    if (currentSegmentId && currentSegmentId !== segment.id) {
+      const newSegment = segments.find((s) => s.id === currentSegmentId);
+      if (newSegment) {
+        navigate({ to: "/learn/$slug", params: { slug: newSegment.slug } });
+      }
+    }
+  }, [currentSegmentId, segment.id, segments, navigate]);
 
   return (
     <div className="flex w-full">
@@ -68,7 +90,9 @@ export const Route = createFileRoute("/learn/$slug/_layout")({
 function RouteComponent() {
   return (
     <SidebarProvider>
-      <LayoutContent />
+      <SegmentProvider>
+        <LayoutContent />
+      </SegmentProvider>
     </SidebarProvider>
   );
 }
