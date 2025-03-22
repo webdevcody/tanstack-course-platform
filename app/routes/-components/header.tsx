@@ -7,6 +7,7 @@ import { ModeToggle } from "../../components/ModeToggle";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
 import { useState } from "react";
+import { useCourseLink } from "~/hooks/use-course-link";
 
 export const getUserInfoFn = createServerFn().handler(async () => {
   const user = await getCurrentUser();
@@ -15,6 +16,7 @@ export const getUserInfoFn = createServerFn().handler(async () => {
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const courseLink = useCourseLink();
   const userInfo = useSuspenseQuery({
     queryKey: ["userInfo"],
     queryFn: () => getUserInfoFn(),
@@ -25,7 +27,7 @@ export function Header() {
       <div className="mx-auto max-w-7xl">
         <div className="flex h-16 items-center justify-between px-4">
           {/* Logo and Brand */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,19 +39,26 @@ export function Header() {
               </svg>
               <span className="font-semibold text-lg">React Mastery</span>
             </Link>
-          </div>
-
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
             <Link
               to="/"
-              className="text-foreground/70 hover:text-foreground transition-colors"
+              className="hidden md:flex text-foreground/70 hover:text-foreground transition-colors ml-4"
               activeProps={{ className: "font-bold text-foreground" }}
               activeOptions={{ exact: true }}
             >
               Home
             </Link>
+            <Link
+              to={courseLink}
+              className="hidden md:flex text-foreground/70 hover:text-foreground transition-colors ml-4"
+              activeProps={{ className: "font-bold text-foreground" }}
+              activeOptions={{ exact: false }}
+            >
+              Course Content
+            </Link>
+          </div>
 
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-4">
               {userInfo.data.user ? (
                 <a href="/api/logout">

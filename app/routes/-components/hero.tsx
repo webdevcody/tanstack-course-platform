@@ -1,20 +1,10 @@
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { createServerFn } from "@tanstack/start";
-import { getSegments } from "~/data-access/segments";
-import { useSuspenseQuery } from "@tanstack/react-query";
-
-const getFirstSegmentFn = createServerFn().handler(async () => {
-  const segments = await getSegments();
-  return segments[0];
-});
+import { useCourseLink } from "~/hooks/use-course-link";
 
 export function HeroSection() {
-  const firstSegment = useSuspenseQuery({
-    queryKey: ["first-segment"],
-    queryFn: getFirstSegmentFn,
-  });
+  const courseLink = useCourseLink();
 
   return (
     <section className="pt-32 pb-16 px-6">
@@ -49,13 +39,13 @@ export function HeroSection() {
               Buy Now
             </Button>
           </Link>
-          <Link to="/learn/$slug" params={{ slug: firstSegment.data.slug }}>
+          <Link to={courseLink}>
             <Button
               size="lg"
               variant="outline"
               className="w-full sm:w-auto px-8"
             >
-              Start Learning ▶
+              Continue Learning
             </Button>
           </Link>
         </motion.div>

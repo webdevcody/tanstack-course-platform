@@ -11,6 +11,7 @@ import {
   useSegment,
 } from "~/routes/learn/-components/segment-context";
 import { useEffect } from "react";
+import { setLastWatchedSegment } from "~/utils/local-storage";
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
@@ -21,7 +22,9 @@ function LayoutContent() {
   // Initialize the current segment ID when the component mounts
   useEffect(() => {
     setCurrentSegmentId(segment.id);
-  }, [segment.id, setCurrentSegmentId]);
+    // Track the last watched segment
+    setLastWatchedSegment(segment.slug);
+  }, [segment.id, segment.slug, setCurrentSegmentId]);
 
   // Handle segment changes
   useEffect(() => {

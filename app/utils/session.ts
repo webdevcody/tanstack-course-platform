@@ -1,4 +1,4 @@
-import { UserId } from "~/use-cases/types";
+import { type UserId } from "~/use-cases/types";
 import { createSession, generateSessionToken, validateRequest } from "./auth";
 import { AuthenticationError } from "~/use-cases/errors";
 import { getCookie, setCookie } from "vinxi/http";
