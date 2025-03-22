@@ -5,47 +5,24 @@ import {
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
 import { authenticatedMiddleware } from "~/lib/auth";
 import { addSegmentUseCase } from "~/use-cases/segments";
 import { assertAuthenticatedFn } from "~/fn/auth";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { getSegments } from "~/data-access/segments";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import { uploadFile } from "~/utils/storage";
 import { Container } from "./-components/container";
-import { Combobox } from "~/components/ui/combobox";
-import { AutoComplete } from "~/components/ui/autocomplete";
+import {
+  SegmentForm,
+  type SegmentFormValues,
+} from "./-components/segment-form";
 
 function generateRandomUUID() {
   return uuidv4();
 }
-
-const formSchema = z.object({
-  title: z
-    .string()
-    .min(2, "Title must be at least 2 characters")
-    .max(100, "Title must be less than 100 characters"),
-  content: z.string().min(10, "Content must be at least 10 characters"),
-  video: z.instanceof(File).optional(),
-  slug: z.string().min(2, "Slug must be at least 2 characters"),
-  moduleId: z.string().min(1, "Module ID is required"),
-  length: z.string().optional(),
-});
 
 const createSegmentFn = createServerFn()
   .middleware([authenticatedMiddleware])
@@ -107,19 +84,7 @@ function RouteComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { moduleNames } = Route.useLoaderData();
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      content: "",
-      video: undefined,
-      slug: "",
-      moduleId: "",
-      length: "",
-    },
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: SegmentFormValues) => {
     try {
       setIsSubmitting(true);
       let videoKey = undefined;
@@ -162,143 +127,21 @@ function RouteComponent() {
         </Button>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter a title" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Give your content a clear and concise title.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Slug</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter a slug" {...field} />
-                </FormControl>
-                <FormDescription>
-                  The slug is used to generate the URL for your content.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Content</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Enter your content"
-                    className="min-h-[200px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Write your content using Markdown for rich formatting.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="video"
-            render={({ field: { value, onChange, ...field } }) => (
-              <FormItem>
-                <FormLabel>Video (Optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => onChange(e.target.files?.[0])}
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Upload a video to accompany your content.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="moduleId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Module Name</FormLabel>
-                <FormControl>
-                  <AutoComplete
-                    selectedValue={field.value}
-                    onSelectedValueChange={field.onChange}
-                    searchValue={field.value}
-                    onSearchValueChange={field.onChange}
-                    items={moduleNames.map((name) => ({
-                      value: name,
-                      label: name,
-                    }))}
-                    isLoading={false}
-                    placeholder="Search or enter a module name"
-                    emptyMessage="No modules found."
-                  />
-                </FormControl>
-                <FormDescription>
-                  Select an existing module or enter a new one.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="length"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Length (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="2:54" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Estimated length of the segment (e.g. "5 minutes", "2 hours")
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              "Create Content"
-            )}
-          </Button>
-        </form>
-      </Form>
+      <SegmentForm
+        onSubmit={onSubmit}
+        defaultValues={{
+          title: "",
+          content: "",
+          video: undefined,
+          slug: "",
+          moduleId: "",
+          length: "",
+        }}
+        moduleNames={moduleNames}
+        isSubmitting={isSubmitting}
+        submitButtonText="Create Content"
+        submitButtonLoadingText="Creating..."
+      />
     </Container>
   );
 }
