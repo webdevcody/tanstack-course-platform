@@ -1,8 +1,9 @@
 import { createAPIFileRoute } from "@tanstack/start/api";
 import { stripe } from "~/lib/stripe";
 import { updateUserToPremiumUseCase } from "~/use-cases/users";
+import { env } from "~/utils/env";
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = env.STRIPE_WEBHOOK_SECRET!;
 
 export const APIRoute = createAPIFileRoute("/api/stripe/webhook")({
   POST: async ({ request }) => {

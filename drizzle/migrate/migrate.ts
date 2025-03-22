@@ -5,8 +5,9 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { env } from "~/utils/env";
 
-const pg = postgres(process.env.DATABASE_URL!);
+const pg = postgres(env.DATABASE_URL!);
 const database = drizzle(pg);
 
 async function main() {

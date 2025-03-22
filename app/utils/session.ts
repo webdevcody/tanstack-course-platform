@@ -2,6 +2,7 @@ import { type UserId } from "~/use-cases/types";
 import { createSession, generateSessionToken, validateRequest } from "./auth";
 import { AuthenticationError } from "~/use-cases/errors";
 import { getCookie, setCookie } from "vinxi/http";
+import { env } from "./env";
 
 const SESSION_COOKIE_NAME = "session";
 
@@ -12,7 +13,7 @@ export async function setSessionTokenCookie(
   setCookie(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     expires: expiresAt,
     path: "/",
   });
@@ -22,7 +23,7 @@ export async function deleteSessionTokenCookie(): Promise<void> {
   setCookie(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     maxAge: 0,
     path: "/",
   });

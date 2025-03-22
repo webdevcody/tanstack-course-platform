@@ -2,9 +2,10 @@ import { createMiddleware } from "@tanstack/start";
 import { validateRequest } from "~/utils/auth";
 import { redirect } from "@tanstack/react-router";
 import { type User } from "~/db/schema";
+import { env } from "~/utils/env";
 
 export function isAdmin(user: User | null) {
-  return user?.email === process.env.ADMIN_EMAIL;
+  return user?.email === env.ADMIN_EMAIL;
 }
 
 export const authenticatedMiddleware = createMiddleware().server(

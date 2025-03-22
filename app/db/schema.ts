@@ -7,6 +7,7 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 const PREFIX = "app";
@@ -84,12 +85,17 @@ export const progress = tableCreator(
     userId: serial("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    segmentId: serial("segmentId"),
+    segmentId: serial("segmentId").references(() => segments.id, {
+      onDelete: "cascade",
+    }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [
-    index("progress_user_id_segment_id_idx").on(table.userId, table.segmentId),
-  ]
+  (table) => ({
+    uniqueConstraint: uniqueIndex("progress_user_segment_unique_idx").on(
+      table.userId,
+      table.segmentId
+    ),
+  })
 );
 
 export const segmentsRelations = relations(segments, ({ many }) => ({

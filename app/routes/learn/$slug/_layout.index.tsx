@@ -315,14 +315,17 @@ function ViewSegment({
         </div>
       )}
 
-      {nextSegment && isLoggedIn && (
+      {isLoggedIn && (
         <div className="flex justify-end">
           <Button
             onClick={async () => {
               await markedAsWatchedFn({
                 data: { segmentId: currentSegmentId },
               });
-              setCurrentSegmentId(nextSegment.id);
+
+              if (nextSegment) {
+                setCurrentSegmentId(nextSegment.id);
+              }
             }}
           >
             Next Video <ArrowRight className="ml-2 h-4 w-4" />
