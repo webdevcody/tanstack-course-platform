@@ -1,12 +1,12 @@
 import { Check, ChevronRight, Lock } from "lucide-react";
-import { Segment } from "~/db/schema";
+import { Segment, Progress } from "~/db/schema";
 import { cn } from "~/lib/utils";
 import { useState } from "react";
 import { useSegment } from "./segment-context";
-import { GetSegmentsWithProgressResult } from "~/data-access/segments";
 
 interface NavigationItemsProps {
-  segments: GetSegmentsWithProgressResult;
+  segments: Segment[];
+  progress: Progress[];
   currentSegmentId: Segment["id"];
   isAdmin: boolean;
   isPremium: boolean;
@@ -16,6 +16,7 @@ interface NavigationItemsProps {
 
 export function NavigationItems({
   segments,
+  progress,
   currentSegmentId,
   isAdmin,
   isPremium,
@@ -33,7 +34,7 @@ export function NavigationItems({
       acc[segment.moduleId].push(segment);
       return acc;
     },
-    {} as Record<string, GetSegmentsWithProgressResult>
+    {} as Record<string, Segment[]>
   );
 
   // Find the current segment's moduleId
@@ -54,6 +55,10 @@ export function NavigationItems({
   const handleSegmentClick = (segment: Segment) => {
     setCurrentSegmentId(segment.id);
     onItemClick?.();
+  };
+
+  const hasProgress = (segmentId: number) => {
+    return progress.some((p) => p.segmentId === segmentId);
   };
 
   return (
@@ -95,7 +100,7 @@ export function NavigationItems({
                       {segment.isPremium && !isPremium && (
                         <Lock className="h-4 w-4" />
                       )}
-                      {segment.progress && (
+                      {hasProgress(segment.id) && (
                         <Check className="h-4 w-4 text-green-500" />
                       )}
                     </button>

@@ -1,11 +1,12 @@
 import { Sheet, SheetContent } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { X, Plus } from "lucide-react";
-import { Segment } from "~/db/schema";
+import { Segment, Progress } from "~/db/schema";
 import { NavigationItems } from "./navigation-items";
 
 interface MobileNavigationProps {
   segments: Segment[];
+  progress: Progress[];
   currentSegmentId: Segment["id"];
   isOpen: boolean;
   onClose: () => void;
@@ -15,6 +16,7 @@ interface MobileNavigationProps {
 
 export function MobileNavigation({
   segments,
+  progress,
   currentSegmentId,
   isOpen,
   onClose,
@@ -44,6 +46,7 @@ export function MobileNavigation({
         <div className="divide-y divide-border overflow-y-auto flex-1">
           <NavigationItems
             segments={segments}
+            progress={progress}
             currentSegmentId={currentSegmentId}
             isAdmin={isAdmin}
             isPremium={isPremium}

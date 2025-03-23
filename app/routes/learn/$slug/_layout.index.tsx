@@ -1,4 +1,9 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  redirect,
+  Link,
+  useNavigate,
+} from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -8,11 +13,7 @@ import {
   deleteSegmentUseCase,
   getSegmentBySlugUseCase,
 } from "~/use-cases/segments";
-import {
-  getSegmentAttachments,
-  getSegments,
-  getSegmentsWithProgress,
-} from "~/data-access/segments";
+import { getSegmentAttachments, getSegments } from "~/data-access/segments";
 import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
@@ -45,7 +46,10 @@ import {
   unauthenticatedMiddleware,
 } from "~/lib/auth";
 import { isUserPremiumFn } from "~/fn/auth";
-import { markAsWatchedUseCase } from "~/use-cases/progress";
+import {
+  markAsWatchedUseCase,
+  getAllProgressForUserUseCase,
+} from "~/use-cases/progress";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getUserInfoFn } from "~/routes/-components/header";
 import { useSegment } from "../-components/segment-context";
@@ -55,12 +59,13 @@ export const getSegmentInfoFn = createServerFn()
   .validator(z.object({ slug: z.string() }))
   .handler(async ({ data, context }) => {
     const segment = await getSegmentBySlugUseCase(data.slug);
-    const [segments, attachments] = await Promise.all([
-      getSegmentsWithProgress(context.userId), // todo should a use case
-      getSegmentAttachments(segment.id), // todo should a use case
+    const [segments, attachments, progress] = await Promise.all([
+      getSegments(),
+      getSegmentAttachments(segment.id),
+      context.userId ? getAllProgressForUserUseCase(context.userId) : [],
     ]);
 
-    return { segment, segments, attachments };
+    return { segment, segments, attachments, progress };
   });
 
 export const createAttachmentFn = createServerFn()
@@ -100,9 +105,9 @@ export const deleteSegmentFn = createServerFn()
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
   loader: async ({ params }) => {
-    const { segment, segments, attachments } = await getSegmentInfoFn({
-      data: { slug: params.slug },
-    });
+    const { segment, segments, attachments, progress } = await getSegmentInfoFn(
+      { data: { slug: params.slug } }
+    );
 
     const isPremium = await isUserPremiumFn();
 
@@ -114,7 +119,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
       throw redirect({ to: "/learn/not-found" });
     }
 
-    return { segment, segments, attachments, isPremium };
+    return { segment, segments, attachments, progress, isPremium };
   },
 });
 
@@ -170,6 +175,7 @@ function ViewSegment({
 }) {
   const { toast } = useToast();
   const router = useRouter();
+  const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const { setCurrentSegmentId } = useSegment();
 
@@ -185,6 +191,16 @@ function ViewSegment({
     );
     return segments[currentIndex + 1];
   }, [currentSegmentId, segments]);
+
+  const previousSegment = useMemo(() => {
+    const currentIndex = segments.findIndex(
+      (segment) => segment.id === currentSegmentId
+    );
+    return segments[currentIndex - 1];
+  }, [currentSegmentId, segments]);
+
+  const isLastSegment = !nextSegment;
+  const isFirstSegment = !previousSegment;
 
   // Show upgrade placeholder for premium segments if user is not premium
   if (currentSegment.isPremium && !isPremium) {
@@ -270,7 +286,7 @@ function ViewSegment({
   };
 
   return (
-    <div className="">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
         <div className="flex gap-2">
@@ -316,19 +332,31 @@ function ViewSegment({
       )}
 
       {isLoggedIn && (
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <Button
+            disabled={isFirstSegment}
+            onClick={() => {
+              setCurrentSegmentId(previousSegment.id);
+            }}
+          >
+            <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
+            Previous Lesson
+          </Button>
           <Button
             onClick={async () => {
               await markedAsWatchedFn({
                 data: { segmentId: currentSegmentId },
               });
 
-              if (nextSegment) {
+              if (isLastSegment) {
+                navigate({ to: "/learn/course-completed" });
+              } else if (nextSegment) {
                 setCurrentSegmentId(nextSegment.id);
               }
             }}
           >
-            Next Video <ArrowRight className="ml-2 h-4 w-4" />
+            {isLastSegment ? "Complete Course" : "Next Video"}{" "}
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       )}

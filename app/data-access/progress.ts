@@ -13,6 +13,12 @@ export async function getProgress(
   return progressEntry;
 }
 
+export async function getAllProgressForUser(userId: UserId) {
+  return database.query.progress.findMany({
+    where: eq(progress.userId, userId),
+  });
+}
+
 export async function markAsWatched(
   userId: UserId,
   segmentId: Progress["segmentId"]

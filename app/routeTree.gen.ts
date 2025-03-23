@@ -24,6 +24,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as LearnNotFoundImport } from './routes/learn/not-found'
 import { Route as LearnNoSegmentsImport } from './routes/learn/no-segments'
 import { Route as LearnAddImport } from './routes/learn/add'
+import { Route as LearnCourseCompletedIndexImport } from './routes/learn/course-completed/index'
 import { Route as LearnSlugEditImport } from './routes/learn/$slug/edit'
 import { Route as LearnSlugLayoutImport } from './routes/learn/$slug/_layout'
 import { Route as LearnSlugLayoutIndexImport } from './routes/learn/$slug/_layout.index'
@@ -103,6 +104,12 @@ const LearnNoSegmentsRoute = LearnNoSegmentsImport.update({
 const LearnAddRoute = LearnAddImport.update({
   id: '/learn/add',
   path: '/learn/add',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnCourseCompletedIndexRoute = LearnCourseCompletedIndexImport.update({
+  id: '/learn/course-completed/',
+  path: '/learn/course-completed/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -225,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnSlugEditImport
       parentRoute: typeof LearnSlugImport
     }
+    '/learn/course-completed/': {
+      id: '/learn/course-completed/'
+      path: '/learn/course-completed'
+      fullPath: '/learn/course-completed'
+      preLoaderRoute: typeof LearnCourseCompletedIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/learn/$slug/_layout/': {
       id: '/learn/$slug/_layout/'
       path: '/'
@@ -277,6 +291,7 @@ export interface FileRoutesByFullPath {
   '/learn/not-found': typeof LearnNotFoundRoute
   '/learn/$slug': typeof LearnSlugLayoutRouteWithChildren
   '/learn/$slug/edit': typeof LearnSlugEditRoute
+  '/learn/course-completed': typeof LearnCourseCompletedIndexRoute
   '/learn/$slug/': typeof LearnSlugLayoutIndexRoute
 }
 
@@ -294,6 +309,7 @@ export interface FileRoutesByTo {
   '/learn/not-found': typeof LearnNotFoundRoute
   '/learn/$slug': typeof LearnSlugLayoutIndexRoute
   '/learn/$slug/edit': typeof LearnSlugEditRoute
+  '/learn/course-completed': typeof LearnCourseCompletedIndexRoute
 }
 
 export interface FileRoutesById {
@@ -312,6 +328,7 @@ export interface FileRoutesById {
   '/learn/$slug': typeof LearnSlugRouteWithChildren
   '/learn/$slug/_layout': typeof LearnSlugLayoutRouteWithChildren
   '/learn/$slug/edit': typeof LearnSlugEditRoute
+  '/learn/course-completed/': typeof LearnCourseCompletedIndexRoute
   '/learn/$slug/_layout/': typeof LearnSlugLayoutIndexRoute
 }
 
@@ -331,6 +348,7 @@ export interface FileRouteTypes {
     | '/learn/not-found'
     | '/learn/$slug'
     | '/learn/$slug/edit'
+    | '/learn/course-completed'
     | '/learn/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -347,6 +365,7 @@ export interface FileRouteTypes {
     | '/learn/not-found'
     | '/learn/$slug'
     | '/learn/$slug/edit'
+    | '/learn/course-completed'
   id:
     | '__root__'
     | '/'
@@ -363,6 +382,7 @@ export interface FileRouteTypes {
     | '/learn/$slug'
     | '/learn/$slug/_layout'
     | '/learn/$slug/edit'
+    | '/learn/course-completed/'
     | '/learn/$slug/_layout/'
   fileRoutesById: FileRoutesById
 }
@@ -380,6 +400,7 @@ export interface RootRouteChildren {
   LearnNoSegmentsRoute: typeof LearnNoSegmentsRoute
   LearnNotFoundRoute: typeof LearnNotFoundRoute
   LearnSlugRoute: typeof LearnSlugRouteWithChildren
+  LearnCourseCompletedIndexRoute: typeof LearnCourseCompletedIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -395,6 +416,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnNoSegmentsRoute: LearnNoSegmentsRoute,
   LearnNotFoundRoute: LearnNotFoundRoute,
   LearnSlugRoute: LearnSlugRouteWithChildren,
+  LearnCourseCompletedIndexRoute: LearnCourseCompletedIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -418,7 +440,8 @@ export const routeTree = rootRoute
         "/learn/add",
         "/learn/no-segments",
         "/learn/not-found",
-        "/learn/$slug"
+        "/learn/$slug",
+        "/learn/course-completed/"
       ]
     },
     "/": {
@@ -471,6 +494,9 @@ export const routeTree = rootRoute
     "/learn/$slug/edit": {
       "filePath": "learn/$slug/edit.tsx",
       "parent": "/learn/$slug"
+    },
+    "/learn/course-completed/": {
+      "filePath": "learn/course-completed/index.tsx"
     },
     "/learn/$slug/_layout/": {
       "filePath": "learn/$slug/_layout.index.tsx",

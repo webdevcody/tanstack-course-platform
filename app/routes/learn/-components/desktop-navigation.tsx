@@ -5,14 +5,14 @@ import {
   Sidebar,
   SidebarContent,
 } from "~/components/ui/sidebar";
-import { Segment } from "~/db/schema";
+import { Segment, Progress } from "~/db/schema";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
-import { GetSegmentsWithProgressResult } from "~/data-access/segments";
 
 interface DesktopNavigationProps {
-  segments: GetSegmentsWithProgressResult;
+  segments: Segment[];
+  progress: Progress[];
   currentSegmentId: Segment["id"];
   isAdmin: boolean;
   isPremium: boolean;
@@ -20,6 +20,7 @@ interface DesktopNavigationProps {
 
 export function DesktopNavigation({
   segments,
+  progress,
   currentSegmentId,
   isAdmin,
   isPremium,
@@ -33,6 +34,7 @@ export function DesktopNavigation({
               <SidebarMenu className="space-y-1">
                 <NavigationItems
                   segments={segments}
+                  progress={progress}
                   currentSegmentId={currentSegmentId}
                   isAdmin={isAdmin}
                   isPremium={isPremium}

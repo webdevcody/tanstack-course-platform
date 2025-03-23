@@ -90,12 +90,12 @@ export const progress = tableCreator(
     }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => ({
-    uniqueConstraint: uniqueIndex("progress_user_segment_unique_idx").on(
+  (table) => [
+    uniqueIndex("progress_user_segment_unique_idx").on(
       table.userId,
       table.segmentId
     ),
-  })
+  ]
 );
 
 export const segmentsRelations = relations(segments, ({ many }) => ({

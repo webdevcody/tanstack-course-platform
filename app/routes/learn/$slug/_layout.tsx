@@ -16,19 +16,19 @@ import { setLastWatchedSegment } from "~/utils/local-storage";
 export const Route = createFileRoute("/learn/$slug/_layout")({
   component: RouteComponent,
   loader: async ({ params }) => {
-    const { segment, segments, attachments } = await getSegmentInfoFn({
-      data: { slug: params.slug },
-    });
+    const { segment, segments, attachments, progress } = await getSegmentInfoFn(
+      { data: { slug: params.slug } }
+    );
 
     const isPremium = await isUserPremiumFn();
 
-    return { segment, segments, attachments, isPremium };
+    return { segment, segments, attachments, progress, isPremium };
   },
 });
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
-  const { segments, segment, isPremium } = Route.useLoaderData();
+  const { segments, segment, progress, isPremium } = Route.useLoaderData();
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
@@ -55,6 +55,7 @@ function LayoutContent() {
       <div className="hidden md:block w-80 flex-shrink-0">
         <DesktopNavigation
           segments={segments}
+          progress={progress}
           currentSegmentId={segment.id}
           isAdmin={true}
           isPremium={isPremium}
@@ -65,6 +66,7 @@ function LayoutContent() {
         {/* Mobile Navigation */}
         <MobileNavigation
           segments={segments}
+          progress={progress}
           currentSegmentId={segment.id}
           isOpen={openMobile}
           onClose={() => setOpenMobile(false)}

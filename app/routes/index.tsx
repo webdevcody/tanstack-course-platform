@@ -1,4 +1,4 @@
-import { createFileRoute, Router, useLoaderData } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "./-components/hero";
 import { CodePreviewSection } from "./-components/code-preview";
 import { ModulesSection } from "./-components/modules";
@@ -9,9 +9,11 @@ import { FooterSection } from "./-components/footer";
 import { NewsletterSection } from "./-components/newsletter";
 import { createServerFn } from "@tanstack/start";
 import { getSegments } from "~/data-access/segments";
+import { env } from "~/utils/env";
 
 const loaderFn = createServerFn().handler(async () => {
   const segments = await getSegments();
+
   return { segments };
 });
 

@@ -1,6 +1,10 @@
 import { Segment } from "~/db/schema";
 import { UserId } from "./types";
-import { getProgress, markAsWatched } from "~/data-access/progress";
+import {
+  getProgress,
+  markAsWatched,
+  getAllProgressForUser,
+} from "~/data-access/progress";
 
 export async function markAsWatchedUseCase(
   userId: UserId,
@@ -10,4 +14,8 @@ export async function markAsWatchedUseCase(
   if (!progress) {
     return markAsWatched(userId, segmentId);
   }
+}
+
+export async function getAllProgressForUserUseCase(userId: UserId) {
+  return getAllProgressForUser(userId);
 }
