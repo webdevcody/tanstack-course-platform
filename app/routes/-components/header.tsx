@@ -27,7 +27,7 @@ export function Header() {
   const isActive = pathname.startsWith("/learn");
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-background border-b z-50">
+    <div className="fixed top-0 left-0 right-0 bg-black border-b z-50">
       <div className="mx-auto max-w-7xl">
         <div className="flex h-16 items-center justify-between px-4">
           {/* Logo and Brand */}

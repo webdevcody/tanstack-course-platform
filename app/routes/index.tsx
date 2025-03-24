@@ -28,11 +28,11 @@ function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <HeroSection />
-      <CodePreviewSection />
-      <NewsletterSection />
       <ModulesSection segments={segments} />
+      <CodePreviewSection />
       <TestimonialsSection />
       <PricingSection />
+      <NewsletterSection />
       <FAQSection />
       <FooterSection />
     </div>

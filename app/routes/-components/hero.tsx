@@ -1,6 +1,5 @@
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { useContinueSlug } from "~/hooks/use-continue-slug";
 import { GraphVisualization } from "~/components/graph-visualization";
 
@@ -18,7 +17,8 @@ export function HeroSection() {
           <div className="flex items-center h-full">
             <div className="max-w-xl relative">
               <h1 className="text-5xl sm:text-6xl font-bold mb-8 text-white [text-shadow:_0_1px_12px_rgb(0_0_0_/_40%)]">
-                The Ultimate React Starting Point
+                The <span className="text-green-400">Ultimate</span> Starting
+                Point to Learn React
               </h1>
               <p className="text-xl text-gray-200 mb-12 [text-shadow:_0_1px_12px_rgb(0_0_0_/_40%)]">
                 Master React through hands-on practice with 20 engaging
@@ -28,7 +28,10 @@ export function HeroSection() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/purchase">
-                  <Button size="lg" className="w-full sm:w-auto px-8 relative">
+                  <Button
+                    size="lg"
+                    className="bg-green-500 hover:bg-green-600 text-white w-full sm:w-auto px-8 relative"
+                  >
                     Buy Now
                   </Button>
                 </Link>

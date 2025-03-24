@@ -12,13 +12,13 @@ const CAMERA_DISTANCE = 7;
 const CAMERA_OFFSET_X = 30; // Offset camera to the right
 const NODE_SIZE = 0.2;
 const LINE_OPACITY = 0.3;
-const GLOW_INTENSITY = 2;
-const CENTER_ORB_SIZE = 2;
-const CENTER_LIGHT_INTENSITY = 3;
+const GLOW_INTENSITY = 4;
+const CENTER_ORB_SIZE = 1;
+const CENTER_LIGHT_INTENSITY = 5;
 const ROTATION_SPEED = 0.001; // Fixed rotation speed per frame
-const BASE_ROTATION_SPEED = 0.0005; // Base rotation speed when no mouse movement
+const BASE_ROTATION_SPEED = 0.03; // Increased base rotation speed when no mouse movement
 const MIN_ORBIT_RADIUS = 5; // Minimum distance from center
-const MAX_ORBIT_RADIUS = 15; // Maximum distance from center
+const MAX_ORBIT_RADIUS = 20; // Maximum distance from center
 const BACKGROUND_STARS_COUNT = 200;
 const STAR_MIN_SIZE = 0.02;
 const STAR_MAX_SIZE = 0.08;
@@ -59,6 +59,7 @@ interface Node {
   precessSpeed: number; // Speed of orbital plane precession
   eccentricity: number; // Orbit elliptical factor
   phaseOffset: number; // Starting position offset
+  seed: number; // Random seed for unique pulsing patterns
 }
 
 function generateGraph(): Node[] {
@@ -92,6 +93,7 @@ function generateGraph(): Node[] {
     const eccentricity = Math.random() * 0.3; // Slight elliptical orbits
     const phaseOffset = Math.random() * Math.PI * 2; // Random starting position
     const orbitSpeed = ROTATION_SPEED * (0.8 + Math.random() * 0.4);
+    const seed = Math.random() * Math.PI * 2; // Random seed for pulsing
 
     // Initial position using Fibonacci sphere distribution
     const i2 = 2 * i - (NODE_COUNT - 1);
@@ -114,6 +116,7 @@ function generateGraph(): Node[] {
       precessSpeed,
       eccentricity,
       phaseOffset,
+      seed,
     });
   }
 
@@ -138,7 +141,7 @@ const glowMaterial = {
     intensity: { value: GLOW_INTENSITY },
     lightPosition: { value: new THREE.Vector3(100, 100, 100) },
     time: { value: 0 },
-    pulseOffset: { value: 0 },
+    seed: { value: 0 },
   },
   vertexShader: `
     varying vec3 vNormal;
@@ -157,7 +160,7 @@ const glowMaterial = {
     uniform float intensity;
     uniform vec3 lightPosition;
     uniform float time;
-    uniform float pulseOffset;
+    uniform float seed;
     
     varying vec3 vNormal;
     varying vec3 vWorldPosition;
@@ -172,8 +175,17 @@ const glowMaterial = {
       // Ambient light
       float ambient = 0.3;
       
-      // Much more dramatic pulsing effect
-      float pulse = 0.5 + 0.5 * sin(time * 5.0 + pulseOffset);
+      // Create unique pulsing pattern using seed
+      float baseSpeed = 1.0;
+      float speedVariation = sin(seed) * 0.5; // Vary between -0.5 and 0.5
+      float phaseOffset = seed * 2.0; // Full rotation of phase
+      float pulseSpeed = baseSpeed + speedVariation;
+      
+      // Create a more complex pulsing pattern with multiple frequencies
+      float pulse1 = sin(time * pulseSpeed + phaseOffset);
+      float pulse2 = sin(time * (pulseSpeed * 1.5) + phaseOffset * 1.3);
+      float pulse3 = sin(time * (pulseSpeed * 2.2) + phaseOffset * 1.7);
+      float pulse = 0.5 + 0.5 * (pulse1 * 0.5 + pulse2 * 0.3 + pulse3 * 0.2);
       
       // Rim lighting (edge glow) with strong pulse
       float rimPower = 3.0;
@@ -221,7 +233,7 @@ const centerOrbMaterial = {
 };
 
 const starMaterial = {
-  uniforms: { color: { value: new THREE.Color(0xffffff) }, time: { value: 0 } },
+  uniforms: { color: { value: new THREE.Color(0x00ff00) }, time: { value: 0 } },
   vertexShader: `
     varying vec3 vNormal;
     void main() {
@@ -309,6 +321,7 @@ function Graph() {
   const groupRef = useRef<THREE.Group>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const rotationRef = useRef({ x: 0, y: 0 });
+  const timeRef = useRef(0); // Add time reference
   const lineRefs = useRef<{ [key: string]: THREE.LineSegments }>({});
 
   useEffect(() => {
@@ -327,8 +340,14 @@ function Graph() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (!groupRef.current) return;
+
+    // Update global time
+    timeRef.current += delta;
+
+    // Calculate base rotation from time
+    const baseRotationY = timeRef.current * BASE_ROTATION_SPEED;
 
     // Update rotation based on mouse position
     const targetRotationY = mouseRef.current.x * Math.PI * 0.5; // Half PI rotation max
@@ -339,16 +358,13 @@ function Graph() {
     rotationRef.current.y += (targetRotationY - rotationRef.current.y) * 0.05;
     rotationRef.current.x += (targetRotationX - rotationRef.current.x) * 0.05;
 
-    // Then add the continuous rotation
-    rotationRef.current.y += BASE_ROTATION_SPEED;
-
-    // Apply rotation to the entire group
-    groupRef.current.rotation.y = rotationRef.current.y;
+    // Combine mouse-based rotation with time-based rotation
+    groupRef.current.rotation.y = rotationRef.current.y + baseRotationY;
     groupRef.current.rotation.x = rotationRef.current.x;
 
     // Update node positions with complex orbital motion
     nodes.forEach((node, index) => {
-      const time = performance.now() * 0.001;
+      const time = timeRef.current; // Use our global time instead of performance.now()
 
       // Calculate the varying radius for elliptical orbit
       const r =
@@ -375,14 +391,30 @@ function Graph() {
       // Update node position (without camera offset as it's now applied to the group)
       node.position.set(x, y, z);
 
-      // Update the mesh position
+      // Update the mesh position and shader uniforms
       const nodeGroup = groupRef.current?.children.find(
         (child) => child.name === `node-${index}`
       ) as THREE.Group;
       if (nodeGroup) {
         nodeGroup.position.copy(node.position);
+        // Update shader uniforms
+        const mesh = nodeGroup.children[0] as THREE.Mesh;
+        if (mesh?.material && "uniforms" in mesh.material) {
+          const material = mesh.material as THREE.ShaderMaterial;
+          material.uniforms.time.value = time;
+          material.uniforms.seed.value = node.seed; // Use the node's unique seed
+        }
       }
     });
+
+    // Update center orb shader
+    const centerOrb = groupRef.current?.children.find(
+      (child) => child.name === "centerOrb"
+    ) as THREE.Mesh;
+    if (centerOrb?.material && "uniforms" in centerOrb.material) {
+      (centerOrb.material as THREE.ShaderMaterial).uniforms.time.value =
+        timeRef.current;
+    }
 
     // Update line positions
     nodes.forEach((node, index) => {
@@ -443,6 +475,7 @@ function Graph() {
               uniforms={{
                 ...glowMaterial.uniforms,
                 lightPosition: { value: new THREE.Vector3(0, 0, 0) },
+                seed: { value: node.seed },
               }}
             />
           </mesh>
