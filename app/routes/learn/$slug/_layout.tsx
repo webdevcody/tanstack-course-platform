@@ -11,7 +11,6 @@ import {
   useSegment,
 } from "~/routes/learn/-components/segment-context";
 import { useEffect } from "react";
-import { setLastWatchedSegment } from "~/utils/local-storage";
 
 export const Route = createFileRoute("/learn/$slug/_layout")({
   component: RouteComponent,
@@ -32,22 +31,30 @@ function LayoutContent() {
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
-  // Initialize the current segment ID when the component mounts
+  // Combined effect to handle both initialization and navigation
   useEffect(() => {
-    setCurrentSegmentId(segment.id);
-    // Track the last watched segment
-    setLastWatchedSegment(segment.slug);
-  }, [segment.id, segment.slug, setCurrentSegmentId]);
+    // If we don't have a currentSegmentId, initialize it
+    if (!currentSegmentId) {
+      setCurrentSegmentId(segment.id);
+      return;
+    }
 
-  // Handle segment changes
-  useEffect(() => {
-    if (currentSegmentId && currentSegmentId !== segment.id) {
+    // If we have a currentSegmentId that's different from the current segment,
+    // and we're not already on that segment's page, navigate
+    if (currentSegmentId !== segment.id) {
       const newSegment = segments.find((s) => s.id === currentSegmentId);
-      if (newSegment) {
+      if (newSegment && newSegment.slug !== segment.slug) {
         navigate({ to: "/learn/$slug", params: { slug: newSegment.slug } });
       }
     }
-  }, [currentSegmentId, segment.id, segments, navigate]);
+  }, [
+    currentSegmentId,
+    segment.id,
+    segment.slug,
+    segments,
+    navigate,
+    setCurrentSegmentId,
+  ]);
 
   return (
     <div className="flex w-full">
@@ -93,11 +100,15 @@ function LayoutContent() {
 }
 
 function RouteComponent() {
+  const { segment } = Route.useLoaderData();
+
   return (
     <SidebarProvider>
-      <SegmentProvider>
-        <LayoutContent />
-      </SegmentProvider>
+      {segment && (
+        <SegmentProvider>
+          <LayoutContent />
+        </SegmentProvider>
+      )}
     </SidebarProvider>
   );
 }

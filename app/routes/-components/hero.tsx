@@ -1,10 +1,10 @@
 import { Button } from "~/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { useCourseLink } from "~/hooks/use-course-link";
+import { useContinueSlug } from "~/hooks/use-continue-slug";
 
 export function HeroSection() {
-  const courseLink = useCourseLink();
+  const continueSlug = useContinueSlug();
 
   return (
     <section className="pt-32 pb-16 px-6">
@@ -39,7 +39,7 @@ export function HeroSection() {
               Buy Now
             </Button>
           </Link>
-          <Link to={courseLink}>
+          <Link to={"/learn/$slug"} params={{ slug: continueSlug }}>
             <Button
               size="lg"
               variant="outline"

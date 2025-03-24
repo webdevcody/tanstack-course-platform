@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import { Segment } from "~/db/schema";
 
 interface SegmentContextType {
   currentSegmentId: number | null;

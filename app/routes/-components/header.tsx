@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { getCurrentUser } from "~/utils/session";
 import { Button } from "../../components/ui/button";
@@ -7,7 +7,8 @@ import { ModeToggle } from "../../components/ModeToggle";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
 import { useState } from "react";
-import { useCourseLink } from "~/hooks/use-course-link";
+import { useContinueSlug } from "~/hooks/use-continue-slug";
+import { cn } from "~/lib/utils";
 
 export const getUserInfoFn = createServerFn().handler(async () => {
   const user = await getCurrentUser();
@@ -16,11 +17,14 @@ export const getUserInfoFn = createServerFn().handler(async () => {
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const courseLink = useCourseLink();
+  const continueSlug = useContinueSlug();
   const userInfo = useSuspenseQuery({
     queryKey: ["userInfo"],
     queryFn: () => getUserInfoFn(),
   });
+  const router = useRouter();
+  const pathname = router.state.location.pathname;
+  const isActive = pathname.startsWith("/learn");
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-background border-b z-50">
@@ -48,10 +52,14 @@ export function Header() {
               Home
             </Link>
             <Link
-              to={courseLink}
-              className="hidden md:flex text-foreground/70 hover:text-foreground transition-colors ml-4"
-              activeProps={{ className: "font-bold text-foreground" }}
-              activeOptions={{ exact: false }}
+              to="/learn/$slug"
+              params={{ slug: continueSlug }}
+              className={cn(
+                "hidden md:flex transition-colors ml-4",
+                isActive
+                  ? "font-bold text-foreground"
+                  : "text-foreground/70 hover:text-foreground"
+              )}
             >
               Course Content
             </Link>

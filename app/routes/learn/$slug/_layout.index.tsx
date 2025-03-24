@@ -7,8 +7,8 @@ import {
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { ArrowRight, Edit, Trash2 } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import { ArrowRight, CheckCircle, Edit, Trash2 } from "lucide-react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   deleteSegmentUseCase,
   getSegmentBySlugUseCase,
@@ -20,7 +20,6 @@ import { Navigation } from "~/routes/learn/-components/navigation";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
 import { getStorageUrl, uploadFile } from "~/utils/storage";
 import { useDropzone } from "react-dropzone";
-import { cn } from "~/utils/cn";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/hooks/use-toast";
 import { useRouter } from "@tanstack/react-router";
@@ -53,6 +52,8 @@ import {
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getUserInfoFn } from "~/routes/-components/header";
 import { useSegment } from "../-components/segment-context";
+import { setLastWatchedSegment } from "~/utils/local-storage";
+import { cn } from "~/lib/utils";
 
 export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -178,6 +179,10 @@ function ViewSegment({
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const { setCurrentSegmentId } = useSegment();
+
+  useEffect(() => {
+    setLastWatchedSegment(currentSegment.slug);
+  }, [currentSegment.slug]);
 
   const userInfo = useSuspenseQuery({
     queryKey: ["userInfo"],
@@ -356,7 +361,11 @@ function ViewSegment({
             }}
           >
             {isLastSegment ? "Complete Course" : "Next Video"}{" "}
-            <ArrowRight className="ml-2 h-4 w-4" />
+            {isLastSegment ? (
+              <CheckCircle className="ml-2 h-4 w-4" />
+            ) : (
+              <ArrowRight className="ml-2 h-4 w-4" />
+            )}
           </Button>
         </div>
       )}
