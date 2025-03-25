@@ -74,20 +74,20 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
   return (
     <section className="relative py-32 px-6">
       {/* Enhanced background effects */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/0 via-emerald-950/10 to-gray-900/0 pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.05)_0%,transparent_65%)] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/0 via-theme-950/10 to-gray-900/0 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(74,222,128,0.05)_0%,transparent_65%)] pointer-events-none" />
 
       {/* Decorative elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2">
-        <div className="w-px h-24 bg-gradient-to-b from-emerald-500/0 via-emerald-500/30 to-emerald-500/0" />
-        <div className="w-3 h-3 rounded-full bg-emerald-500/30 blur-sm -translate-x-1/2" />
+        <div className="w-px h-24 bg-gradient-to-b from-theme-500/0 via-theme-500/30 to-theme-500/0" />
+        <div className="w-3 h-3 rounded-full bg-theme-500/30 blur-sm -translate-x-1/2" />
       </div>
 
       {/* Course Introduction - More dynamic styling */}
       <div className="max-w-6xl mx-auto mb-20 text-center relative">
         <div className="space-y-6">
           <div className="inline-block animate-fade-in">
-            <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 shadow-lg shadow-emerald-900/20">
+            <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-theme-950/60 text-theme-400 border border-theme-800/50 shadow-lg shadow-theme-900/20">
               Your Journey to React Mastery
             </span>
           </div>
@@ -114,10 +114,10 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
       <div className="max-w-6xl mx-auto mb-24">
         <div className="relative">
           {/* Animated glowing background effect */}
-          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-emerald-500/20 via-emerald-500/10 to-emerald-500/20 blur-lg opacity-50 animate-pulse" />
-          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-emerald-500/0 via-emerald-500/20 to-emerald-500/0 animate-shimmer" />
+          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-theme-500/20 via-theme-500/10 to-theme-500/20 blur-lg opacity-50 animate-pulse" />
+          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-theme-500/0 via-theme-500/20 to-theme-500/0 animate-shimmer" />
 
-          <div className="relative grid grid-cols-3 gap-8 p-10 bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-emerald-500/20">
+          <div className="relative grid grid-cols-3 gap-8 p-10 bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-theme-500/20">
             <Stat label="Students Enrolled" value="2,547+" />
             <Stat label="Total Duration" value={formattedTotalDuration} />
             <Stat label="Total Lessons" value={`${segments.length}`} />
@@ -161,9 +161,9 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
                     background:
                       isActive && activeCard?.position
                         ? `radial-gradient(800px circle at ${activeCard.position.x}px ${activeCard.position.y}px, 
-                            rgba(52,211,153,0.08),
-                            rgba(16,185,129,0.06) 20%,
-                            rgba(6,78,59,0.04) 30%,
+                            rgba(74,222,128,0.08),
+                            rgba(74,222,128,0.06) 20%,
+                            rgba(74,222,128,0.04) 30%,
                             transparent 50%
                           )`
                         : "",
@@ -188,7 +188,7 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
                       <Link
                         to="/learn/$slug"
                         params={{ slug: moduleSegments[0]?.slug }}
-                        className="px-4 py-2 bg-emerald-700 text-white font-medium rounded-lg hover:bg-emerald-800 transition-colors"
+                        className="px-4 py-2 bg-theme-700 text-white font-medium rounded-lg hover:bg-theme-800 transition-colors"
                       >
                         Start Module
                       </Link>
@@ -212,7 +212,7 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
                               {!segment.isPremium ? (
                                 <Badge
                                   variant="outline"
-                                  className="bg-emerald-950 text-emerald-300 border-emerald-800"
+                                  className="bg-theme-950 text-theme-300 border-theme-800"
                                 >
                                   FREE
                                 </Badge>
@@ -238,7 +238,7 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
 
           {/* Total Modules Value Proposition Card */}
           <div className="relative z-10 flex flex-col items-center justify-center py-12 text-center">
-            <div className="text-4xl font-bold text-emerald-400 mb-2">
+            <div className="text-4xl font-bold text-theme-400 mb-2">
               {Object.keys(modules).length} Total Modules
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
@@ -251,7 +251,7 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
             <Link
               to="/learn/$slug"
               params={{ slug: segments[0]?.slug }}
-              className="px-6 py-3 bg-emerald-700 text-white font-medium rounded-lg hover:bg-emerald-800 transition-colors inline-flex items-center gap-2"
+              className="px-6 py-3 bg-theme-500 text-white font-medium rounded-lg hover:bg-theme-600 transition-colors inline-flex items-center gap-2"
             >
               Start Watching Now
               <svg

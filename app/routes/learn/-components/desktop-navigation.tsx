@@ -41,7 +41,7 @@ export function DesktopNavigation({
                 />
 
                 {isAdmin && (
-                  <Button variant="secondary" asChild>
+                  <Button variant="outline" asChild>
                     <a href="/learn/add">
                       <Plus className="h-4 w-4" /> Add Segment
                       <span className="sr-only">Create new segment</span>

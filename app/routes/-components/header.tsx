@@ -22,13 +22,10 @@ export function Header() {
     queryKey: ["userInfo"],
     queryFn: () => getUserInfoFn(),
   });
-  const router = useRouter();
-  const pathname = router.state.location.pathname;
-  const isActive = pathname.startsWith("/learn");
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-black border-b z-50">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto container">
         <div className="flex h-16 items-center justify-between px-4">
           {/* Logo and Brand */}
           <div className="flex items-center gap-8">
@@ -45,9 +42,11 @@ export function Header() {
             </Link>
             <Link
               to="/"
-              className="hidden md:flex text-foreground/70 hover:text-foreground transition-colors ml-4"
-              activeProps={{ className: "font-bold text-foreground" }}
-              activeOptions={{ exact: true }}
+              className={cn(
+                "hidden md:flex transition-colors ml-4",
+                "text-foreground/70 hover:text-foreground"
+              )}
+              activeProps={{ className: "font-bold text-theme-500" }}
             >
               Home
             </Link>
@@ -56,10 +55,9 @@ export function Header() {
               params={{ slug: continueSlug }}
               className={cn(
                 "hidden md:flex transition-colors ml-4",
-                isActive
-                  ? "font-bold text-foreground"
-                  : "text-foreground/70 hover:text-foreground"
+                "text-foreground/70 hover:text-foreground"
               )}
+              activeProps={{ className: "font-bold text-theme-500" }}
             >
               Course Content
             </Link>

@@ -17,7 +17,7 @@ export function HeroSection() {
           <div className="flex items-center h-full">
             <div className="max-w-xl relative">
               <h1 className="text-5xl sm:text-6xl font-bold mb-8 text-white [text-shadow:_0_1px_12px_rgb(0_0_0_/_40%)]">
-                The <span className="text-green-400">Ultimate</span> Starting
+                The <span className="text-theme-400">Ultimate</span> Starting
                 Point to Learn React
               </h1>
               <p className="text-xl text-gray-200 mb-12 [text-shadow:_0_1px_12px_rgb(0_0_0_/_40%)]">
@@ -30,7 +30,7 @@ export function HeroSection() {
                 <Link to="/purchase">
                   <Button
                     size="lg"
-                    className="bg-green-500 hover:bg-green-600 text-white w-full sm:w-auto px-8 relative"
+                    className="bg-theme-500 hover:bg-theme-600 text-black w-full sm:w-auto px-8 relative"
                   >
                     Buy Now
                   </Button>

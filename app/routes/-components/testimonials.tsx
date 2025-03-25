@@ -1,8 +1,18 @@
 export function TestimonialsSection() {
   return (
-    <section className="py-20 px-6 bg-gradient-to-b from-gray-900 to-gray-800">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-4xl font-bold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+    <section className="relative py-24 px-6">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-gray-900 to-black"></div>
+
+      {/* Top border glow */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-theme-500/50 to-transparent"></div>
+      <div className="absolute top-0 left-0 right-0 h-[2px] blur-sm bg-gradient-to-r from-transparent via-theme-400/50 to-transparent"></div>
+
+      {/* Bottom border glow */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-theme-500/50 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] blur-sm bg-gradient-to-r from-transparent via-theme-400/50 to-transparent"></div>
+
+      <div className="relative max-w-5xl mx-auto">
+        <h2 className="text-4xl font-bold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-theme-400 to-theme-500">
           Loved by Developers Worldwide
         </h2>
         <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
@@ -10,9 +20,9 @@ export function TestimonialsSection() {
           our comprehensive React courses
         </p>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 backdrop-blur-sm">
+          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
             <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-purple-500/30">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
                 <img
                   src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop"
                   alt="Emma Thompson"
@@ -21,7 +31,7 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Emma Thompson</p>
-                <p className="text-sm text-purple-400">
+                <p className="text-sm text-theme-400">
                   Senior Frontend Engineer
                 </p>
               </div>
@@ -45,9 +55,9 @@ export function TestimonialsSection() {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-pink-500/20 hover:border-pink-500/40 transition-all duration-300 backdrop-blur-sm">
+          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
             <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-pink-500/30">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop"
                   alt="Alex Rivera"
@@ -56,7 +66,7 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Alex Rivera</p>
-                <p className="text-sm text-pink-400">Full Stack Developer</p>
+                <p className="text-sm text-theme-400">Full Stack Developer</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 italic">
@@ -78,9 +88,9 @@ export function TestimonialsSection() {
             </div>
           </div>
 
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 backdrop-blur-sm">
+          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
             <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/30">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
                 <img
                   src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop"
                   alt="Sophie Chen"
@@ -89,7 +99,7 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Sophie Chen</p>
-                <p className="text-sm text-blue-400">React Developer</p>
+                <p className="text-sm text-theme-400">React Developer</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 italic">

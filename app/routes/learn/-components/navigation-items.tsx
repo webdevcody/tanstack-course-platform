@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Lock } from "lucide-react";
+import { Check, ChevronRight, CircleCheck, Lock } from "lucide-react";
 import { Segment, Progress } from "~/db/schema";
 import { cn } from "~/lib/utils";
 import { useState } from "react";
@@ -87,13 +87,13 @@ export function NavigationItems({
                 return (
                   <div key={segment.id} className="relative">
                     {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-px bg-foreground" />
+                      <div className="absolute left-0 top-0 bottom-0 w-px bg-theme-500" />
                     )}
                     <button
                       onClick={() => handleSegmentClick(segment)}
                       className={cn(
                         "flex items-center gap-2 w-full pl-6 pr-4 py-3 text-base hover:text-foreground transition-colors group relative text-left",
-                        isActive ? "text-foreground" : "text-muted-foreground"
+                        isActive ? "text-theme-500" : "text-muted-foreground"
                       )}
                     >
                       <span className="flex-1">{segment.title}</span>
@@ -101,7 +101,7 @@ export function NavigationItems({
                         <Lock className="h-4 w-4" />
                       )}
                       {hasProgress(segment.id) && (
-                        <Check className="h-4 w-4 text-green-500" />
+                        <CircleCheck className="h-4 w-4 text-theme-500" />
                       )}
                     </button>
                   </div>

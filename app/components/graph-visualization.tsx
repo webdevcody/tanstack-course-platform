@@ -24,6 +24,14 @@ const STAR_MIN_SIZE = 0.02;
 const STAR_MAX_SIZE = 0.08;
 const STAR_FIELD_RADIUS = 50;
 
+// Theme colors in RGB format
+const THEME_COLORS = {
+  primary: new THREE.Color("#4ade80"), // theme-400
+  glow: new THREE.Color("#22c55e"), // theme-500
+  accent: new THREE.Color("#86efac"), // theme-300
+  highlight: new THREE.Color("#bbf7d0"), // theme-200
+};
+
 const REACT_KEYWORDS = [
   "useState",
   "useEffect",
@@ -45,6 +53,27 @@ const REACT_KEYWORDS = [
   "JSX",
   "React",
   "Hooks",
+  "useLayoutEffect",
+  "useImperativeHandle",
+  "useDebugValue",
+  "useDeferredValue",
+  "useTransition",
+  "useId",
+  "Lifecycle",
+  "Render Props",
+  "Higher-Order Components",
+  "Context",
+  "Error Boundary",
+  "Strict Mode",
+  "Reconciliation",
+  "Event Handling",
+  "Controlled Components",
+  "Uncontrolled Components",
+  "Pure Components",
+  "Synthetic Events",
+  "Server Components",
+  "Client Components",
+  "Hydration",
 ];
 
 interface Node {
@@ -136,8 +165,8 @@ function generateGraph(): Node[] {
 // Custom shader material for glowing effect with surface lighting
 const glowMaterial = {
   uniforms: {
-    color: { value: new THREE.Color(0x00ff00) },
-    glowColor: { value: new THREE.Color(0x44ff44) },
+    color: { value: THEME_COLORS.primary },
+    glowColor: { value: THEME_COLORS.glow },
     intensity: { value: GLOW_INTENSITY },
     lightPosition: { value: new THREE.Vector3(100, 100, 100) },
     time: { value: 0 },
@@ -209,7 +238,7 @@ const glowMaterial = {
 
 // Custom shader for the center orb
 const centerOrbMaterial = {
-  uniforms: { time: { value: 0 }, color: { value: new THREE.Color(0x00ff44) } },
+  uniforms: { time: { value: 0 }, color: { value: THEME_COLORS.primary } },
   vertexShader: `
     varying vec3 vNormal;
     void main() {
@@ -233,7 +262,7 @@ const centerOrbMaterial = {
 };
 
 const starMaterial = {
-  uniforms: { color: { value: new THREE.Color(0x00ff00) }, time: { value: 0 } },
+  uniforms: { color: { value: THEME_COLORS.accent }, time: { value: 0 } },
   vertexShader: `
     varying vec3 vNormal;
     void main() {
@@ -460,7 +489,7 @@ function Graph() {
         intensity={CENTER_LIGHT_INTENSITY}
         distance={50}
         decay={2}
-        color="#00ff44"
+        color={THEME_COLORS.primary}
       />
 
       {/* Draw nodes */}
@@ -481,7 +510,7 @@ function Graph() {
           </mesh>
           <Billboard>
             <Text
-              color="#00ff00"
+              color={THEME_COLORS.primary.getStyle()}
               fontSize={0.4}
               maxWidth={200}
               lineHeight={1}
@@ -516,7 +545,7 @@ function Graph() {
               <Line
                 key={`${index}-${targetIndex}`}
                 points={points}
-                color="#00ff00"
+                color={THEME_COLORS.primary.getStyle()}
                 opacity={LINE_OPACITY}
                 transparent
               />

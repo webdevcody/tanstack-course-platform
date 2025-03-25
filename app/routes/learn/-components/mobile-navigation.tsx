@@ -55,7 +55,7 @@ export function MobileNavigation({
         </div>
 
         {isAdmin && (
-          <Button variant="secondary" className="py-8" asChild>
+          <Button variant="outline" className="py-8" asChild>
             <a href="/learn/add">
               <Plus className="h-4 w-4" /> Add Segment
               <span className="sr-only">Create new segment</span>

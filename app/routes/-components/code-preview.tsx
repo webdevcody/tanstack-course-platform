@@ -1,26 +1,55 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // TypeWriter component for animated code display
 function TypeWriter({ code, speed = 20 }: { code: string; speed?: number }) {
   const [displayedCode, setDisplayedCode] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const codeRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
-    if (currentIndex < code.length) {
-      const timer = setTimeout(() => {
-        setDisplayedCode((prev) => prev + code[currentIndex]);
-        setCurrentIndex((prev) => prev + 1);
-      }, speed);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        } else {
+          setIsVisible(false);
+          setDisplayedCode("");
+          setCurrentIndex(0);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-      return () => clearTimeout(timer);
+    if (codeRef.current) {
+      observer.observe(codeRef.current);
     }
-  }, [currentIndex, code, speed]);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible || currentIndex >= code.length) return;
+
+    const timer = setTimeout(() => {
+      setDisplayedCode((prev) => prev + code[currentIndex]);
+      setCurrentIndex((prev) => prev + 1);
+    }, speed);
+
+    return () => clearTimeout(timer);
+  }, [currentIndex, code, speed, isVisible]);
 
   return (
-    <pre className="p-4 text-sm overflow-x-auto h-[300px] overflow-y-auto">
-      <code className="language-typescript font-mono text-[#39FF14] drop-shadow-[0_0_10px_rgba(57,255,20,0.5)] whitespace-pre">
+    <pre
+      ref={codeRef}
+      className="p-4 text-sm overflow-x-auto h-[300px] overflow-y-auto"
+    >
+      <code className="language-typescript font-mono text-theme-400 drop-shadow-[0_0_10px_rgba(74,222,128,0.5)] whitespace-pre">
         {displayedCode}
-        {currentIndex < code.length && <span className="animate-pulse">|</span>}
+        {currentIndex < code.length && isVisible && (
+          <span className="animate-pulse">|</span>
+        )}
       </code>
     </pre>
   );
@@ -33,7 +62,7 @@ export function CodePreviewSection() {
         {/* First Snippet - Left Text, Right Code */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-6 sticky top-4">
-            <h2 className="text-3xl font-bold text-green-400">
+            <h2 className="text-3xl font-bold text-theme-400">
               Master React Hooks
             </h2>
             <div className="space-y-4">
@@ -44,21 +73,21 @@ export function CodePreviewSection() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🎯</span>
+                  <span className="text-theme-400 mt-1">🎯</span>
                   <span className="text-gray-300">
                     Learn how to fetch and manage data in your components - a
                     crucial skill for any React developer
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">✨</span>
+                  <span className="text-theme-400 mt-1">✨</span>
                   <span className="text-gray-300">
                     Understand loading and error states to create smooth user
                     experiences
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🔄</span>
+                  <span className="text-theme-400 mt-1">🔄</span>
                   <span className="text-gray-300">
                     Build reusable hooks that you can use in all your future
                     projects
@@ -67,12 +96,12 @@ export function CodePreviewSection() {
               </ul>
             </div>
           </div>
-          <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-[#39FF14]/20 shadow-[0_0_15px_rgba(57,255,20,0.15)]">
-            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-[#39FF14]/20">
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
+            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-theme-400/20">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="ml-2 text-sm text-[#39FF14]/80">
+              <span className="ml-2 text-sm text-theme-400/80">
                 useDataFetching.ts
               </span>
             </div>
@@ -106,7 +135,7 @@ export function CodePreviewSection() {
         {/* Second Snippet - Right Text, Left Code */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="md:order-2 space-y-6 sticky top-4">
-            <h2 className="text-3xl font-bold text-green-400">
+            <h2 className="text-3xl font-bold text-theme-400">
               Write Better Components
             </h2>
             <div className="space-y-4">
@@ -117,20 +146,20 @@ export function CodePreviewSection() {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🚀</span>
+                  <span className="text-theme-400 mt-1">🚀</span>
                   <span className="text-gray-300">
                     Discover why your components might be running slowly and how
                     to fix them
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">💡</span>
+                  <span className="text-theme-400 mt-1">💡</span>
                   <span className="text-gray-300">
                     Learn when and how to use React.memo to speed up your apps
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">📝</span>
+                  <span className="text-theme-400 mt-1">📝</span>
                   <span className="text-gray-300">
                     Master list rendering - a key skill for handling data in
                     React
@@ -139,12 +168,12 @@ export function CodePreviewSection() {
               </ul>
             </div>
           </div>
-          <div className="md:order-1 bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-[#39FF14]/20 shadow-[0_0_15px_rgba(57,255,20,0.15)]">
-            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-[#39FF14]/20">
+          <div className="md:order-1 bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
+            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-theme-400/20">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="ml-2 text-sm text-[#39FF14]/80">
+              <span className="ml-2 text-sm text-theme-400/80">
                 OptimizedList.tsx
               </span>
             </div>
@@ -179,7 +208,7 @@ const OptimizedList = ({ items, onItemSelect }) => {
         {/* Third Snippet - Left Text, Right Code */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-6 sticky top-4">
-            <h2 className="text-3xl font-bold text-green-400">
+            <h2 className="text-3xl font-bold text-theme-400">
               Manage Application State
             </h2>
             <div className="space-y-4">
@@ -190,21 +219,21 @@ const OptimizedList = ({ items, onItemSelect }) => {
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🎓</span>
+                  <span className="text-theme-400 mt-1">🎓</span>
                   <span className="text-gray-300">
                     Understand React Context with real-world examples you can
                     relate to
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🔍</span>
+                  <span className="text-theme-400 mt-1">🔍</span>
                   <span className="text-gray-300">
                     Learn when to use local state vs. global state - and why it
                     matters
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-400 mt-1">🛠️</span>
+                  <span className="text-theme-400 mt-1">🛠️</span>
                   <span className="text-gray-300">
                     Build a complete app with proper state management from start
                     to finish
@@ -213,12 +242,12 @@ const OptimizedList = ({ items, onItemSelect }) => {
               </ul>
             </div>
           </div>
-          <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-[#39FF14]/20 shadow-[0_0_15px_rgba(57,255,20,0.15)]">
-            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-[#39FF14]/20">
+          <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.15)]">
+            <div className="flex items-center space-x-2 px-4 py-2 bg-gray-800/50 border-b border-theme-400/20">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="ml-2 text-sm text-[#39FF14]/80">
+              <span className="ml-2 text-sm text-theme-400/80">
                 AppContext.tsx
               </span>
             </div>

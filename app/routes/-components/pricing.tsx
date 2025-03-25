@@ -23,16 +23,26 @@ export function PricingSection() {
   }, []);
 
   return (
-    <section className="py-16 px-6 min-h-screen flex items-center justify-center bg-[#0a0a0a]">
-      <div className="max-w-4xl mx-auto text-center">
+    <section className="relative py-24 px-6 min-h-screen flex items-center justify-center">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-theme-950 via-gray-900 to-black"></div>
+
+      {/* Top border glow */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-theme-500/50 to-transparent"></div>
+      <div className="absolute top-0 left-0 right-0 h-[2px] blur-sm bg-gradient-to-r from-transparent via-theme-400/50 to-transparent"></div>
+
+      {/* Bottom border glow */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-theme-500/50 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] blur-sm bg-gradient-to-r from-transparent via-theme-400/50 to-transparent"></div>
+
+      <div className="relative max-w-4xl mx-auto text-center">
         <h2 className="text-5xl font-bold mb-12 text-white">
-          Start <span className="text-[#4ade80]">learning</span> today
+          Start your <span className="text-theme-400">React</span> journey today
         </h2>
         <div ref={cardRef} className="relative max-w-lg mx-auto">
-          <div className="relative bg-[#111111] p-10 rounded-2xl overflow-hidden border border-[#4ade80]/10">
+          <div className="relative bg-[#111111] p-10 rounded-2xl overflow-hidden border border-theme-400/10">
             <div className="absolute inset-0 rounded-2xl transition-opacity duration-300 [background:radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(74,222,128,0.1)_0%,rgba(74,222,128,0.05)_35%,transparent_60%)]"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-2 text-[#4ade80]">
+              <h3 className="text-2xl font-bold mb-2 text-theme-400">
                 Complete Course
               </h3>
               <div className="text-6xl font-bold mb-8 text-white">
@@ -44,7 +54,7 @@ export function PricingSection() {
               <ul className="text-left space-y-6 mb-10">
                 <li className="flex items-center text-gray-300 group">
                   <svg
-                    className="w-6 h-6 mr-3 text-[#4ade80] group-hover:scale-110 transition-transform"
+                    className="w-6 h-6 mr-3 text-theme-400 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -56,13 +66,13 @@ export function PricingSection() {
                       d="M5 13l4 4L19 7"
                     ></path>
                   </svg>
-                  <span className="group-hover:text-[#4ade80] transition-colors">
+                  <span className="group-hover:text-theme-400 transition-colors">
                     50+ in-depth video tutorials
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
                   <svg
-                    className="w-6 h-6 mr-3 text-[#4ade80] group-hover:scale-110 transition-transform"
+                    className="w-6 h-6 mr-3 text-theme-400 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -74,13 +84,13 @@ export function PricingSection() {
                       d="M5 13l4 4L19 7"
                     ></path>
                   </svg>
-                  <span className="group-hover:text-[#4ade80] transition-colors">
+                  <span className="group-hover:text-theme-400 transition-colors">
                     Access to private Discord community
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
                   <svg
-                    className="w-6 h-6 mr-3 text-[#4ade80] group-hover:scale-110 transition-transform"
+                    className="w-6 h-6 mr-3 text-theme-400 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -92,13 +102,13 @@ export function PricingSection() {
                       d="M5 13l4 4L19 7"
                     ></path>
                   </svg>
-                  <span className="group-hover:text-[#4ade80] transition-colors">
+                  <span className="group-hover:text-theme-400 transition-colors">
                     Project source code included
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
                   <svg
-                    className="w-6 h-6 mr-3 text-[#4ade80] group-hover:scale-110 transition-transform"
+                    className="w-6 h-6 mr-3 text-theme-400 group-hover:scale-110 transition-transform"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -110,7 +120,7 @@ export function PricingSection() {
                       d="M5 13l4 4L19 7"
                     ></path>
                   </svg>
-                  <span className="group-hover:text-[#4ade80] transition-colors">
+                  <span className="group-hover:text-theme-400 transition-colors">
                     Lifetime access to updates
                   </span>
                 </li>
@@ -118,7 +128,7 @@ export function PricingSection() {
               <Link to="/purchase" className="block">
                 <Button
                   size="lg"
-                  className="w-full h-14 text-lg font-semibold bg-[#4ade80] hover:bg-[#22c55e] text-black transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)]"
+                  className="w-full h-14 text-lg font-semibold bg-theme-400 hover:bg-theme-500 text-black transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)]"
                 >
                   Buy Now
                 </Button>

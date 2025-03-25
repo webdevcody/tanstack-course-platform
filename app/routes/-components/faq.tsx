@@ -1,6 +1,4 @@
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 interface FAQItemProps {
@@ -9,47 +7,23 @@ interface FAQItemProps {
 }
 
 const FAQItem = ({ question, answer }: FAQItemProps) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="overflow-hidden"
-    >
-      <button
-        onClick={() => setIsOpen(!isOpen)}
+    <div className="overflow-hidden">
+      <div
         className={cn(
           "w-full flex items-center justify-between p-6 rounded-lg",
-          "bg-gray-800/50 hover:bg-gray-800/70 transition-colors duration-200",
-          "border border-gray-700/50 backdrop-blur-sm",
-          isOpen && "bg-gray-800/70"
+          "bg-gray-800/70 border border-theme-500/20 backdrop-blur-sm",
+          "shadow-[0_0_15px_rgba(34,197,94,0.1)]"
         )}
       >
-        <h3 className="text-xl font-semibold text-left">{question}</h3>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="w-6 h-6 text-gray-400" />
-        </motion.div>
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="p-6 rounded-b-lg bg-gray-800/30 border-x border-b border-gray-700/50">
-              {answer}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        <h3 className="text-xl font-semibold text-left text-theme-400">
+          {question}
+        </h3>
+      </div>
+      <div className="p-6 rounded-b-lg bg-gray-800/30 border-x border-b border-theme-500/20">
+        {answer}
+      </div>
+    </div>
   );
 };
 
@@ -61,7 +35,7 @@ const faqData: FAQItemProps[] = [
         Oh no! Send us an email at{" "}
         <a
           href="mailto:webdevcody@gmail.com"
-          className="text-blue-400 hover:text-blue-300 underline transition-colors"
+          className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
           webdevcody@gmail.com
         </a>
@@ -95,7 +69,7 @@ const faqData: FAQItemProps[] = [
         receipt. If you need a more detailed invoice, just{" "}
         <a
           href="mailto:webdevcody@gmail.com"
-          className="text-blue-400 hover:text-blue-300 underline transition-colors"
+          className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
           email us
         </a>
@@ -111,7 +85,7 @@ const faqData: FAQItemProps[] = [
         are a student, don't hesitate to{" "}
         <a
           href="mailto:webdevcody@gmail.com"
-          className="text-blue-400 hover:text-blue-300 underline transition-colors"
+          className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
           email us
         </a>
@@ -130,37 +104,19 @@ export function FAQSection() {
       {/* Content */}
       <div className="relative max-w-4xl mx-auto">
         <div className="flex flex-col items-center mb-12 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-400">
-              Frequently Asked Questions
-            </h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <p className="text-gray-400 max-w-2xl">
-              Get quick answers to common questions about our course and
-              services
-            </p>
-          </motion.div>
+          <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-theme-400 to-theme-600">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-gray-400 max-w-2xl">
+            Get quick answers to common questions about our course and services
+          </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-8">
           {faqData.map((faq, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
+            <div key={index}>
               <FAQItem question={faq.question} answer={faq.answer} />
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -13,7 +13,7 @@ export function NewsletterSection() {
     <section className="bg-black py-24">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-theme-400 to-theme-500 bg-clip-text text-transparent">
             /subscribe
           </h2>
           <p className="text-gray-400 text-xl mb-8 max-w-2xl mx-auto">
@@ -28,7 +28,7 @@ export function NewsletterSection() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
-                className="flex-1 px-6 py-4 rounded-lg bg-gray-900 text-white border border-gray-800 focus:outline-none focus:border-green-500"
+                className="flex-1 px-6 py-4 rounded-lg bg-gray-900 text-white border border-gray-800 focus:outline-none focus:border-theme-500"
                 required
               />
               <button
