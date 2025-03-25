@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 # Persistence
 
 when trying to read or write to the database, please first check existing persistence files inside the persitence directory that related to the new feature. If non exist, create one that match the name of the primary data model
