@@ -51,6 +51,16 @@ export function Header() {
               Home
             </Link>
             <Link
+              to="/purchase"
+              className={cn(
+                "hidden md:flex transition-colors ml-4",
+                "text-foreground/70 hover:text-foreground"
+              )}
+              activeProps={{ className: "font-bold text-theme-500" }}
+            >
+              Pricing
+            </Link>
+            <Link
               to="/learn/$slug"
               params={{ slug: continueSlug }}
               className={cn(

@@ -29,67 +29,71 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
 
 const faqData: FAQItemProps[] = [
   {
-    question: "I'm having issues with the course. Who can I contact?",
+    question: "How can I get help if I'm stuck on a section?",
     answer: (
       <p className="text-gray-300">
-        Oh no! Send us an email at{" "}
+        You can reach out in our Discord community or email me directly at{" "}
         <a
           href="mailto:webdevcody@gmail.com"
           className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
           webdevcody@gmail.com
         </a>
-        .
+        . I typically respond within 24 hours.
       </p>
     ),
   },
   {
-    question: "Is there a free trial available?",
+    question: "What technologies will I learn in this course?",
     answer: (
       <p className="text-gray-300">
-        There are several free videos, but no free trial. If you aren't fully
-        satisfied with the course, just ask for your money back—no problem.
+        This course covers the complete TanStack ecosystem including React
+        Query, React Router, React Table, and more. You'll learn how to build
+        modern, type-safe applications with these powerful tools.
       </p>
     ),
   },
   {
-    question: "Is there a money back guarantee?",
+    question: "What skill level is required for this course?",
     answer: (
       <p className="text-gray-300">
-        If, for any reason, you find yourself less than fully satisfied with the
-        course, you may request a refund at any time.
+        You should have a basic understanding of React and TypeScript. While
+        we'll cover advanced concepts, we'll break them down in a way that's
+        approachable for intermediate developers.
       </p>
     ),
   },
   {
-    question: "Can I get an invoice?",
+    question: "Do I get lifetime access to the course materials?",
     answer: (
       <p className="text-gray-300">
-        Absolutely! After making a purchase we will automatically email you a
-        receipt. If you need a more detailed invoice, just{" "}
+        Yes! Once you purchase the course, you'll have permanent access to all
+        current content and future updates. If you ever need to download your
+        invoice, just{" "}
         <a
           href="mailto:webdevcody@gmail.com"
           className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
-          email us
+          email me
         </a>
         .
       </p>
     ),
   },
   {
-    question: "Do you offer discounts?",
+    question: "Are there any prerequisites?",
     answer: (
       <p className="text-gray-300">
-        Sure, if you live in a country where the USD price is too high or if you
-        are a student, don't hesitate to{" "}
+        You should be comfortable with React fundamentals and have some
+        experience with TypeScript. If you need to brush up on these topics,
+        check out my{" "}
         <a
-          href="mailto:webdevcody@gmail.com"
+          href="https://youtube.com/@WebDevCody"
           className="text-theme-400 hover:text-theme-300 underline transition-colors"
         >
-          email us
-        </a>
-        !
+          YouTube channel
+        </a>{" "}
+        for free resources!
       </p>
     ),
   },
