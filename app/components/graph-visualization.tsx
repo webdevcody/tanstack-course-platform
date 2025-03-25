@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  Suspense,
+  useCallback,
+} from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Text, Billboard } from "@react-three/drei";
@@ -558,18 +565,44 @@ function Graph() {
   );
 }
 
-export function GraphVisualization() {
+// Separate the Three.js canvas into its own component
+function ThreeCanvas({ onLoad }: { onLoad: () => void }) {
+  useEffect(() => {
+    // Call onLoad after the first render
+    onLoad();
+  }, [onLoad]);
+
   return (
-    <div className="absolute w-full h-full">
-      <Canvas
-        camera={{ position: [CAMERA_OFFSET_X, 0, CAMERA_DISTANCE], fov: 75 }}
-        style={{ background: "black" }}
-      >
-        <ambientLight intensity={0.2} />
-        <group position={[CAMERA_OFFSET_X, 0, 0]}>
-          <Graph />
-        </group>
-      </Canvas>
+    <Canvas
+      camera={{ position: [CAMERA_OFFSET_X, 0, CAMERA_DISTANCE], fov: 75 }}
+      style={{ background: "black" }}
+    >
+      <ambientLight intensity={0.2} />
+      <group position={[CAMERA_OFFSET_X, 0, 0]}>
+        <Graph />
+      </group>
+    </Canvas>
+  );
+}
+
+export function GraphVisualization() {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleLoad = useCallback(() => {
+    setIsLoaded(true);
+  }, []);
+
+  return (
+    <div
+      className="absolute w-full h-full"
+      style={{
+        opacity: isLoaded ? 1 : 0,
+        transition: "opacity 1s ease-in-out",
+      }}
+    >
+      <Suspense fallback={null}>
+        <ThreeCanvas onLoad={handleLoad} />
+      </Suspense>
     </div>
   );
 }

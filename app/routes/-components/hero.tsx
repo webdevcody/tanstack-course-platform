@@ -7,15 +7,17 @@ export function HeroSection() {
   const continueSlug = useContinueSlug();
 
   return (
-    <section className="relative h-screen overflow-hidden w-full">
-      {/* Graph visualization */}
-      <GraphVisualization />
+    <section className="relative h-screen overflow-hidden w-full bg-black">
+      {/* Background container with fixed dimensions */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <GraphVisualization />
+      </div>
 
-      {/* Content */}
-      <div className="relative z-10 h-full">
+      {/* Content - now with a subtle gradient background to ensure visibility */}
+      <div className="relative z-10 h-full bg-gradient-to-r from-black/50 to-transparent">
         <div className="container mx-auto h-full px-6 lg:px-12">
           <div className="flex items-center h-full">
-            <div className="max-w-xl relative">
+            <div className="max-w-xl relative backdrop-blur-[2px] p-6 rounded-lg bg-black/10">
               <h1 className="text-5xl sm:text-6xl font-bold mb-8 text-white [text-shadow:_0_1px_12px_rgb(0_0_0_/_40%)]">
                 The <span className="text-theme-400">Ultimate</span> Starting
                 Point to Learn React
