@@ -29,19 +29,19 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
   } | null>(null);
 
   // Create a map of refs outside the render loop
-  const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const cardRefs = useRef<Map<string, HTMLAnchorElement>>(new Map());
 
   const handleMouseMove = (
-    event: React.MouseEvent<HTMLDivElement>,
-    moduleId: string
+    event: React.MouseEvent<HTMLAnchorElement>,
+    segmentId: string
   ) => {
-    const cardElement = cardRefs.current.get(moduleId);
+    const cardElement = cardRefs.current.get(segmentId);
     if (!cardElement) return;
 
     const rect = cardElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    setActiveCard({ id: moduleId, position: { x, y } });
+    setActiveCard({ id: segmentId, position: { x, y } });
   };
 
   const handleMouseLeave = () => {
@@ -149,26 +149,7 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
             return (
               <div key={moduleId} className="group/module relative">
                 {/* Card content */}
-                <div
-                  ref={(el) => {
-                    if (el) cardRefs.current.set(moduleId, el);
-                    else cardRefs.current.delete(moduleId);
-                  }}
-                  onMouseMove={(e) => handleMouseMove(e, moduleId)}
-                  onMouseLeave={handleMouseLeave}
-                  className="relative bg-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/30 transition-colors overflow-hidden border border-white/[0.08]"
-                  style={{
-                    background:
-                      isActive && activeCard?.position
-                        ? `radial-gradient(800px circle at ${activeCard.position.x}px ${activeCard.position.y}px, 
-                            rgba(74,222,128,0.08),
-                            rgba(74,222,128,0.06) 20%,
-                            rgba(74,222,128,0.04) 30%,
-                            transparent 50%
-                          )`
-                        : "",
-                  }}
-                >
+                <div className="relative bg-gray-800/50 rounded-2xl p-6 hover:bg-gray-800/30 transition-colors overflow-hidden border border-white/[0.08]">
                   <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-[1px] transition-colors group-hover/module:bg-gray-900/50" />
 
                   {/* Content container */}
@@ -196,39 +177,65 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
 
                     {/* Preview grid with hover effects */}
                     <div className="grid gap-4 grid-cols-3">
-                      {moduleSegments.map((segment, index) => (
-                        <Link
-                          key={segment.id}
-                          to="/learn/$slug"
-                          params={{ slug: segment.slug }}
-                          className="bg-gray-900/95 hover:bg-gray-800/95 transition-colors p-4 rounded-lg flex justify-between items-center group/card border border-gray-800"
-                        >
-                          <div>
-                            <div className="text-gray-300 text-sm">
-                              Video {index + 1}
+                      {moduleSegments.map((segment, index) => {
+                        const isActive =
+                          activeCard?.id === segment.id.toString();
+
+                        return (
+                          <Link
+                            key={segment.id}
+                            ref={(el) => {
+                              if (el)
+                                cardRefs.current.set(segment.id.toString(), el);
+                              else
+                                cardRefs.current.delete(segment.id.toString());
+                            }}
+                            onMouseMove={(e) =>
+                              handleMouseMove(e, segment.id.toString())
+                            }
+                            onMouseLeave={handleMouseLeave}
+                            to="/learn/$slug"
+                            params={{ slug: segment.slug }}
+                            className="bg-gray-900/95 hover:bg-gray-800/95 transition-colors p-4 rounded-lg flex justify-between items-center group/card border border-gray-800"
+                            style={{
+                              background:
+                                isActive && activeCard?.position
+                                  ? `radial-gradient(400px circle at ${activeCard.position.x}px ${activeCard.position.y}px, 
+                                      rgba(74,222,128,0.08),
+                                      rgba(74,222,128,0.06) 20%,
+                                      rgba(74,222,128,0.04) 30%,
+                                      transparent 50%
+                                    )`
+                                  : "",
+                            }}
+                          >
+                            <div>
+                              <div className="text-gray-300 text-sm">
+                                Video {index + 1}
+                              </div>
+                              <div className="text-white text-lg flex items-center gap-2">
+                                {segment.title}
+                                {!segment.isPremium ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-theme-950 text-theme-300 border-theme-800"
+                                  >
+                                    FREE
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="outline"
+                                    className="bg-amber-950 text-amber-300 border-amber-800 flex items-center gap-1"
+                                  >
+                                    <Lock className="w-3 h-3" />
+                                    PREMIUM
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
-                            <div className="text-white text-lg flex items-center gap-2">
-                              {segment.title}
-                              {!segment.isPremium ? (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-theme-950 text-theme-300 border-theme-800"
-                                >
-                                  FREE
-                                </Badge>
-                              ) : (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-amber-950 text-amber-300 border-amber-800 flex items-center gap-1"
-                                >
-                                  <Lock className="w-3 h-3" />
-                                  PREMIUM
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

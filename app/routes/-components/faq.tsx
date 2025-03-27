@@ -8,7 +8,7 @@ interface FAQItemProps {
 
 const FAQItem = ({ question, answer }: FAQItemProps) => {
   return (
-    <div className="overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       <div
         className={cn(
           "w-full flex items-center justify-between p-6 rounded-lg",
@@ -20,7 +20,7 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
           {question}
         </h3>
       </div>
-      <div className="p-6 rounded-b-lg bg-gray-800/30 border-x border-b border-theme-500/20">
+      <div className="p-6 rounded-b-lg bg-gray-800/30 border-x border-b border-theme-500/20 flex-1">
         {answer}
       </div>
     </div>
@@ -97,6 +97,17 @@ const faqData: FAQItemProps[] = [
       </p>
     ),
   },
+  {
+    question: "Will the course be updated with new content?",
+    answer: (
+      <p className="text-gray-300">
+        Yes! I regularly update the course with new content and examples as the
+        TanStack ecosystem evolves. You'll get access to all future updates at
+        no additional cost, ensuring you're always learning the latest best
+        practices and features.
+      </p>
+    ),
+  },
 ];
 
 export function FAQSection() {
@@ -116,9 +127,9 @@ export function FAQSection() {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {faqData.map((faq, index) => (
-            <div key={index}>
+            <div key={index} className="h-full flex">
               <FAQItem question={faq.question} answer={faq.answer} />
             </div>
           ))}

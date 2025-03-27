@@ -41,3 +41,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { segments } = Route.useLoaderData();
 ```
+
+# File Naming Convention
+
+all files must be lowercase with hyphens.
