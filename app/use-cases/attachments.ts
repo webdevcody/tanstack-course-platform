@@ -1,7 +1,6 @@
 import { getAttachment } from "~/data-access/attachments";
 import { createAttachment, deleteAttachment } from "~/data-access/segments";
-import { Segment, User } from "~/db/schema";
-import { deleteFile } from "~/storage";
+import { Segment } from "~/db/schema";
 
 export async function deleteAttachmentUseCase(attachmentId: number) {
   const attachment = await getAttachment(attachmentId);
@@ -10,7 +9,7 @@ export async function deleteAttachmentUseCase(attachmentId: number) {
     throw new Error("Attachment not found");
   }
 
-  await deleteFile(attachment.fileKey);
+  // await deleteFile(attachment.fileKey);
   return deleteAttachment(attachmentId);
 }
 

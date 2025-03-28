@@ -51,3 +51,22 @@ export async function getFile(key: string) {
     );
   }
 }
+
+export async function deleteFile(key: string) {
+  const uploadDir = process.env.UPLOAD_DIR;
+
+  if (!uploadDir) {
+    throw new Error("UPLOAD_DIR environment variable is not set");
+  }
+
+  const filePath = path.join(uploadDir, key);
+
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    console.error(`Error deleting file ${key}:`, error);
+    throw new Error(
+      `Failed to delete file: ${error instanceof Error ? error.message : "Unknown error"}`
+    );
+  }
+}

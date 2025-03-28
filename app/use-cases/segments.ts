@@ -8,13 +8,12 @@ import {
   deleteAttachment,
   getSegmentBySlug,
 } from "~/data-access/segments";
-import type { Segment, SegmentCreate, User } from "~/db/schema";
-import { deleteFile } from "~/storage";
+import type { Segment, SegmentCreate } from "~/db/schema";
 import { eq } from "drizzle-orm";
 import { getOrCreateModuleUseCase } from "./modules";
 import { database } from "~/db";
-import type { Transaction } from "drizzle-orm";
 import { segments } from "~/db/schema";
+import { deleteFile } from "~/utils/disk-storage";
 
 export async function getSegmentsUseCase() {
   return getSegments();
@@ -86,7 +85,7 @@ export async function deleteSegmentUseCase(segmentId: number) {
   await Promise.all(
     attachments.map(async (attachment) => {
       await deleteFile(attachment.fileKey);
-      await deleteAttachment(attachment.id);
+      // await deleteAttachment(attachment.id);
     })
   );
 
