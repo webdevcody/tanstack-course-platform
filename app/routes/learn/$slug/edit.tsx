@@ -18,8 +18,6 @@ import { ChevronLeft } from "lucide-react";
 import { Container } from "~/routes/learn/-components/container";
 import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
-import { uploadFile } from "~/utils/storage";
-import { getSegments } from "~/data-access/segments";
 import {
   SegmentForm,
   type SegmentFormValues,

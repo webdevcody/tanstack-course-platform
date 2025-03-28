@@ -18,7 +18,7 @@ import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
-import { getStorageUrl, uploadFile } from "~/utils/storage";
+import { getStorageUrl } from "~/utils/storage";
 import { useDropzone } from "react-dropzone";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/hooks/use-toast";
@@ -228,51 +228,51 @@ function ViewSegment({
     );
   }
 
-  const handleFileSelect = async (file: File) => {
-    try {
-      setIsUploading(true);
-      const fileKey = generateRandomUUID();
-      await uploadFile(fileKey, file);
+  // const handleFileSelect = async (file: File) => {
+  //   try {
+  //     setIsUploading(true);
+  //     const fileKey = generateRandomUUID();
+  //     await uploadFile(fileKey, file);
 
-      await createAttachmentFn({
-        data: { segmentId: currentSegmentId, fileName: file.name, fileKey },
-      });
+  //     await createAttachmentFn({
+  //       data: { segmentId: currentSegmentId, fileName: file.name, fileKey },
+  //     });
 
-      toast({
-        title: "File uploaded successfully!",
-        description: "The file has been attached to this content.",
-      });
-      router.invalidate();
-    } catch (error) {
-      console.error("Failed to upload file:", error);
-      toast({
-        title: "Failed to upload file",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  //     toast({
+  //       title: "File uploaded successfully!",
+  //       description: "The file has been attached to this content.",
+  //     });
+  //     router.invalidate();
+  //   } catch (error) {
+  //     console.error("Failed to upload file:", error);
+  //     toast({
+  //       title: "Failed to upload file",
+  //       description: "Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // };
 
-  const handleDeleteAttachment = async (attachmentId: number) => {
-    if (!confirm("Are you sure you want to delete this attachment?")) return;
+  // const handleDeleteAttachment = async (attachmentId: number) => {
+  //   if (!confirm("Are you sure you want to delete this attachment?")) return;
 
-    try {
-      await deleteAttachmentFn({ data: { attachmentId } });
-      toast({
-        title: "File deleted successfully!",
-        description: "The file has been deleted.",
-      });
-      router.invalidate();
-    } catch (error) {
-      console.error("Failed to delete attachment:", error);
-      toast({
-        title: "Failed to delete attachment",
-        description: "Please try again.",
-      });
-    }
-  };
+  //   try {
+  //     await deleteAttachmentFn({ data: { attachmentId } });
+  //     toast({
+  //       title: "File deleted successfully!",
+  //       description: "The file has been deleted.",
+  //     });
+  //     router.invalidate();
+  //   } catch (error) {
+  //     console.error("Failed to delete attachment:", error);
+  //     toast({
+  //       title: "Failed to delete attachment",
+  //       description: "Please try again.",
+  //     });
+  //   }
+  // };
 
   const handleDeleteSegment = async () => {
     try {
