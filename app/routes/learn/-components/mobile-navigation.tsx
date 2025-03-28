@@ -10,7 +10,7 @@ import { Menu, Plus } from "lucide-react";
 import type { Module, Segment } from "~/db/schema";
 import { NavigationItems } from "./navigation-items";
 import { useState } from "react";
-
+import { useRouter } from "@tanstack/react-router";
 interface ModuleWithSegments extends Module {
   segments: Segment[];
 }
@@ -29,6 +29,7 @@ export function MobileNavigation({
   isPremium,
 }: MobileNavigationProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -56,11 +57,11 @@ export function MobileNavigation({
               size="sm"
               className="w-full mt-4"
               onClick={() => {
-                // TODO: Implement add module functionality
+                router.navigate({ to: "/learn/add" });
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Module
+              Add Segment
             </Button>
           )}
         </div>
