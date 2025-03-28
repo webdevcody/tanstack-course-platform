@@ -1,8 +1,8 @@
+import { Segment } from "~/db/schema";
 import { getPresignedPostUrlFn } from "~/fn/storage";
-import { publicEnv } from "./env-public";
 
-export function getStorageUrl(key: string) {
-  return `${publicEnv.VITE_FILE_URL}/${key}`;
+export function getStorageUrl(segmentId: Segment["id"]) {
+  return `/api/segments/${segmentId}/video`;
 }
 
 export async function uploadFile(key: string, file: File) {

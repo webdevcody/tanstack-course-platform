@@ -11,6 +11,7 @@ import {
 import type { Segment, SegmentCreate, User } from "~/db/schema";
 import { deleteFile } from "~/storage";
 import { eq } from "drizzle-orm";
+import { getOrCreateModuleUseCase } from "./modules";
 
 export async function getSegmentsUseCase() {
   return getSegments();
@@ -24,8 +25,14 @@ export async function getSegmentByIdUseCase(id: Segment["id"]) {
   return getSegmentById(id);
 }
 
-export async function addSegmentUseCase(segment: SegmentCreate) {
-  return createSegment(segment);
+export async function addSegmentUseCase(
+  segment: SegmentCreate & { moduleTitle: string }
+) {
+  // Get or create the module
+  const module = await getOrCreateModuleUseCase(segment.moduleTitle);
+
+  // Create the segment with the module's ID
+  return createSegment({ ...segment, moduleId: module.id });
 }
 
 export async function editSegmentUseCase(
@@ -45,7 +52,7 @@ export type SegmentUpdate = Partial<
 
 export async function updateSegmentUseCase(
   segmentId: number,
-  data: SegmentUpdate
+  data: SegmentUpdate & { moduleTitle: string }
 ) {
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
@@ -55,7 +62,11 @@ export async function updateSegmentUseCase(
     await deleteFile(segment.videoKey);
   }
 
-  return await updateSegment(segmentId, data);
+  // Get or create the module
+  const module = await getOrCreateModuleUseCase(data.moduleTitle);
+
+  // Update the segment with the module's ID
+  return await updateSegment(segmentId, { ...data, moduleId: module.id });
 }
 
 export async function deleteSegmentUseCase(segmentId: number) {

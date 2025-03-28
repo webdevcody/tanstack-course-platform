@@ -3,13 +3,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   vite: {
-    plugins: [
-      tsConfigPaths({
-        projects: ["./tsconfig.json"],
-      }),
-    ],
-    ssr: {
-      noExternal: ["react-dropzone"],
-    },
+    plugins: [tsConfigPaths({ projects: ["./tsconfig.json"] })],
+    ssr: { noExternal: ["react-dropzone"] },
   },
 });

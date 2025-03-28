@@ -50,6 +50,13 @@
       "when": 1742658542047,
       "tag": "0006_right_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1743122968712,
+      "tag": "0007_loose_maximus",
+      "breakpoints": true
     }
   ]
 }

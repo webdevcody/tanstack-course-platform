@@ -5,53 +5,142 @@ import {
   Sidebar,
   SidebarContent,
 } from "~/components/ui/sidebar";
-import { Segment, Progress } from "~/db/schema";
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
+import type { Module, Segment } from "~/db/schema";
+import { useRouter } from "@tanstack/react-router";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { reorderModulesFn } from "~/fn/modules";
+import { cn } from "~/lib/utils";
+
+interface ModuleWithSegments extends Module {
+  segments: Segment[];
+}
 
 interface DesktopNavigationProps {
-  segments: Segment[];
-  progress: Progress[];
-  currentSegmentId: Segment["id"];
+  modules: ModuleWithSegments[];
+  currentSegmentId: number;
   isAdmin: boolean;
   isPremium: boolean;
 }
 
 export function DesktopNavigation({
-  segments,
-  progress,
+  modules,
   currentSegmentId,
   isAdmin,
   isPremium,
 }: DesktopNavigationProps) {
-  return (
-    <Sidebar className="fixed top-0 left-0 bottom-0 w-80 border-r">
-      <SidebarContent className="pt-[4.5rem]">
-        <div className="px-4">
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu className="space-y-1">
-                <NavigationItems
-                  segments={segments}
-                  progress={progress}
-                  currentSegmentId={currentSegmentId}
-                  isAdmin={isAdmin}
-                  isPremium={isPremium}
-                />
+  const router = useRouter();
+  const queryClient = useQueryClient();
 
-                {isAdmin && (
-                  <Button variant="outline" asChild>
-                    <a href="/learn/add">
-                      <Plus className="h-4 w-4" /> Add Segment
-                      <span className="sr-only">Create new segment</span>
-                    </a>
-                  </Button>
-                )}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </div>
+  const reorderMutation = useMutation({
+    mutationFn: (updates: { id: number; order: number }[]) =>
+      reorderModulesFn({ data: updates }),
+    onMutate: async (updates) => {
+      await queryClient.cancelQueries({ queryKey: ["modules"] });
+      const previousModules = queryClient.getQueryData<ModuleWithSegments[]>([
+        "modules",
+      ]);
+
+      const optimisticModules = [...modules].sort((a, b) => {
+        const aOrder = updates.find((u) => u.id === a.id)?.order ?? a.order;
+        const bOrder = updates.find((u) => u.id === b.id)?.order ?? b.order;
+        return aOrder - bOrder;
+      });
+
+      queryClient.setQueryData(["modules"], optimisticModules);
+      return { previousModules };
+    },
+    onError: (err, newModules, context) => {
+      queryClient.setQueryData(["modules"], context?.previousModules);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["modules"] });
+    },
+  });
+
+  const handleDragEnd = (result: any) => {
+    if (!result.destination || !isAdmin) return;
+
+    const items = Array.from(modules);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    const updates = items.map((item, index) => ({
+      id: item.id,
+      order: index + 1,
+    }));
+
+    reorderMutation.mutate(updates);
+  };
+
+  return (
+    <Sidebar className="hidden lg:block">
+      <SidebarContent className="pt-20">
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="modules">
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-4"
+                    >
+                      {modules.map((module, index) => (
+                        <Draggable
+                          key={module.id}
+                          draggableId={`module-${module.id}`}
+                          index={index}
+                          isDragDisabled={!isAdmin}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={cn(
+                                "relative",
+                                snapshot.isDragging && "z-50"
+                              )}
+                            >
+                              <NavigationItems
+                                modules={[module]}
+                                currentSegmentId={currentSegmentId}
+                                isAdmin={isAdmin}
+                                isPremium={isPremium}
+                                dragHandleProps={
+                                  isAdmin ? provided.dragHandleProps : undefined
+                                }
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-4"
+                  onClick={() => {
+                    // TODO: Implement add module functionality
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Module
+                </Button>
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
     </Sidebar>
   );

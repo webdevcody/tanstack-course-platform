@@ -11,38 +11,57 @@ import {
   useSegment,
 } from "~/routes/learn/-components/segment-context";
 import { useEffect } from "react";
+import { createServerFn } from "@tanstack/start";
+import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
+import { unauthenticatedMiddleware } from "~/lib/auth";
+import {
+  queryOptions,
+  useQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+
+const getModulesWithSegmentsFn = createServerFn()
+  .middleware([unauthenticatedMiddleware])
+  .handler(async () => {
+    return getModulesWithSegmentsUseCase();
+  });
+
+export const modulesQueryOptions = queryOptions({
+  queryKey: ["modules"],
+  queryFn: () => getModulesWithSegmentsFn(),
+});
 
 export const Route = createFileRoute("/learn/$slug/_layout")({
   component: RouteComponent,
-  loader: async ({ params }) => {
-    const { segment, segments, attachments, progress } = await getSegmentInfoFn(
-      { data: { slug: params.slug } }
-    );
-
+  loader: async ({ context: { queryClient }, params }) => {
+    const { segment } = await getSegmentInfoFn({ data: { slug: params.slug } });
     const isPremium = await isUserPremiumFn();
 
-    return { segment, segments, attachments, progress, isPremium };
+    await queryClient.ensureQueryData(modulesQueryOptions);
+
+    return { segment, isPremium };
   },
 });
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
-  const { segments, segment, progress, isPremium } = Route.useLoaderData();
+  const { segment, isPremium } = Route.useLoaderData();
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
+  const { data: modulesWithSegments } = useQuery(modulesQueryOptions);
+
   // Combined effect to handle both initialization and navigation
   useEffect(() => {
-    // If we don't have a currentSegmentId, initialize it
     if (!currentSegmentId) {
       setCurrentSegmentId(segment.id);
       return;
     }
 
-    // If we have a currentSegmentId that's different from the current segment,
-    // and we're not already on that segment's page, navigate
     if (currentSegmentId !== segment.id) {
-      const newSegment = segments.find((s) => s.id === currentSegmentId);
+      const newSegment = modulesWithSegments
+        ?.flatMap((module) => module.segments)
+        .find((s) => s.id === currentSegmentId);
       if (newSegment && newSegment.slug !== segment.slug) {
         navigate({ to: "/learn/$slug", params: { slug: newSegment.slug } });
       }
@@ -51,7 +70,7 @@ function LayoutContent() {
     currentSegmentId,
     segment.id,
     segment.slug,
-    segments,
+    modulesWithSegments,
     navigate,
     setCurrentSegmentId,
   ]);
@@ -61,8 +80,7 @@ function LayoutContent() {
       {/* Desktop Navigation */}
       <div className="hidden md:block w-80 flex-shrink-0">
         <DesktopNavigation
-          segments={segments}
-          progress={progress}
+          modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
           isAdmin={true}
           isPremium={isPremium}
@@ -72,11 +90,8 @@ function LayoutContent() {
       <div className="flex-1 w-full">
         {/* Mobile Navigation */}
         <MobileNavigation
-          segments={segments}
-          progress={progress}
+          modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
-          isOpen={openMobile}
-          onClose={() => setOpenMobile(false)}
           isAdmin={true}
           isPremium={isPremium}
         />

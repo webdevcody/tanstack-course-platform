@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import type { Progress, Segment, SegmentCreate } from "~/db/schema";
 
 export async function getSegments() {
-  return database.select().from(segments).orderBy(segments.order);
+  return database.query.segments.findMany();
 }
 
 export type SegmentWithProgress = Segment & { progress: Progress | null };

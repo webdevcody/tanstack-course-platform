@@ -15,6 +15,7 @@ import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { AutoComplete } from "~/components/ui/autocomplete";
+import { Switch } from "~/components/ui/switch";
 
 export const formSchema = z.object({
   title: z
@@ -23,9 +24,10 @@ export const formSchema = z.object({
     .max(100, "Title must be less than 100 characters"),
   content: z.string().min(10, "Content must be at least 10 characters"),
   video: z.instanceof(File).optional(),
-  moduleId: z.string().min(1, "Module ID is required"),
+  moduleTitle: z.string().min(1, "Module ID is required"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
   length: z.string().optional(),
+  isPremium: z.boolean().default(false),
 });
 
 export type SegmentFormValues = z.infer<typeof formSchema>;
@@ -116,7 +118,7 @@ export function SegmentForm({
               <FormControl>
                 <Input
                   type="file"
-                  accept="video/*"
+                  accept="video/mp4"
                   onChange={(e) => onChange(e.target.files?.[0])}
                   {...field}
                 />
@@ -131,7 +133,7 @@ export function SegmentForm({
 
         <FormField
           control={form.control}
-          name="moduleId"
+          name="moduleTitle"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Module Name</FormLabel>
@@ -171,6 +173,28 @@ export function SegmentForm({
                 Estimated length of the segment (e.g. "5 minutes", "2 hours")
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="isPremium"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Premium Content</FormLabel>
+                <FormDescription>
+                  Mark this segment as premium content. Premium content will
+                  only be accessible to premium users.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

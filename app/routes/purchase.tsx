@@ -27,7 +27,6 @@ export const Route = createFileRoute("/purchase")({
 const checkoutFn = createServerFn()
   .middleware([authenticatedMiddleware])
   .handler(async ({ context }) => {
-    console.log("env.STRIPE_PRICE_ID", env.STRIPE_PRICE_ID);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [{ price: env.STRIPE_PRICE_ID, quantity: 1 }],

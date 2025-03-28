@@ -60,6 +60,14 @@ export const sessions = tableCreator(
   (table) => [index("sessions_user_id_idx").on(table.userId)]
 );
 
+export const modules = tableCreator("module", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  order: integer("order").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const segments = tableCreator(
   "segment",
   {
@@ -70,7 +78,9 @@ export const segments = tableCreator(
     order: integer("order").notNull(),
     length: text("length"),
     isPremium: boolean("isPremium").notNull().default(false),
-    moduleId: text("moduleId").notNull(),
+    moduleId: serial("moduleId")
+      .notNull()
+      .references(() => modules.id, { onDelete: "cascade" }),
     videoKey: text("videoKey"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -98,8 +108,16 @@ export const progress = tableCreator(
   ]
 );
 
-export const segmentsRelations = relations(segments, ({ many }) => ({
+export const modulesRelations = relations(modules, ({ many }) => ({
+  segments: many(segments),
+}));
+
+export const segmentsRelations = relations(segments, ({ one, many }) => ({
   attachments: many(attachments),
+  module: one(modules, {
+    fields: [segments.moduleId],
+    references: [modules.id],
+  }),
 }));
 
 export const attachments = tableCreator("attachment", {
@@ -128,3 +146,5 @@ export type Attachment = typeof attachments.$inferSelect;
 export type AttachmentCreate = typeof attachments.$inferInsert;
 export type Progress = typeof progress.$inferSelect;
 export type ProgressCreate = typeof progress.$inferInsert;
+export type Module = typeof modules.$inferSelect;
+export type ModuleCreate = typeof modules.$inferInsert;

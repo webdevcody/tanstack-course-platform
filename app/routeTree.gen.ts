@@ -21,6 +21,7 @@ import { Route as LoginImport } from './routes/login'
 import { Route as CancelImport } from './routes/cancel'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as LearnIndexImport } from './routes/learn/index'
 import { Route as LearnNotFoundImport } from './routes/learn/not-found'
 import { Route as LearnNoSegmentsImport } from './routes/learn/no-segments'
 import { Route as LearnCourseCompletedImport } from './routes/learn/course-completed'
@@ -86,6 +87,12 @@ const IndexRoute = IndexImport.update({
 const LearnSlugRoute = LearnSlugImport.update({
   id: '/learn/$slug',
   path: '/learn/$slug',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LearnIndexRoute = LearnIndexImport.update({
+  id: '/learn/',
+  path: '/learn/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -218,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnNotFoundImport
       parentRoute: typeof rootRoute
     }
+    '/learn/': {
+      id: '/learn/'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/learn/$slug': {
       id: '/learn/$slug'
       path: '/learn/$slug'
@@ -290,6 +304,7 @@ export interface FileRoutesByFullPath {
   '/learn/course-completed': typeof LearnCourseCompletedRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn': typeof LearnIndexRoute
   '/learn/$slug': typeof LearnSlugLayoutRouteWithChildren
   '/learn/$slug/edit': typeof LearnSlugEditRoute
   '/learn/$slug/': typeof LearnSlugLayoutIndexRoute
@@ -308,6 +323,7 @@ export interface FileRoutesByTo {
   '/learn/course-completed': typeof LearnCourseCompletedRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn': typeof LearnIndexRoute
   '/learn/$slug': typeof LearnSlugLayoutIndexRoute
   '/learn/$slug/edit': typeof LearnSlugEditRoute
 }
@@ -326,6 +342,7 @@ export interface FileRoutesById {
   '/learn/course-completed': typeof LearnCourseCompletedRoute
   '/learn/no-segments': typeof LearnNoSegmentsRoute
   '/learn/not-found': typeof LearnNotFoundRoute
+  '/learn/': typeof LearnIndexRoute
   '/learn/$slug': typeof LearnSlugRouteWithChildren
   '/learn/$slug/_layout': typeof LearnSlugLayoutRouteWithChildren
   '/learn/$slug/edit': typeof LearnSlugEditRoute
@@ -347,6 +364,7 @@ export interface FileRouteTypes {
     | '/learn/course-completed'
     | '/learn/no-segments'
     | '/learn/not-found'
+    | '/learn'
     | '/learn/$slug'
     | '/learn/$slug/edit'
     | '/learn/$slug/'
@@ -364,6 +382,7 @@ export interface FileRouteTypes {
     | '/learn/course-completed'
     | '/learn/no-segments'
     | '/learn/not-found'
+    | '/learn'
     | '/learn/$slug'
     | '/learn/$slug/edit'
   id:
@@ -380,6 +399,7 @@ export interface FileRouteTypes {
     | '/learn/course-completed'
     | '/learn/no-segments'
     | '/learn/not-found'
+    | '/learn/'
     | '/learn/$slug'
     | '/learn/$slug/_layout'
     | '/learn/$slug/edit'
@@ -400,6 +420,7 @@ export interface RootRouteChildren {
   LearnCourseCompletedRoute: typeof LearnCourseCompletedRoute
   LearnNoSegmentsRoute: typeof LearnNoSegmentsRoute
   LearnNotFoundRoute: typeof LearnNotFoundRoute
+  LearnIndexRoute: typeof LearnIndexRoute
   LearnSlugRoute: typeof LearnSlugRouteWithChildren
 }
 
@@ -416,6 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnCourseCompletedRoute: LearnCourseCompletedRoute,
   LearnNoSegmentsRoute: LearnNoSegmentsRoute,
   LearnNotFoundRoute: LearnNotFoundRoute,
+  LearnIndexRoute: LearnIndexRoute,
   LearnSlugRoute: LearnSlugRouteWithChildren,
 }
 
@@ -441,6 +463,7 @@ export const routeTree = rootRoute
         "/learn/course-completed",
         "/learn/no-segments",
         "/learn/not-found",
+        "/learn/",
         "/learn/$slug"
       ]
     },
@@ -479,6 +502,9 @@ export const routeTree = rootRoute
     },
     "/learn/not-found": {
       "filePath": "learn/not-found.tsx"
+    },
+    "/learn/": {
+      "filePath": "learn/index.tsx"
     },
     "/learn/$slug": {
       "filePath": "learn/$slug",

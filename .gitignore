@@ -21,3 +21,4 @@ yarn.lock
 /blob-report/
 /playwright/.cache/
 s3/wdc-tanstack-starter-kit/
+files/*

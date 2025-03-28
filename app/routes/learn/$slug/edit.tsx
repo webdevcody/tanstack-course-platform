@@ -24,63 +24,61 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "../-components/segment-form";
+import { uploadVideoFn } from "~/fn/storage";
+import { getModuleById } from "~/data-access/modules";
+import { getModulesUseCase } from "~/use-cases/modules";
 
 function generateRandomUUID() {
   return uuidv4();
 }
 
 const updateSegmentFn = createServerFn()
-  .middleware([authenticatedMiddleware])
+  .middleware([adminMiddleware])
   .validator(
     z.object({
       segmentId: z.number(),
-      data: z.object({
+      updates: z.object({
         title: z.string(),
         content: z.string(),
         videoKey: z.string().optional(),
-        moduleId: z.string(),
+        moduleTitle: z.string(),
         slug: z.string(),
         length: z.string().optional(),
+        isPremium: z.boolean(),
       }),
     })
   )
-  .handler(async ({ data, context }) => {
-    const segment = await getSegmentByIdUseCase(data.segmentId);
-    if (!segment) throw new Error("Segment not found");
-
-    if (!context.isAdmin) throw new Error("Not authorized");
-
-    return await updateSegmentUseCase(data.segmentId, data.data);
+  .handler(async ({ data }) => {
+    const { segmentId, updates } = data;
+    return updateSegmentUseCase(segmentId, updates);
   });
 
-const loaderFn = createServerFn()
-  .middleware([adminMiddleware])
+const getSegmentFn = createServerFn()
+  .middleware([authenticatedMiddleware])
   .validator(z.object({ slug: z.string() }))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const segment = await getSegmentBySlugUseCase(data.slug);
     if (!segment) throw new Error("Segment not found");
-    return segment;
+
+    const module = await getModuleById(segment.moduleId);
+    if (!module) throw new Error("Module not found");
+
+    return { segment: { ...segment, moduleTitle: module.title } };
   });
 
 const getUniqueModuleNamesFn = createServerFn()
   .middleware([authenticatedMiddleware])
   .handler(async () => {
-    const segments = await getSegments();
-    const uniqueModuleNames = Array.from(
-      new Set(segments.map((segment) => segment.moduleId))
-    );
-    return uniqueModuleNames;
+    const modules = await getModulesUseCase();
+    return modules.map((module) => module.title);
   });
 
 export const Route = createFileRoute("/learn/$slug/edit")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
-  loader: async ({ params, context }) => {
-    const [segment, moduleNames] = await Promise.all([
-      loaderFn({ data: { slug: params.slug } }),
-      getUniqueModuleNamesFn(),
-    ]);
-
+  loader: async ({ params }) => {
+    const { segment } = await getSegmentFn({ data: { slug: params.slug } });
+    const moduleNames = await getUniqueModuleNamesFn();
     return { segment, moduleNames };
   },
 });
@@ -96,21 +94,27 @@ function RouteComponent() {
     try {
       setIsSubmitting(true);
       let videoKey = undefined;
+
       if (values.video) {
-        videoKey = generateRandomUUID();
-        await uploadFile(videoKey, values.video);
+        const formData = new FormData();
+        formData.set("file", values.video);
+        const { videoKey: uploadedKey } = await uploadVideoFn({
+          data: formData,
+        });
+        videoKey = uploadedKey;
       }
 
       await updateSegmentFn({
         data: {
           segmentId: segment.id,
-          data: {
+          updates: {
             title: values.title,
             content: values.content,
             videoKey: videoKey,
-            moduleId: values.moduleId,
+            moduleTitle: values.moduleTitle,
             slug: values.slug,
             length: values.length || undefined,
+            isPremium: values.isPremium,
           },
         },
       });
@@ -149,9 +153,10 @@ function RouteComponent() {
             title: segment.title,
             content: segment.content,
             video: undefined,
-            moduleId: segment.moduleId,
+            moduleTitle: segment.moduleTitle,
             slug: segment.slug,
             length: segment.length || "",
+            isPremium: segment.isPremium,
           }}
           moduleNames={moduleNames}
           isSubmitting={isSubmitting}

@@ -6,36 +6,31 @@ import {
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
-import { authenticatedMiddleware } from "~/lib/auth";
+import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";
 import { addSegmentUseCase } from "~/use-cases/segments";
 import { assertAuthenticatedFn } from "~/fn/auth";
 import { ChevronLeft } from "lucide-react";
 import { getSegments } from "~/data-access/segments";
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
-import { uploadFile } from "~/utils/storage";
 import { Container } from "./-components/container";
 import {
   SegmentForm,
   type SegmentFormValues,
 } from "./-components/segment-form";
-
-function generateRandomUUID() {
-  return uuidv4();
-}
+import { uploadVideoFn } from "~/fn/storage";
+import { getModulesUseCase } from "~/use-cases/modules";
 
 const createSegmentFn = createServerFn()
-  .middleware([authenticatedMiddleware])
+  .middleware([adminMiddleware])
   .validator(
     z.object({
-      data: z.object({
-        title: z.string(),
-        content: z.string(),
-        videoKey: z.string().optional(),
-        slug: z.string(),
-        moduleId: z.string(),
-        length: z.string().optional(),
-      }),
+      title: z.string(),
+      content: z.string(),
+      videoKey: z.string().optional(),
+      slug: z.string(),
+      moduleTitle: z.string(),
+      length: z.string().optional(),
+      isPremium: z.boolean(),
     })
   )
   .handler(async ({ data }) => {
@@ -48,13 +43,14 @@ const createSegmentFn = createServerFn()
     const nextOrder = maxOrder + 1;
 
     const segment = await addSegmentUseCase({
-      title: data.data.title,
-      content: data.data.content,
-      slug: data.data.slug,
+      title: data.title,
+      content: data.content,
+      slug: data.slug,
       order: nextOrder,
-      moduleId: data.data.moduleId,
-      videoKey: data.data.videoKey,
-      length: data.data.length,
+      moduleTitle: data.moduleTitle,
+      videoKey: data.videoKey,
+      length: data.length,
+      isPremium: data.isPremium,
     });
 
     return segment;
@@ -63,11 +59,8 @@ const createSegmentFn = createServerFn()
 const getUniqueModuleNamesFn = createServerFn()
   .middleware([authenticatedMiddleware])
   .handler(async () => {
-    const segments = await getSegments();
-    const uniqueModuleNames = Array.from(
-      new Set(segments.map((segment) => segment.moduleId))
-    );
-    return uniqueModuleNames;
+    const modules = await getModulesUseCase();
+    return modules.map((module) => module.title);
   });
 
 export const Route = createFileRoute("/learn/add")({
@@ -87,22 +80,26 @@ function RouteComponent() {
   const onSubmit = async (values: SegmentFormValues) => {
     try {
       setIsSubmitting(true);
-      let videoKey = undefined;
+      let videoKey;
+
       if (values.video) {
-        videoKey = generateRandomUUID();
-        await uploadFile(videoKey, values.video);
+        const formData = new FormData();
+        formData.set("file", values.video);
+        const { videoKey: uploadedKey } = await uploadVideoFn({
+          data: formData,
+        });
+        videoKey = uploadedKey;
       }
 
       const segment = await createSegmentFn({
         data: {
-          data: {
-            title: values.title,
-            content: values.content,
-            videoKey: videoKey,
-            slug: values.title.toLowerCase().replace(/ /g, "-"),
-            moduleId: values.moduleId,
-            length: values.length || undefined,
-          },
+          title: values.title,
+          content: values.content,
+          slug: values.title.toLowerCase().replace(/ /g, "-"),
+          moduleTitle: values.moduleTitle,
+          length: values.length || undefined,
+          videoKey,
+          isPremium: values.isPremium,
         },
       });
 
@@ -134,8 +131,9 @@ function RouteComponent() {
           content: "",
           video: undefined,
           slug: "",
-          moduleId: "",
+          moduleTitle: "",
           length: "",
+          isPremium: false,
         }}
         moduleNames={moduleNames}
         isSubmitting={isSubmitting}

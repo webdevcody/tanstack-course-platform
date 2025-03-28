@@ -1,67 +1,72 @@
-import { Sheet, SheetContent } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
-import { X, Plus } from "lucide-react";
-import { Segment, Progress } from "~/db/schema";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
+import { Menu, Plus } from "lucide-react";
+import type { Module, Segment } from "~/db/schema";
 import { NavigationItems } from "./navigation-items";
+import { useState } from "react";
+
+interface ModuleWithSegments extends Module {
+  segments: Segment[];
+}
 
 interface MobileNavigationProps {
-  segments: Segment[];
-  progress: Progress[];
-  currentSegmentId: Segment["id"];
-  isOpen: boolean;
-  onClose: () => void;
+  modules: ModuleWithSegments[];
+  currentSegmentId: number;
   isAdmin: boolean;
   isPremium: boolean;
 }
 
 export function MobileNavigation({
-  segments,
-  progress,
+  modules,
   currentSegmentId,
-  isOpen,
-  onClose,
   isAdmin,
   isPremium,
 }: MobileNavigationProps) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent
-        side="left"
-        className="w-full max-w-[85vw] p-0 flex flex-col gap-0"
-      >
-        <div className="sticky top-0 right-0 flex items-center justify-between p-6 bg-background border-b z-10">
-          <div className="flex items-center gap-4">
-            <h2 className="text-lg font-semibold">Content Navigation</h2>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-accent/50"
-            onClick={onClose}
-          >
-            <X className="h-6 w-6" />
-            <span className="sr-only">Close navigation</span>
-          </Button>
-        </div>
-        <div className="divide-y divide-border overflow-y-auto flex-1">
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
+        >
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="pl-1 pr-0">
+        <SheetHeader>
+          <SheetTitle>Course Content</SheetTitle>
+        </SheetHeader>
+        <div className="my-4 px-4">
           <NavigationItems
-            segments={segments}
-            progress={progress}
+            modules={modules}
             currentSegmentId={currentSegmentId}
             isAdmin={isAdmin}
             isPremium={isPremium}
-            onItemClick={onClose}
+            onItemClick={() => setOpen(false)}
           />
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full mt-4"
+              onClick={() => {
+                // TODO: Implement add module functionality
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Module
+            </Button>
+          )}
         </div>
-
-        {isAdmin && (
-          <Button variant="outline" className="py-8" asChild>
-            <a href="/learn/add">
-              <Plus className="h-4 w-4" /> Add Segment
-              <span className="sr-only">Create new segment</span>
-            </a>
-          </Button>
-        )}
       </SheetContent>
     </Sheet>
   );

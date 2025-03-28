@@ -332,7 +332,7 @@ function ViewSegment({
 
       {currentSegment.videoKey && (
         <div className="w-full">
-          <VideoPlayer url={getStorageUrl(currentSegment.videoKey)} />
+          <VideoPlayer url={getStorageUrl(currentSegment.id)} />
         </div>
       )}
 
@@ -373,7 +373,8 @@ function ViewSegment({
       <h2 className="text-xl font-bold">Content</h2>
       <MarkdownContent content={currentSegment.content} />
 
-      <div className="space-y-4">
+      {/* focusing on videos for now */}
+      {/* <div className="space-y-4">
         <h2 className="text-xl font-bold">Documents</h2>
 
         <div className="space-y-4">
@@ -435,7 +436,7 @@ function ViewSegment({
             No documents have been uploaded yet.
           </p>
         )}
-      </div>
+      </div> */}
 
       <Navigation prevSegment={null} nextSegment={null} />
     </div>
