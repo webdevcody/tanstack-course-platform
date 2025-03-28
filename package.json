@@ -78,7 +78,6 @@
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.30.4",
     "postcss": "^8.5.1",
-    "s3rver": "^3.7.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^5.1.4"

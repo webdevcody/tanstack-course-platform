@@ -12,17 +12,5 @@ services:
     volumes:
       - postgres:/data/postgres
 
-  s3-bucket:
-    build: .
-    restart: always
-    ports:
-      - 9000:9000
-    command: "node s3.mjs"
-    environment:
-      AWS_ACCESS_KEY_ID: S3RVER
-      AWS_SECRET_ACCESS_KEY: S3RVER
-    volumes:
-      - ".:/home/app"
-
 volumes:
   postgres:
