@@ -25,7 +25,7 @@ const createSegmentFn = createServerFn()
   .validator(
     z.object({
       title: z.string(),
-      content: z.string(),
+      content: z.string().optional(),
       videoKey: z.string().optional(),
       slug: z.string(),
       moduleTitle: z.string(),

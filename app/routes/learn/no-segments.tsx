@@ -1,19 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
-import { unauthenticatedMiddleware } from "~/lib/auth";
-import { isAdminUseCase } from "~/use-cases/users";
-
-const loaderFn = createServerFn()
-  .middleware([unauthenticatedMiddleware])
-  .handler(async () => {
-    const isAdmin = await isAdminUseCase();
-    return { isAdmin };
-  });
+import { isAdminFn } from "~/fn/auth";
 
 export const Route = createFileRoute("/learn/no-segments")({
   component: RouteComponent,
   loader: async () => {
-    return loaderFn();
+    const isAdmin = await isAdminFn();
+    return { isAdmin };
   },
 });
 

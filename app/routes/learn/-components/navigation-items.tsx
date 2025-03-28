@@ -164,9 +164,6 @@ export function NavigationItems({
                                     snapshot.isDragging && "z-50"
                                   )}
                                 >
-                                  {isActive && (
-                                    <div className="absolute left-0 top-0 bottom-0 w-px bg-theme-500" />
-                                  )}
                                   <div className="flex items-center">
                                     <div
                                       {...provided.dragHandleProps}

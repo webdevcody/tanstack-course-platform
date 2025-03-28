@@ -33,11 +33,8 @@ export function MobileNavigation({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 lg:hidden"
-        >
-          <Menu className="h-6 w-6" />
+        <Button variant="outline" className="md:hidden ml-6 mt-4">
+          <Menu className="size-6" /> Quick Navigation
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>

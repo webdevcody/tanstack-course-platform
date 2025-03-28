@@ -5,8 +5,7 @@ import { Menu } from "lucide-react";
 import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
 import { DesktopNavigation } from "~/routes/learn/-components/desktop-navigation";
 import { getSegmentInfoFn } from "./_layout.index";
-import { isUserPremiumFn } from "~/fn/auth";
-import { isAdminUseCase } from "~/use-cases/users";
+import { isAdminFn, isUserPremiumFn } from "~/fn/auth";
 import {
   SegmentProvider,
   useSegment,
@@ -21,12 +20,6 @@ const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .handler(async () => {
     return getModulesWithSegmentsUseCase();
-  });
-
-const isAdminFn = createServerFn()
-  .middleware([unauthenticatedMiddleware])
-  .handler(async () => {
-    return isAdminUseCase();
   });
 
 export const modulesQueryOptions = queryOptions({
@@ -101,16 +94,6 @@ function LayoutContent() {
         />
 
         <main className="w-full p-6 pt-4">
-          {/* Mobile Sidebar Toggle */}
-          <Button
-            size="icon"
-            className="z-50 md:hidden hover:bg-accent"
-            onClick={() => setOpenMobile(true)}
-          >
-            <Menu />
-            <span className="sr-only">Toggle navigation</span>
-          </Button>
-
           <Outlet />
         </main>
       </div>

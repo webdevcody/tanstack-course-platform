@@ -1,0 +1,1 @@
+ALTER TABLE "app_segment" ALTER COLUMN "content" DROP NOT NULL;

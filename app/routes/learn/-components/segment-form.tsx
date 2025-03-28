@@ -22,7 +22,7 @@ export const formSchema = z.object({
     .string()
     .min(2, "Title must be at least 2 characters")
     .max(100, "Title must be less than 100 characters"),
-  content: z.string().min(10, "Content must be at least 10 characters"),
+  content: z.string().optional(),
   video: z.instanceof(File).optional(),
   moduleTitle: z.string().min(1, "Module ID is required"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
@@ -93,7 +93,7 @@ export function SegmentForm({
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>Content (Optional)</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Enter your content"

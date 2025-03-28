@@ -44,7 +44,7 @@ import {
   authenticatedMiddleware,
   unauthenticatedMiddleware,
 } from "~/lib/auth";
-import { isUserPremiumFn } from "~/fn/auth";
+import { isAdminFn, isUserPremiumFn } from "~/fn/auth";
 import {
   markAsWatchedUseCase,
   getAllProgressForUserUseCase,
@@ -105,12 +105,12 @@ export const deleteSegmentFn = createServerFn()
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
-  loader: async ({ params }) => {
+  loader: async ({ context: { queryClient }, params }) => {
     const { segment, segments, attachments, progress } = await getSegmentInfoFn(
       { data: { slug: params.slug } }
     );
-
     const isPremium = await isUserPremiumFn();
+    const isAdmin = await isAdminFn();
 
     if (segments.length === 0) {
       throw redirect({ to: "/learn/no-segments" });
@@ -120,7 +120,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
       throw redirect({ to: "/learn/not-found" });
     }
 
-    return { segment, segments, attachments, progress, isPremium };
+    return { segment, segments, attachments, progress, isPremium, isAdmin };
   },
 });
 
@@ -167,12 +167,14 @@ function ViewSegment({
   currentSegmentId,
   attachments,
   isPremium,
+  isAdmin,
 }: {
   segments: Segment[];
   currentSegment: Segment;
   currentSegmentId: number;
   attachments: Attachment[];
   isPremium: boolean;
+  isAdmin: boolean;
 }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -294,40 +296,46 @@ function ViewSegment({
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
-        <div className="flex gap-2">
-          <Link
-            to="/learn/$slug/edit"
-            params={{ slug: currentSegment.slug }}
-            className={buttonVariants({ variant: "outline" })}
-          >
-            <Edit className="mr-2 h-4 w-4" /> Edit Segment
-          </Link>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Segment
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  this content and all its associated files and attachments.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDeleteSegment}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+        {isAdmin && (
+          <div className="gap-2 hidden md:flex">
+            <Link
+              to="/learn/$slug/edit"
+              params={{ slug: currentSegment.slug }}
+              className={buttonVariants({ variant: "outline" })}
+            >
+              <Edit className="mr-2 h-4 w-4" /> Edit Segment
+            </Link>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive-outline">
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete Segment
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    this content and all its associated files and attachments.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel
+                    className={buttonVariants({ variant: "gray-outline" })}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteSegment}
+                    className={buttonVariants({ variant: "destructive" })}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
 
       {currentSegment.videoKey && (
@@ -370,8 +378,12 @@ function ViewSegment({
         </div>
       )}
 
-      <h2 className="text-xl font-bold">Content</h2>
-      <MarkdownContent content={currentSegment.content} />
+      {currentSegment.content && (
+        <>
+          <h2 className="text-xl font-bold">Content</h2>
+          <MarkdownContent content={currentSegment.content} />
+        </>
+      )}
 
       {/* focusing on videos for now */}
       {/* <div className="space-y-4">
@@ -444,7 +456,8 @@ function ViewSegment({
 }
 
 function RouteComponent() {
-  const { segment, segments, attachments, isPremium } = Route.useLoaderData();
+  const { segment, segments, attachments, isPremium, isAdmin } =
+    Route.useLoaderData();
 
   return (
     <>
@@ -454,6 +467,7 @@ function RouteComponent() {
         currentSegmentId={segment.id}
         attachments={attachments}
         isPremium={isPremium}
+        isAdmin={isAdmin}
       />
       <Toaster />
     </>

@@ -39,7 +39,7 @@ const updateSegmentFn = createServerFn()
       segmentId: z.number(),
       updates: z.object({
         title: z.string(),
-        content: z.string(),
+        content: z.string().optional(),
         videoKey: z.string().optional(),
         moduleTitle: z.string(),
         slug: z.string(),
@@ -151,7 +151,7 @@ function RouteComponent() {
           onSubmit={onSubmit}
           defaultValues={{
             title: segment.title,
-            content: segment.content,
+            content: segment.content || "",
             video: undefined,
             moduleTitle: segment.moduleTitle,
             slug: segment.slug,

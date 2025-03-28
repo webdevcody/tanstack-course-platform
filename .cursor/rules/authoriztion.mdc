@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# What is considered a non admin?
+
+anyone who doesn't have isAdmin true on their user model
+
+# what special functionality should admins have access to
+
+- delete segments
+- create segments
+- edit segments
+- reorder segments
+- reorger categories
+- upload files

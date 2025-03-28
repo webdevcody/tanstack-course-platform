@@ -1,21 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/start";
 import { unauthenticatedMiddleware } from "~/lib/auth";
-import { isAdminUseCase } from "~/use-cases/users";
 import { getSegments } from "~/data-access/segments";
 import { Button } from "~/components/ui/button";
+import { isAdminFn } from "~/fn/auth";
 
-const loaderFn = createServerFn()
+const getSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .handler(async () => {
-    const isAdmin = await isAdminUseCase();
-    const segments = await getSegments();
-    return { isAdmin, segments };
+    return await getSegments();
   });
 
 export const Route = createFileRoute("/learn/")({
   component: RouteComponent,
-  loader: () => loaderFn(),
+  loader: async () => {
+    const isAdmin = await isAdminFn();
+    const segments = await getSegmentsFn();
+    return { isAdmin, segments };
+  },
 });
 
 function RouteComponent() {
