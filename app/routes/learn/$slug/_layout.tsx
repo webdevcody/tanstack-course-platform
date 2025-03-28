@@ -6,6 +6,7 @@ import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
 import { DesktopNavigation } from "~/routes/learn/-components/desktop-navigation";
 import { getSegmentInfoFn } from "./_layout.index";
 import { isUserPremiumFn } from "~/fn/auth";
+import { isAdminUseCase } from "~/use-cases/users";
 import {
   SegmentProvider,
   useSegment,
@@ -14,16 +15,18 @@ import { useEffect } from "react";
 import { createServerFn } from "@tanstack/start";
 import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
 import { unauthenticatedMiddleware } from "~/lib/auth";
-import {
-  queryOptions,
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 
 const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .handler(async () => {
     return getModulesWithSegmentsUseCase();
+  });
+
+const isAdminFn = createServerFn()
+  .middleware([unauthenticatedMiddleware])
+  .handler(async () => {
+    return isAdminUseCase();
   });
 
 export const modulesQueryOptions = queryOptions({
@@ -36,16 +39,17 @@ export const Route = createFileRoute("/learn/$slug/_layout")({
   loader: async ({ context: { queryClient }, params }) => {
     const { segment } = await getSegmentInfoFn({ data: { slug: params.slug } });
     const isPremium = await isUserPremiumFn();
+    const isAdmin = await isAdminFn();
 
     await queryClient.ensureQueryData(modulesQueryOptions);
 
-    return { segment, isPremium };
+    return { segment, isPremium, isAdmin };
   },
 });
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
-  const { segment, isPremium } = Route.useLoaderData();
+  const { segment, isPremium, isAdmin } = Route.useLoaderData();
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
@@ -82,7 +86,7 @@ function LayoutContent() {
         <DesktopNavigation
           modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
-          isAdmin={true}
+          isAdmin={isAdmin}
           isPremium={isPremium}
         />
       </div>
@@ -92,7 +96,7 @@ function LayoutContent() {
         <MobileNavigation
           modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
-          isAdmin={true}
+          isAdmin={isAdmin}
           isPremium={isPremium}
         />
 

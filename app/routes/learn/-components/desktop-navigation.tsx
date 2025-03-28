@@ -131,7 +131,7 @@ export function DesktopNavigation({
                   size="sm"
                   className="w-full mt-4"
                   onClick={() => {
-                    // TODO: Implement add module functionality
+                    router.navigate({ to: "/learn/add" });
                   }}
                 >
                   <Plus className="mr-2 h-4 w-4" />

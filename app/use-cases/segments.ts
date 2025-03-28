@@ -12,6 +12,9 @@ import type { Segment, SegmentCreate, User } from "~/db/schema";
 import { deleteFile } from "~/storage";
 import { eq } from "drizzle-orm";
 import { getOrCreateModuleUseCase } from "./modules";
+import { database } from "~/db";
+import type { Transaction } from "drizzle-orm";
+import { segments } from "~/db/schema";
 
 export async function getSegmentsUseCase() {
   return getSegments();
@@ -89,4 +92,21 @@ export async function deleteSegmentUseCase(segmentId: number) {
 
   // Finally delete the segment (this will cascade delete attachments due to foreign key)
   return deleteSegment(segmentId);
+}
+
+export async function reorderSegmentsUseCase(
+  updates: { id: number; order: number }[]
+) {
+  return database.transaction(async (tx) => {
+    const results = [];
+    for (const update of updates) {
+      const [result] = await tx
+        .update(segments)
+        .set({ order: update.order, updatedAt: new Date() })
+        .where(eq(segments.id, update.id))
+        .returning();
+      results.push(result);
+    }
+    return results;
+  });
 }

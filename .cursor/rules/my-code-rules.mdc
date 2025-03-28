@@ -87,3 +87,7 @@ never interpolate the to string, instead use props:
   to="/learn/$slug"
   params={{ slug: continueSlug }}>Start Learning</Link>
 ```
+
+# Rules
+
+Never invoke backend code outside of a server function when in a .tsx file

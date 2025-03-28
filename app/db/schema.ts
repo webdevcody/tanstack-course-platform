@@ -19,6 +19,7 @@ export const users = tableCreator("user", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   isPremium: boolean("isPremium").notNull().default(false),
+  isAdmin: boolean("isAdmin").notNull().default(false),
 });
 
 export const accounts = tableCreator(
