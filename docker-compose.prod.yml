@@ -23,6 +23,8 @@ services:
     container_name: wdc-tanstack-starter-kit-app
     expose:
       - 3000
+    volumes:
+      - app_files:/app/files
 
   caddy:
     image: caddy:2
@@ -42,3 +44,4 @@ volumes:
   postgres:
   caddy_data:
   caddy_config:
+  app_files:
