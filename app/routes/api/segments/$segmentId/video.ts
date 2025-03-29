@@ -3,6 +3,7 @@ import { AuthenticationError } from "~/use-cases/errors";
 import { getSegmentByIdUseCase } from "~/use-cases/segments";
 import { getAuthenticatedUser } from "~/utils/auth";
 import { getFile } from "~/utils/disk-storage";
+import { stat } from "fs/promises";
 
 export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
   GET: async ({ request, params }) => {
@@ -31,20 +32,45 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       throw new Error("You don't have permission to access this video");
     }
 
-    const video = await getFile(segment.videoKey);
+    const videoStream = await getFile(segment.videoKey);
 
-    if (!video) {
+    if (!videoStream) {
       throw new Error("Video not found");
     }
 
+    // Get file stats for content length
+    const uploadDir = process.env.UPLOAD_DIR;
+    if (!uploadDir) {
+      throw new Error("UPLOAD_DIR environment variable is not set");
+    }
+    const filePath = `${uploadDir}/${segment.videoKey}`;
+    const stats = await stat(filePath);
+
     const headers = new Headers({
       "Content-Type": "video/mp4",
-      "Content-Length": video.length.toString(),
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-      Pragma: "no-cache",
-      Expires: "0",
+      "Content-Length": stats.size.toString(),
+      "Cache-Control": "public, max-age=31536000, immutable",
+      ETag: `"${stats.mtimeMs}"`,
     });
 
-    return new Response(video, { headers });
+    // Convert Node.js stream to Web stream
+    const webStream = new ReadableStream({
+      start(controller) {
+        videoStream.on("data", (chunk) => {
+          controller.enqueue(chunk);
+        });
+        videoStream.on("end", () => {
+          controller.close();
+        });
+        videoStream.on("error", (err) => {
+          controller.error(err);
+        });
+      },
+      cancel() {
+        videoStream.destroy();
+      },
+    });
+
+    return new Response(webStream, { headers });
   },
 });

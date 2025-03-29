@@ -1,6 +1,8 @@
 import { writeFile } from "fs/promises";
 import path from "path";
 import fs from "fs/promises";
+import { createReadStream } from "fs";
+import { Readable } from "stream";
 
 export async function saveFile(key: string, file: Buffer | File) {
   const uploadDir = process.env.UPLOAD_DIR;
@@ -42,8 +44,9 @@ export async function getFile(key: string) {
   const filePath = path.join(uploadDir, key);
 
   try {
-    const fileContent = await fs.readFile(filePath);
-    return fileContent;
+    // Create a readable stream from the file
+    const fileStream = createReadStream(filePath);
+    return fileStream;
   } catch (error) {
     console.error(`Error reading file ${key}:`, error);
     throw new Error(
