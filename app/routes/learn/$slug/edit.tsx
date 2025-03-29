@@ -16,19 +16,15 @@ import {
 import { assertAuthenticatedFn } from "~/fn/auth";
 import { ChevronLeft } from "lucide-react";
 import { Container } from "~/routes/learn/-components/container";
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import {
   SegmentForm,
   type SegmentFormValues,
 } from "../-components/segment-form";
-import { uploadVideoFn } from "~/fn/storage";
+import { uploadVideoChunk } from "~/utils/storage";
 import { getModuleById } from "~/data-access/modules";
 import { getModulesUseCase } from "~/use-cases/modules";
-
-function generateRandomUUID() {
-  return uuidv4();
-}
+import { generateRandomUUID } from "~/utils/uuid";
 
 const updateSegmentFn = createServerFn()
   .middleware([adminMiddleware])
@@ -94,12 +90,8 @@ function RouteComponent() {
       let videoKey = undefined;
 
       if (values.video) {
-        const formData = new FormData();
-        formData.set("file", values.video);
-        const { videoKey: uploadedKey } = await uploadVideoFn({
-          data: formData,
-        });
-        videoKey = uploadedKey;
+        videoKey = `${generateRandomUUID()}.mp4`;
+        await uploadVideoChunk(videoKey, values.video);
       }
 
       await updateSegmentFn({

@@ -17,8 +17,18 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "./-components/segment-form";
-import { uploadVideoFn } from "~/fn/storage";
+import { uploadVideoChunk } from "~/utils/storage";
 import { getModulesUseCase } from "~/use-cases/modules";
+import { generateRandomUUID } from "~/utils/uuid";
+
+export const Route = createFileRoute("/learn/add")({
+  component: RouteComponent,
+  beforeLoad: () => assertAuthenticatedFn(),
+  loader: async () => {
+    const moduleNames = await getUniqueModuleNamesFn();
+    return { moduleNames };
+  },
+});
 
 const createSegmentFn = createServerFn()
   .middleware([adminMiddleware])
@@ -63,15 +73,6 @@ const getUniqueModuleNamesFn = createServerFn()
     return modules.map((module) => module.title);
   });
 
-export const Route = createFileRoute("/learn/add")({
-  component: RouteComponent,
-  beforeLoad: () => assertAuthenticatedFn(),
-  loader: async () => {
-    const moduleNames = await getUniqueModuleNamesFn();
-    return { moduleNames };
-  },
-});
-
 function RouteComponent() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,12 +84,8 @@ function RouteComponent() {
       let videoKey;
 
       if (values.video) {
-        const formData = new FormData();
-        formData.set("file", values.video);
-        const { videoKey: uploadedKey } = await uploadVideoFn({
-          data: formData,
-        });
-        videoKey = uploadedKey;
+        videoKey = `${generateRandomUUID()}.mp4`;
+        await uploadVideoChunk(videoKey, values.video);
       }
 
       const segment = await createSegmentFn({
