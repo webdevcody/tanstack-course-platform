@@ -344,6 +344,10 @@ function ViewSegment({
         </div>
       )}
 
+      {currentSegment.content && (
+        <MarkdownContent content={currentSegment.content} />
+      )}
+
       {isLoggedIn && (
         <div className="flex justify-between">
           <Button
@@ -376,13 +380,6 @@ function ViewSegment({
             )}
           </Button>
         </div>
-      )}
-
-      {currentSegment.content && (
-        <>
-          <h2 className="text-xl font-bold">Content</h2>
-          <MarkdownContent content={currentSegment.content} />
-        </>
       )}
 
       {/* focusing on videos for now */}
