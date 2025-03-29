@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  wdc-tanstack-starter-kit-db:
+    image: postgres:17
+    restart: always
+    container_name: wdc-tanstack-starter-kit-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+
+  wdc-tanstack-starter-kit-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wdc-tanstack-starter-kit-app
+    env_file:
+      - .env
+    restart: always
+    container_name: wdc-tanstack-starter-kit-app
+    expose:
+      - 3000
+
+  caddy:
+    image: caddy:2
+    restart: always
+    container_name: wdc-tanstack-starter-kit-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - wdc-tanstack-starter-kit-app
+
+volumes:
+  postgres:
+  caddy_data:
+  caddy_config:
