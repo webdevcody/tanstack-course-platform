@@ -65,8 +65,5 @@ export async function deleteFile(key: string) {
     await fs.unlink(filePath);
   } catch (error) {
     console.error(`Error deleting file ${key}:`, error);
-    throw new Error(
-      `Failed to delete file: ${error instanceof Error ? error.message : "Unknown error"}`
-    );
   }
 }

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/start";
 import { adminMiddleware } from "~/lib/auth";
 import { z } from "zod";
 import { generateRandomUUID } from "~/utils/uuid";
-import { saveFile } from "~/utils/disk-storage";
+import { deleteFile, saveFile } from "~/utils/disk-storage";
 import path from "path";
 import fs from "fs/promises";
 
@@ -55,13 +55,17 @@ export const uploadVideoChunkFn = createServerFn({ method: "POST" })
         const chunkPath = path.join(uploadDir, `${videoKey}.part${i}`);
         const chunkData = await fs.readFile(chunkPath);
         chunks.push(chunkData);
-        // Delete chunk file after reading
-        await fs.unlink(chunkPath);
       }
 
       // Combine chunks and save final file
       const finalBuffer = Buffer.concat(chunks);
       await saveFile(videoKey, finalBuffer);
+
+      // Delete all chunk files
+      for (let i = 0; i < totalChunks; i++) {
+        const chunkPath = path.join(uploadDir, `${videoKey}.part${i}`);
+        await deleteFile(chunkPath);
+      }
     }
 
     return { videoKey };
