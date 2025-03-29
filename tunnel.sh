@@ -1,4 +1,4 @@
 #!/bin/bash
 
-# ssh -L 5435:127.0.0.1:5432 root@$COURSE_SERVER_IP
-ssh -L 3000:127.0.0.1:3000 root@$COURSE_SERVER_IP
+ssh -L 5435:localhost:5432 root@$COURSE_SERVER_IP
+# ssh -L 3000:localhost:3000 root@$COURSE_SERVER_IP

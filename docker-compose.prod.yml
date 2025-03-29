@@ -5,10 +5,9 @@ services:
     restart: always
     container_name: wdc-tanstack-starter-kit-db
     ports:
-      - 127.0.0.1:5435:5432
-    environment:
-      POSTGRES_PASSWORD: example
-      PGDATA: /data/postgres
+      - 127.0.0.1:5432:5432
+    env_file:
+      - .env.postgres
     volumes:
       - postgres:/data/postgres
 
