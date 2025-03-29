@@ -9,12 +9,11 @@ import { createReadStream } from "fs";
 export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
   GET: async ({ request, params }) => {
     const { segmentId } = params;
-    console.time("getAuthenticatedUser");
+
     const user = await getAuthenticatedUser();
     if (!user) {
       throw new AuthenticationError();
     }
-    console.timeEnd("getAuthenticatedUser");
 
     if (isNaN(Number(segmentId))) {
       throw new Error("Invalid segment ID");
