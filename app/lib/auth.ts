@@ -59,9 +59,7 @@ export const userIdMiddleware = createMiddleware()
 export const unauthenticatedMiddleware = createMiddleware()
   .middleware([logMiddleware])
   .server(async ({ next }) => {
-    console.time("validateRequest");
     const { user } = await validateRequest();
-    console.timeEnd("validateRequest");
 
     return next({
       context: { userId: user?.id, isAdmin: isAdmin(user), user },

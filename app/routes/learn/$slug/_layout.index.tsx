@@ -80,7 +80,6 @@ export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .validator(z.object({ slug: z.string() }))
   .handler(async ({ data, context }) => {
-    console.time("getSegmentInfoFn");
     const segment = await getSegmentBySlugUseCase(data.slug);
     const [segments, progress] = await Promise.all([
       getSegments(),
@@ -88,7 +87,6 @@ export const getSegmentInfoFn = createServerFn()
       context.userId ? getAllProgressForUserUseCase(context.userId) : [],
     ]);
 
-    console.timeEnd("getSegmentInfoFn");
     return { segment, segments, progress };
   });
 
