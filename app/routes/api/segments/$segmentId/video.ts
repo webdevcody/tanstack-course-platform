@@ -13,11 +13,8 @@ function logMemoryUsage(label: string) {
   console.log(`RSS: ${Math.round(used.rss / 1024 / 1024)}MB`);
 }
 
-let activeStreams = 0;
-
 function createWebStreamFromNodeStream(nodeStream: ReadStream) {
-  activeStreams++;
-  logMemoryUsage(`Stream Start #${activeStreams}`);
+  logMemoryUsage(`Stream Start`);
 
   let isDestroyed = false;
   let bytesTransferred = 0;
@@ -27,7 +24,6 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
   const cleanup = () => {
     if (!isDestroyed) {
       isDestroyed = true;
-      activeStreams--;
       nodeStream.destroy();
       // Remove all listeners to prevent memory leaks
       nodeStream.removeAllListeners();
@@ -77,7 +73,6 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
     },
 
     cancel() {
-      console.log("Stream cancelled");
       cleanup();
     },
   });
@@ -135,7 +130,6 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       });
     }
 
-    console.log("Starting full file request");
     // Handle full file request
     const stream = createReadStream(filePath, {
       highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
