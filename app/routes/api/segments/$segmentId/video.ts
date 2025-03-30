@@ -28,6 +28,10 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
         try {
           if (!isDestroyed) {
             bytesTransferred += chunk.length;
+
+            // Pause the stream before enqueueing
+            nodeStream.pause();
+
             controller.enqueue(chunk);
 
             // Log every 10MB transferred
@@ -59,16 +63,19 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
         controller.error(err);
       });
     },
+
+    // This method is called when the consumer is ready for more data
+    pull() {
+      if (!isDestroyed) {
+        nodeStream.resume();
+      }
+    },
+
     cancel() {
       console.log("Stream cancelled");
       isDestroyed = true;
       activeStreams--;
       nodeStream.destroy();
-    },
-    pull(controller) {
-      if (!isDestroyed && nodeStream.isPaused()) {
-        nodeStream.resume();
-      }
     },
   });
 }
