@@ -209,8 +209,8 @@ function ViewSegment({
   const isLastSegment = !nextSegment;
   const isFirstSegment = !previousSegment;
 
-  // Show upgrade placeholder for premium segments if user is not premium
-  if (currentSegment.isPremium && !isPremium) {
+  // Show upgrade placeholder for premium segments if user is not premium and not admin
+  if (currentSegment.isPremium && !isPremium && !isAdmin) {
     return (
       <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
         <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
