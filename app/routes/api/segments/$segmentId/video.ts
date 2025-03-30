@@ -82,7 +82,6 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
   GET: async ({ request, params }) => {
     // Validate access
     const user = await getAuthenticatedUser();
-    if (!user) throw new AuthenticationError();
 
     const segmentId = Number(params.segmentId);
     if (isNaN(segmentId)) throw new Error("Invalid segment ID");
@@ -90,8 +89,12 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
     const segment = await getSegmentByIdUseCase(segmentId);
     if (!segment) throw new Error("Segment not found");
     if (!segment.videoKey) throw new Error("Video not attached to segment");
-    if (segment.isPremium && !user.isPremium && !user.isAdmin) {
-      throw new Error("You don't have permission to access this video");
+
+    if (segment.isPremium) {
+      if (!user) throw new AuthenticationError();
+      if (!user.isPremium && !user.isAdmin) {
+        throw new Error("You don't have permission to access this video");
+      }
     }
 
     // Get file info
