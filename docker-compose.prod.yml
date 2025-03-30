@@ -24,6 +24,12 @@ services:
       - "3000:3000"
     volumes:
       - app_files:/app/files
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
 
   caddy:
     image: caddy:2

@@ -6,27 +6,39 @@ import { stat } from "fs/promises";
 import { createReadStream, type ReadStream } from "fs";
 
 function createWebStreamFromNodeStream(nodeStream: ReadStream) {
+  let isDestroyed = false;
+
   return new ReadableStream({
     start(controller) {
       nodeStream.on("data", (chunk) => {
         try {
-          controller.enqueue(chunk);
+          if (!isDestroyed) {
+            controller.enqueue(chunk);
+          }
         } catch (err) {
+          isDestroyed = true;
           nodeStream.destroy();
           controller.error(err);
         }
       });
-      nodeStream.on("end", () => controller.close());
+
+      nodeStream.on("end", () => {
+        isDestroyed = true;
+        controller.close();
+      });
+
       nodeStream.on("error", (err) => {
+        isDestroyed = true;
         nodeStream.destroy();
         controller.error(err);
       });
     },
     cancel() {
+      isDestroyed = true;
       nodeStream.destroy();
     },
     pull(controller) {
-      if (nodeStream.isPaused()) {
+      if (!isDestroyed && nodeStream.isPaused()) {
         nodeStream.resume();
       }
     },
