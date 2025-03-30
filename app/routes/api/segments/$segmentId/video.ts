@@ -29,7 +29,7 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       throw new Error("Video not attached to segment");
     }
 
-    if (segment.isPremium && !user.isPremium) {
+    if (segment.isPremium && !user.isPremium && !user.isAdmin) {
       throw new Error("You don't have permission to access this video");
     }
 
