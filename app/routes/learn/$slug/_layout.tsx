@@ -15,6 +15,7 @@ import { createServerFn } from "@tanstack/start";
 import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
 import { unauthenticatedMiddleware } from "~/lib/auth";
 import { queryOptions, useQuery } from "@tanstack/react-query";
+import { getAllProgressForUserUseCase } from "~/use-cases/progress";
 
 const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -27,22 +28,28 @@ export const modulesQueryOptions = queryOptions({
   queryFn: () => getModulesWithSegmentsFn(),
 });
 
+export const getProgressFn = createServerFn()
+  .middleware([unauthenticatedMiddleware])
+  .handler(async ({ context }) => {
+    return context.userId ? getAllProgressForUserUseCase(context.userId) : [];
+  });
+
 export const Route = createFileRoute("/learn/$slug/_layout")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
     const { segment } = await getSegmentInfoFn({ data: { slug: params.slug } });
     const isPremium = await isUserPremiumFn();
     const isAdmin = await isAdminFn();
-
+    const progress = await getProgressFn();
     await queryClient.ensureQueryData(modulesQueryOptions);
 
-    return { segment, isPremium, isAdmin };
+    return { segment, isPremium, progress, isAdmin };
   },
 });
 
 function LayoutContent() {
   const { openMobile, setOpenMobile } = useSidebar();
-  const { segment, isPremium, isAdmin } = Route.useLoaderData();
+  const { segment, isPremium, isAdmin, progress } = Route.useLoaderData();
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
@@ -80,6 +87,7 @@ function LayoutContent() {
           modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
           isAdmin={isAdmin}
+          progress={progress}
           isPremium={isPremium}
         />
       </div>
@@ -89,6 +97,7 @@ function LayoutContent() {
         <MobileNavigation
           modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
+          progress={progress}
           isAdmin={isAdmin}
           isPremium={isPremium}
         />

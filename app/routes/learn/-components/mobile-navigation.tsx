@@ -7,7 +7,7 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import { Menu, Plus } from "lucide-react";
-import type { Module, Segment } from "~/db/schema";
+import type { Module, Progress, Segment } from "~/db/schema";
 import { NavigationItems } from "./navigation-items";
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
@@ -20,6 +20,7 @@ interface MobileNavigationProps {
   currentSegmentId: number;
   isAdmin: boolean;
   isPremium: boolean;
+  progress: Progress[];
 }
 
 export function MobileNavigation({
@@ -27,6 +28,7 @@ export function MobileNavigation({
   currentSegmentId,
   isAdmin,
   isPremium,
+  progress,
 }: MobileNavigationProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -49,6 +51,7 @@ export function MobileNavigation({
             currentSegmentId={currentSegmentId}
             isAdmin={isAdmin}
             isPremium={isPremium}
+            progress={progress}
             onItemClick={() => setOpen(false)}
           />
           {isAdmin && (

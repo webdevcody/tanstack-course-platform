@@ -8,7 +8,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
-import type { Module, Segment } from "~/db/schema";
+import type { Module, Progress, Segment } from "~/db/schema";
 import { useRouter } from "@tanstack/react-router";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,11 +24,13 @@ interface DesktopNavigationProps {
   currentSegmentId: number;
   isAdmin: boolean;
   isPremium: boolean;
+  progress: Progress[];
 }
 
 export function DesktopNavigation({
   modules,
   currentSegmentId,
+  progress,
   isAdmin,
   isPremium,
 }: DesktopNavigationProps) {
@@ -111,6 +113,7 @@ export function DesktopNavigation({
                                 currentSegmentId={currentSegmentId}
                                 isAdmin={isAdmin}
                                 isPremium={isPremium}
+                                progress={progress}
                                 dragHandleProps={
                                   isAdmin ? provided.dragHandleProps : undefined
                                 }

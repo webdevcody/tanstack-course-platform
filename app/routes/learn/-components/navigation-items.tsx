@@ -5,7 +5,7 @@ import {
   Lock,
   GripVertical,
 } from "lucide-react";
-import type { Module, Segment } from "~/db/schema";
+import type { Module, Progress, Segment } from "~/db/schema";
 import { cn } from "~/lib/utils";
 import { useState } from "react";
 import { useSegment } from "./segment-context";
@@ -20,6 +20,7 @@ interface ModuleWithSegments extends Module {
 interface NavigationItemsProps {
   modules: ModuleWithSegments[];
   currentSegmentId: number;
+  progress: Progress[];
   isAdmin: boolean;
   isPremium: boolean;
   className?: string;
@@ -33,6 +34,7 @@ export function NavigationItems({
   isAdmin,
   isPremium,
   className,
+  progress,
   onItemClick,
   dragHandleProps,
 }: NavigationItemsProps) {
@@ -104,6 +106,10 @@ export function NavigationItems({
     }));
 
     reorderMutation.mutate(updates);
+  };
+
+  const isSegmentCompleted = (segmentId: number) => {
+    return progress.some((p) => p.segmentId === segmentId);
   };
 
   return (
@@ -187,6 +193,9 @@ export function NavigationItems({
                                       <span className="flex-1">
                                         {segment.title}
                                       </span>
+                                      {isSegmentCompleted(segment.id) && (
+                                        <Check className="h-4 w-4 text-theme-500" />
+                                      )}
                                       {segment.isPremium && !isPremium && (
                                         <Lock className="h-4 w-4" />
                                       )}
@@ -223,6 +232,9 @@ export function NavigationItems({
                           )}
                         >
                           <span className="flex-1">{segment.title}</span>
+                          {isSegmentCompleted(segment.id) && (
+                            <Check className="h-4 w-4 text-theme-500" />
+                          )}
                           {segment.isPremium && !isPremium && (
                             <Lock className="h-4 w-4" />
                           )}
