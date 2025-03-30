@@ -195,17 +195,106 @@ function ViewSegment({
   const isLoggedIn = userInfo.data?.user?.id;
 
   const nextSegment = useMemo(() => {
-    const currentIndex = segments.findIndex(
+    // Find the current module and segment index
+    const currentModule = segments.find(
       (segment) => segment.id === currentSegmentId
+    )?.moduleId;
+    if (!currentModule) return null;
+
+    // Get all segments in the current module and sort by order
+    const currentModuleSegments = segments
+      .filter((s) => s.moduleId === currentModule)
+      .sort((a, b) => a.order - b.order);
+    const currentIndex = currentModuleSegments.findIndex(
+      (s) => s.id === currentSegmentId
     );
-    return segments[currentIndex + 1];
+
+    // If there's a next segment in the current module
+    if (currentIndex < currentModuleSegments.length - 1) {
+      return currentModuleSegments[currentIndex + 1];
+    }
+
+    // If we're at the end of the current module, find the next module
+    const modules = segments.reduce(
+      (acc, segment) => {
+        if (!acc[segment.moduleId]) {
+          acc[segment.moduleId] = [];
+        }
+        acc[segment.moduleId].push(segment);
+        return acc;
+      },
+      {} as Record<number, typeof segments>
+    );
+
+    // Sort segments within each module by order
+    Object.keys(modules).forEach((moduleId) => {
+      modules[Number(moduleId)].sort((a, b) => a.order - b.order);
+    });
+
+    const moduleIds = Object.keys(modules)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const currentModuleIndex = moduleIds.indexOf(currentModule);
+
+    // If there's a next module
+    if (currentModuleIndex < moduleIds.length - 1) {
+      const nextModuleId = moduleIds[currentModuleIndex + 1];
+      return modules[nextModuleId][0]; // Return first segment of next module
+    }
+
+    return null;
   }, [currentSegmentId, segments]);
 
   const previousSegment = useMemo(() => {
-    const currentIndex = segments.findIndex(
+    // Find the current module and segment index
+    const currentModule = segments.find(
       (segment) => segment.id === currentSegmentId
+    )?.moduleId;
+    if (!currentModule) return null;
+
+    // Get all segments in the current module and sort by order
+    const currentModuleSegments = segments
+      .filter((s) => s.moduleId === currentModule)
+      .sort((a, b) => a.order - b.order);
+    const currentIndex = currentModuleSegments.findIndex(
+      (s) => s.id === currentSegmentId
     );
-    return segments[currentIndex - 1];
+
+    // If there's a previous segment in the current module
+    if (currentIndex > 0) {
+      return currentModuleSegments[currentIndex - 1];
+    }
+
+    // If we're at the start of the current module, find the previous module
+    const modules = segments.reduce(
+      (acc, segment) => {
+        if (!acc[segment.moduleId]) {
+          acc[segment.moduleId] = [];
+        }
+        acc[segment.moduleId].push(segment);
+        return acc;
+      },
+      {} as Record<number, typeof segments>
+    );
+
+    // Sort segments within each module by order
+    Object.keys(modules).forEach((moduleId) => {
+      modules[Number(moduleId)].sort((a, b) => a.order - b.order);
+    });
+
+    const moduleIds = Object.keys(modules)
+      .map(Number)
+      .sort((a, b) => a - b);
+    const currentModuleIndex = moduleIds.indexOf(currentModule);
+
+    // If there's a previous module
+    if (currentModuleIndex > 0) {
+      const prevModuleId = moduleIds[currentModuleIndex - 1];
+      const prevModuleSegments = modules[prevModuleId];
+      return prevModuleSegments[prevModuleSegments.length - 1]; // Return last segment of previous module
+    }
+
+    return null;
   }, [currentSegmentId, segments]);
 
   const isLastSegment = !nextSegment;
@@ -355,7 +444,9 @@ function ViewSegment({
           <Button
             disabled={isFirstSegment}
             onClick={() => {
-              setCurrentSegmentId(previousSegment.id);
+              if (previousSegment) {
+                setCurrentSegmentId(previousSegment.id);
+              }
             }}
           >
             <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
