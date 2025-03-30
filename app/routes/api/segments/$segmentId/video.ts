@@ -22,24 +22,35 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
   let isDestroyed = false;
   let bytesTransferred = 0;
 
+  // Set a smaller highWaterMark on the nodeStream
+  nodeStream.pause();
+  nodeStream.setMaxListeners(1);
+
   return new ReadableStream({
     start(controller) {
-      nodeStream.on("data", (chunk) => {
+      // Set up data handling
+      nodeStream.on("data", async (chunk) => {
         try {
-          if (!isDestroyed) {
-            bytesTransferred += chunk.length;
+          if (isDestroyed) return;
 
-            // Pause the stream before enqueueing
-            nodeStream.pause();
+          bytesTransferred += chunk.length;
+          nodeStream.pause(); // Ensure stream is paused before processing
 
-            controller.enqueue(chunk);
+          try {
+            await controller.enqueue(chunk);
+          } catch (error) {
+            console.error("Failed to enqueue chunk:", error);
+            isDestroyed = true;
+            nodeStream.destroy();
+            controller.error(error);
+            return;
+          }
 
-            // Log every 10MB transferred
-            if (bytesTransferred % (10 * 1024 * 1024) === 0) {
-              logMemoryUsage(`Transferred ${bytesTransferred / 1024 / 1024}MB`);
-            }
+          if (bytesTransferred % (10 * 1024 * 1024) === 0) {
+            logMemoryUsage(`Transferred ${bytesTransferred / 1024 / 1024}MB`);
           }
         } catch (err) {
+          console.error("Error in data handler:", err);
           isDestroyed = true;
           activeStreams--;
           nodeStream.destroy();
@@ -48,6 +59,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
       });
 
       nodeStream.on("end", () => {
+        if (isDestroyed) return;
         isDestroyed = true;
         activeStreams--;
         logMemoryUsage(
@@ -57,6 +69,8 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
       });
 
       nodeStream.on("error", (err) => {
+        console.error("Stream error:", err);
+        if (isDestroyed) return;
         isDestroyed = true;
         activeStreams--;
         nodeStream.destroy();
@@ -64,18 +78,19 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
       });
     },
 
-    // This method is called when the consumer is ready for more data
     pull() {
-      if (!isDestroyed) {
+      if (!isDestroyed && nodeStream.isPaused()) {
         nodeStream.resume();
       }
     },
 
     cancel() {
       console.log("Stream cancelled");
-      isDestroyed = true;
-      activeStreams--;
-      nodeStream.destroy();
+      if (!isDestroyed) {
+        isDestroyed = true;
+        activeStreams--;
+        nodeStream.destroy();
+      }
     },
   });
 }
@@ -114,7 +129,8 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       const stream = createReadStream(filePath, {
         start,
         end,
-        highWaterMark: 128 * 1024,
+        highWaterMark: 64 * 1024, // Reduce buffer size to 64KB
+        autoClose: true,
       });
       const webStream = createWebStreamFromNodeStream(stream);
 
@@ -131,7 +147,10 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
 
     console.log("Starting full file request");
     // Handle full file request
-    const stream = createReadStream(filePath);
+    const stream = createReadStream(filePath, {
+      highWaterMark: 64 * 1024, // Reduce buffer size to 64KB
+      autoClose: true,
+    });
     const webStream = createWebStreamFromNodeStream(stream);
 
     return new Response(webStream, {
