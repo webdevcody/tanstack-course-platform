@@ -55,18 +55,41 @@ import { useSegment } from "../-components/segment-context";
 import { setLastWatchedSegment } from "~/utils/local-storage";
 import { cn } from "~/lib/utils";
 
+export const Route = createFileRoute("/learn/$slug/_layout/")({
+  component: RouteComponent,
+  loader: async ({ context: { queryClient }, params }) => {
+    const { segment, segments, progress } = await getSegmentInfoFn({
+      data: { slug: params.slug },
+    });
+    const isPremium = await isUserPremiumFn();
+    const isAdmin = await isAdminFn();
+
+    if (segments.length === 0) {
+      throw redirect({ to: "/learn/no-segments" });
+    }
+
+    if (!segment) {
+      throw redirect({ to: "/learn/not-found" });
+    }
+
+    return { segment, segments, progress, isPremium, isAdmin };
+  },
+});
+
 export const getSegmentInfoFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .validator(z.object({ slug: z.string() }))
   .handler(async ({ data, context }) => {
+    console.time("getSegmentInfoFn");
     const segment = await getSegmentBySlugUseCase(data.slug);
-    const [segments, attachments, progress] = await Promise.all([
+    const [segments, progress] = await Promise.all([
       getSegments(),
-      getSegmentAttachments(segment.id),
+      // getSegmentAttachments(segment.id),
       context.userId ? getAllProgressForUserUseCase(context.userId) : [],
     ]);
 
-    return { segment, segments, attachments, progress };
+    console.timeEnd("getSegmentInfoFn");
+    return { segment, segments, progress };
   });
 
 export const createAttachmentFn = createServerFn()
@@ -102,27 +125,6 @@ export const deleteSegmentFn = createServerFn()
   .handler(async ({ data }) => {
     await deleteSegmentUseCase(data.segmentId);
   });
-
-export const Route = createFileRoute("/learn/$slug/_layout/")({
-  component: RouteComponent,
-  loader: async ({ context: { queryClient }, params }) => {
-    const { segment, segments, attachments, progress } = await getSegmentInfoFn(
-      { data: { slug: params.slug } }
-    );
-    const isPremium = await isUserPremiumFn();
-    const isAdmin = await isAdminFn();
-
-    if (segments.length === 0) {
-      throw redirect({ to: "/learn/no-segments" });
-    }
-
-    if (!segment) {
-      throw redirect({ to: "/learn/not-found" });
-    }
-
-    return { segment, segments, attachments, progress, isPremium, isAdmin };
-  },
-});
 
 function FileDropzone({ onDrop }: { onDrop: (file: File) => void }) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -165,14 +167,14 @@ function ViewSegment({
   segments,
   currentSegment,
   currentSegmentId,
-  attachments,
+  // attachments,
   isPremium,
   isAdmin,
 }: {
   segments: Segment[];
   currentSegment: Segment;
   currentSegmentId: number;
-  attachments: Attachment[];
+  // attachments: Attachment[];
   isPremium: boolean;
   isAdmin: boolean;
 }) {
@@ -453,8 +455,7 @@ function ViewSegment({
 }
 
 function RouteComponent() {
-  const { segment, segments, attachments, isPremium, isAdmin } =
-    Route.useLoaderData();
+  const { segment, segments, isPremium, isAdmin } = Route.useLoaderData();
 
   return (
     <>
@@ -462,7 +463,7 @@ function RouteComponent() {
         segments={segments}
         currentSegment={segment}
         currentSegmentId={segment.id}
-        attachments={attachments}
+        // attachments={attachments}
         isPremium={isPremium}
         isAdmin={isAdmin}
       />
