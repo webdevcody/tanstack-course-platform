@@ -29,7 +29,28 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
 
 const faqData: FAQItemProps[] = [
   {
-    question: "How can I get help if I'm stuck on a section?",
+    question: "What are the 20 React challenges?",
+    answer: (
+      <p className="text-gray-300">
+        The challenges range from simple to complex, including building a
+        Connect Four game, creating a Quote Generator, developing a Todo List,
+        and more. Each challenge focuses on different React concepts and
+        problem-solving skills.
+      </p>
+    ),
+  },
+  {
+    question: "What skill level is required for these challenges?",
+    answer: (
+      <p className="text-gray-300">
+        These challenges are perfect for beginners who have a basic
+        understanding of React. Each challenge includes detailed explanations
+        and step-by-step guidance to help you learn and grow.
+      </p>
+    ),
+  },
+  {
+    question: "How do I get help if I'm stuck on a challenge?",
     answer: (
       <p className="text-gray-300">
         You can reach out in our Discord community or email me directly at{" "}
@@ -44,67 +65,32 @@ const faqData: FAQItemProps[] = [
     ),
   },
   {
-    question: "What technologies will I learn in this course?",
+    question: "Do I get access to the solution code?",
     answer: (
       <p className="text-gray-300">
-        This course covers the complete TanStack ecosystem including React
-        Query, React Router, React Table, and more. You'll learn how to build
-        modern, type-safe applications with these powerful tools.
+        Yes! Each challenge comes with a complete solution that you can
+        reference. However, we encourage you to try solving the challenges
+        yourself first to get the most out of the learning experience.
       </p>
     ),
   },
   {
-    question: "What skill level is required for this course?",
+    question: "Can I use these projects in my portfolio?",
     answer: (
       <p className="text-gray-300">
-        You should have a basic understanding of React and TypeScript. While
-        we'll cover advanced concepts, we'll break them down in a way that's
-        approachable for intermediate developers.
+        Absolutely! Each challenge is a complete, portfolio-ready project. You
+        can customize them further to showcase your skills to potential
+        employers.
       </p>
     ),
   },
   {
-    question: "Do I get lifetime access to the course materials?",
+    question: "How long does it take to complete all challenges?",
     answer: (
       <p className="text-gray-300">
-        Yes! Once you purchase the course, you'll have permanent access to all
-        current content and future updates. If you ever need to download your
-        invoice, just{" "}
-        <a
-          href="mailto:webdevcody@gmail.com"
-          className="text-theme-400 hover:text-theme-300 underline transition-colors"
-        >
-          email me
-        </a>
-        .
-      </p>
-    ),
-  },
-  {
-    question: "Are there any prerequisites?",
-    answer: (
-      <p className="text-gray-300">
-        You should be comfortable with React fundamentals and have some
-        experience with TypeScript. If you need to brush up on these topics,
-        check out my{" "}
-        <a
-          href="https://youtube.com/@WebDevCody"
-          className="text-theme-400 hover:text-theme-300 underline transition-colors"
-        >
-          YouTube channel
-        </a>{" "}
-        for free resources!
-      </p>
-    ),
-  },
-  {
-    question: "Will the course be updated with new content?",
-    answer: (
-      <p className="text-gray-300">
-        Yes! I regularly update the course with new content and examples as the
-        TanStack ecosystem evolves. You'll get access to all future updates at
-        no additional cost, ensuring you're always learning the latest best
-        practices and features.
+        The time varies depending on your experience level and how much time you
+        dedicate. On average, each challenge should take a maximum time of an
+        hour or two to solve yourself.
       </p>
     ),
   },
@@ -127,7 +113,7 @@ export function FAQSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {faqData.map((faq, index) => (
             <div key={index} className="h-full flex">
               <FAQItem question={faq.question} answer={faq.answer} />

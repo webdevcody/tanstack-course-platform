@@ -36,14 +36,15 @@ export function PricingSection() {
 
       <div className="relative max-w-4xl mx-auto text-center">
         <h2 className="text-5xl font-bold mb-12 text-white">
-          Start your <span className="text-theme-400">React</span> journey today
+          Learn React Through{" "}
+          <span className="text-theme-400">Problem Solving</span>
         </h2>
         <div ref={cardRef} className="relative max-w-lg mx-auto">
           <div className="relative bg-[#111111] p-10 rounded-2xl overflow-hidden border border-theme-400/10">
             <div className="absolute inset-0 rounded-2xl transition-opacity duration-300 [background:radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(74,222,128,0.1)_0%,rgba(74,222,128,0.05)_35%,transparent_60%)]"></div>
             <div className="relative z-10">
               <h3 className="text-2xl font-bold mb-2 text-theme-400">
-                Complete Course
+                20 Beginner React Challenges
               </h3>
               <div className="text-6xl font-bold mb-8 text-white">
                 $20
@@ -67,7 +68,7 @@ export function PricingSection() {
                     ></path>
                   </svg>
                   <span className="group-hover:text-theme-400 transition-colors">
-                    50+ in-depth video tutorials
+                    Step-by-step problem-solving approach with whiteboarding
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
@@ -85,7 +86,7 @@ export function PricingSection() {
                     ></path>
                   </svg>
                   <span className="group-hover:text-theme-400 transition-colors">
-                    Access to private Discord community
+                    Master React fundamentals through hands-on practice
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
@@ -103,7 +104,7 @@ export function PricingSection() {
                     ></path>
                   </svg>
                   <span className="group-hover:text-theme-400 transition-colors">
-                    Project source code included
+                    Complete solution code with detailed explanations
                   </span>
                 </li>
                 <li className="flex items-center text-gray-300 group">
@@ -121,7 +122,7 @@ export function PricingSection() {
                     ></path>
                   </svg>
                   <span className="group-hover:text-theme-400 transition-colors">
-                    Lifetime access to updates
+                    Access to Discord community for support and discussion
                   </span>
                 </li>
               </ul>

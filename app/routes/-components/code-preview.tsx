@@ -63,34 +63,34 @@ export function CodePreviewSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-6 sticky top-4">
             <h2 className="text-3xl font-bold text-theme-400">
-              Master React Hooks
+              Learn Through Practice
             </h2>
             <div className="space-y-4">
               <p className="text-gray-300 text-lg">
-                Start your React journey by learning the fundamentals of Hooks.
-                You'll discover how to manage data in your components and handle
-                real-world scenarios like loading states and error handling.
+                Each challenge is designed to help you master React concepts
+                through hands-on practice. You'll learn how to break down
+                complex problems and implement solutions step by step.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">🎯</span>
                   <span className="text-gray-300">
-                    Learn how to fetch and manage data in your components - a
-                    crucial skill for any React developer
+                    Solve real-world coding problems that you'll encounter in
+                    your React journey
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">✨</span>
                   <span className="text-gray-300">
-                    Understand loading and error states to create smooth user
-                    experiences
+                    Learn how to think like a developer by breaking down complex
+                    problems
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">🔄</span>
                   <span className="text-gray-300">
-                    Build reusable hooks that you can use in all your future
-                    projects
+                    Build a portfolio of 20 unique React projects to showcase
+                    your skills
                   </span>
                 </li>
               </ul>
@@ -102,31 +102,24 @@ export function CodePreviewSection() {
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="ml-2 text-sm text-theme-400/80">
-                useDataFetching.ts
+                useInterval.ts
               </span>
             </div>
             <TypeWriter
-              code={`const useDataFetching = <T,>(url: string) => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+              code={`const useInterval = (callback: () => void, delay: number) => {
+  const savedCallback = useRef(callback);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(url);
-        const json = await response.json();
-        setData(json);
-        setLoading(false);
-      } catch (err) {
-        setError(err as Error);
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [url]);
+    savedCallback.current = callback;
+  }, [callback]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    const id = setInterval(() => {
+      savedCallback.current();
+    }, delay);
+
+    return () => clearInterval(id);
+  }, [delay]);
 }`}
             />
           </div>
@@ -136,33 +129,31 @@ export function CodePreviewSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="md:order-2 space-y-6 sticky top-4">
             <h2 className="text-3xl font-bold text-theme-400">
-              Write Better Components
+              Understand React Fundamentals
             </h2>
             <div className="space-y-4">
               <p className="text-gray-300 text-lg">
-                Learn the secrets to building fast and efficient React
-                components. We'll show you step-by-step how to avoid common
-                performance pitfalls that every beginner faces.
+                Master the core building blocks of React. Learn how components
+                work, how to handle user interactions, and how to manage state
+                in your applications.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">🚀</span>
                   <span className="text-gray-300">
-                    Discover why your components might be running slowly and how
-                    to fix them
+                    Learn how to create components and handle user events
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">💡</span>
                   <span className="text-gray-300">
-                    Learn when and how to use React.memo to speed up your apps
+                    Understand how state works and when to use it
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-theme-400 mt-1">📝</span>
                   <span className="text-gray-300">
-                    Master list rendering - a key skill for handling data in
-                    React
+                    Practice using props to make reusable components
                   </span>
                 </li>
               </ul>
@@ -174,30 +165,30 @@ export function CodePreviewSection() {
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="ml-2 text-sm text-theme-400/80">
-                OptimizedList.tsx
+                Counter.tsx
               </span>
             </div>
             <TypeWriter
-              code={`const MemoizedListItem = memo(({ item, onSelect }) => (
-  <div className="list-item" onClick={() => onSelect(item.id)}>
-    {item.title}
-  </div>
-));
+              code={`// A simple counter component showing state and events
+function Counter() {
+  // Step 1: Create state for our counter
+  const [count, setCount] = useState(0);
 
-const OptimizedList = ({ items, onItemSelect }) => {
-  const handleSelect = useCallback((id) => {
-    onItemSelect(id);
-  }, [onItemSelect]);
+  // Step 2: Create event handlers
+  const increment = () => {
+    setCount(count + 1);
+  };
 
+  const decrement = () => {
+    setCount(count - 1);
+  };
+
+  // Step 3: Return our JSX with event listeners
   return (
-    <div className="virtual-list">
-      {items.map((item) => (
-        <MemoizedListItem
-          key={item.id}
-          item={item}
-          onSelect={handleSelect}
-        />
-      ))}
+    <div className="counter">
+      <button onClick={decrement}>-</button>
+      <span>{count}</span>
+      <button onClick={increment}>+</button>
     </div>
   );
 }`}
@@ -209,34 +200,34 @@ const OptimizedList = ({ items, onItemSelect }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div className="space-y-6 sticky top-4">
             <h2 className="text-3xl font-bold text-theme-400">
-              Manage Application State
+              Learn to Problem Solve
             </h2>
             <div className="space-y-4">
               <p className="text-gray-300 text-lg">
-                Confused about state management in React? We'll break it down
-                into simple, digestible pieces. Learn how to share data between
-                components without getting lost in complexity.
+                Master the art of breaking down complex React challenges. We'll
+                start each challenge with whiteboarding, identify the right
+                state management approach, and implement step-by-step solutions.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
-                  <span className="text-theme-400 mt-1">🎓</span>
+                  <span className="text-theme-400 mt-1">🤔</span>
                   <span className="text-gray-300">
-                    Understand React Context with real-world examples you can
-                    relate to
+                    Learn how to break down complex problems into manageable
+                    pieces using whiteboarding
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-theme-400 mt-1">🔍</span>
+                  <span className="text-theme-400 mt-1">💭</span>
                   <span className="text-gray-300">
-                    Learn when to use local state vs. global state - and why it
-                    matters
+                    Identify what state you need and where it should live in
+                    your application
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-theme-400 mt-1">🛠️</span>
+                  <span className="text-theme-400 mt-1">⚡</span>
                   <span className="text-gray-300">
-                    Build a complete app with proper state management from start
-                    to finish
+                    Turn your whiteboard solutions into working React code with
+                    confidence
                   </span>
                 </li>
               </ul>
@@ -248,34 +239,47 @@ const OptimizedList = ({ items, onItemSelect }) => {
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="ml-2 text-sm text-theme-400/80">
-                AppContext.tsx
+                TodoList.tsx
               </span>
             </div>
             <TypeWriter
-              code={`const AppContext = createContext<AppState | null>(null);
+              code={`// Step 1: Define our state and actions
+const [todos, setTodos] = useState([]);
+const [newTodo, setNewTodo] = useState("");
 
-export const AppProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(appReducer, initialState);
-  
-  const contextValue = useMemo(() => ({
-    state,
-    dispatch,
-    actions: {
-      updateUser: (user) => 
-        dispatch({ type: 'UPDATE_USER', payload: user }),
-      toggleTheme: () => 
-        dispatch({ type: 'TOGGLE_THEME' }),
-      resetState: () => 
-        dispatch({ type: 'RESET_STATE' })
-    }
-  }), [state]);
+// Step 2: Create handlers for state updates
+const addTodo = () => {
+  if (!newTodo.trim()) return;
+  setTodos([
+    ...todos,
+    { id: Date.now(), text: newTodo, completed: false }
+  ]);
+  setNewTodo("");
+};
 
-  return (
-    <AppContext.Provider value={contextValue}>
-      {children}
-    </AppContext.Provider>
-  );
-}`}
+const toggleTodo = (id) => {
+  setTodos(todos.map(todo =>
+    todo.id === id
+      ? { ...todo, completed: !todo.completed }
+      : todo
+  ));
+};
+
+// Step 3: Implement the UI with our state
+return (
+  <div className="todo-app">
+    <input
+      value={newTodo}
+      onChange={(e) => setNewTodo(e.target.value)}
+      onKeyPress={(e) => e.key === "Enter" && addTodo()}
+    />
+    {todos.map(todo => (
+      <div key={todo.id} onClick={() => toggleTodo(todo.id)}>
+        {todo.text}
+      </div>
+    ))}
+  </div>
+);`}
             />
           </div>
         </div>

@@ -88,24 +88,24 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
         <div className="space-y-6">
           <div className="inline-block animate-fade-in">
             <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-theme-950/60 text-theme-400 border border-theme-800/50 shadow-lg shadow-theme-900/20">
-              Your Journey to React Mastery
+              20 Beginner-Friendly Challenges
             </span>
           </div>
 
           <h1 className="text-6xl font-bold tracking-tight">
             <span className="inline-block bg-gradient-to-r from-white via-white to-gray-300 bg-clip-text text-transparent">
-              The Complete React
+              Master React Through
             </span>
             <br />
             <span className="inline-block bg-gradient-to-r from-gray-300 to-gray-400 bg-clip-text text-transparent">
-              Development Course
+              Hands-On Practice
             </span>
           </h1>
 
           <p className="text-gray-300 text-xl max-w-2xl mx-auto leading-relaxed">
-            Master React through our comprehensive curriculum. Each module
-            builds upon the last, taking you from basics to advanced concepts
-            with hands-on projects.
+            Each challenge is designed to help you learn React by building real
+            projects. From simple utilities to interactive games, you'll develop
+            practical skills while having fun.
           </p>
         </div>
       </div>
@@ -117,8 +117,8 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
           <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-theme-500/20 via-theme-500/10 to-theme-500/20 blur-lg opacity-50 animate-pulse" />
           <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-theme-500/0 via-theme-500/20 to-theme-500/0 animate-shimmer" />
 
-          <div className="relative grid grid-cols-3 gap-8 p-10 bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-theme-500/20">
-            <Stat label="Students Enrolled" value="2,547+" />
+          <div className="relative grid grid-cols-2 gap-8 p-10 bg-gradient-to-b from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-2xl border border-theme-500/20">
+            {/* <Stat label="Students Enrolled" value="2,547+" /> */}
             <Stat label="Total Duration" value={formattedTotalDuration} />
             <Stat label="Total Lessons" value={`${segments.length}`} />
           </div>

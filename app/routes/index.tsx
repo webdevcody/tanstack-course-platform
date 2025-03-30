@@ -9,7 +9,6 @@ import { FooterSection } from "./-components/footer";
 import { NewsletterSection } from "./-components/newsletter";
 import { createServerFn } from "@tanstack/start";
 import { getSegments } from "~/data-access/segments";
-import { env } from "~/utils/env";
 
 const loaderFn = createServerFn().handler(async () => {
   const segments = await getSegments();
@@ -30,9 +29,9 @@ function Home() {
       <HeroSection />
       <ModulesSection segments={segments} />
       <CodePreviewSection />
-      <TestimonialsSection />
+      {/* <TestimonialsSection /> */}
       <PricingSection />
-      <NewsletterSection />
+      {/* <NewsletterSection /> */}
       <FAQSection />
       <FooterSection />
     </div>

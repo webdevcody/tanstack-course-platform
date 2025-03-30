@@ -30,15 +30,9 @@ export function Header() {
           {/* Logo and Brand */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-8 w-8"
-              >
-                <path d="M11.103 0c3.962 0 7.103 3.141 7.103 7.103 0 1.938-.77 3.705-2.023 5.005l5.52 5.521a1 1 0 0 1-1.414 1.414l-5.52-5.52a7.073 7.073 0 0 1-5.006 2.023C3.14 15.546 0 12.405 0 8.443 0 4.48 3.14 1.34 7.103 1.34c1.938 0 3.705.77 5.005 2.023l5.521-5.52a1 1 0 0 1 1.414 1.414l-5.52 5.52A7.073 7.073 0 0 1 11.103 0zm0 2a5.103 5.103 0 1 0 0 10.206 5.103 5.103 0 0 0 0-10.206z" />
-              </svg>
-              <span className="font-semibold text-lg">React Mastery</span>
+              <span className="font-semibold text-lg">
+                Beginner React Challenges
+              </span>
             </Link>
             <Link
               to="/"

@@ -13,11 +13,11 @@ export function TestimonialsSection() {
 
       <div className="relative max-w-5xl mx-auto">
         <h2 className="text-4xl font-bold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-theme-400 to-theme-500">
-          Loved by Developers Worldwide
+          Loved by React Beginners
         </h2>
         <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
-          Join thousands of developers who have transformed their careers with
-          our comprehensive React courses
+          Join thousands of developers who have improved their React skills
+          through hands-on practice with our challenges
         </p>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
@@ -31,15 +31,13 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Emma Thompson</p>
-                <p className="text-sm text-theme-400">
-                  Senior Frontend Engineer
-                </p>
+                <p className="text-sm text-theme-400">Frontend Developer</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 italic">
-              "The course structure is brilliant. Each concept builds perfectly
-              on the previous one, and the real-world projects are exactly what
-              I needed to build my portfolio."
+              "The challenges were exactly what I needed to improve my React
+              skills. Each project helped me understand different aspects of
+              React in a practical way."
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
@@ -66,13 +64,13 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Alex Rivera</p>
-                <p className="text-sm text-theme-400">Full Stack Developer</p>
+                <p className="text-sm text-theme-400">React Developer</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 italic">
-              "The advanced patterns and best practices covered in this course
-              have completely transformed how I approach React development.
-              Worth every penny!"
+              "The step-by-step guidance and solution code helped me understand
+              how to approach React problems. I now feel much more confident in
+              my React skills!"
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
@@ -99,13 +97,13 @@ export function TestimonialsSection() {
               </div>
               <div className="ml-4">
                 <p className="font-semibold text-white">Sophie Chen</p>
-                <p className="text-sm text-theme-400">React Developer</p>
+                <p className="text-sm text-theme-400">Frontend Developer</p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 italic">
-              "The community support is incredible. Having access to the Discord
-              server and getting help from both instructors and peers made
-              learning so much easier."
+              "The challenges helped me build a strong portfolio of React
+              projects. I was able to land my first React job thanks to the
+              skills I learned here!"
             </p>
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (

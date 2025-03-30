@@ -41,34 +41,35 @@ const checkoutFn = createServerFn()
 
 const features = [
   {
-    title: "40+ hours of video content",
+    title: "20 Beginner React Challenges",
     description:
-      "Comprehensive tutorials covering basic to advanced React concepts",
-    icon: Clock,
-  },
-  {
-    title: "Hands-on projects and exercises",
-    description: "Build real-world applications you can add to your portfolio",
+      "Learn React through hands-on practice with carefully crafted challenges",
     icon: Code,
   },
   {
-    title: "Private Discord community",
-    description: "Get help from peers and instructors in real-time",
+    title: "Problem-Solving Approach",
+    description:
+      "Master the art of breaking down complex problems with whiteboarding",
+    icon: Sparkles,
+  },
+  {
+    title: "Step-by-Step Guidance",
+    description: "Detailed explanations and solution code for each challenge",
+    icon: Star,
+  },
+  {
+    title: "Discord Community",
+    description: "Get help and discuss solutions with other learners",
     icon: Users,
   },
   {
-    title: "Certificate of completion",
-    description: "Showcase your React expertise to potential employers",
+    title: "React Fundamentals",
+    description: "Build a strong foundation in React concepts and patterns",
     icon: Trophy,
   },
   {
-    title: "Source code for all projects",
-    description: "Reference production-ready code for your own projects",
-    icon: Code,
-  },
-  {
-    title: "Lifetime updates",
-    description: "Access new content and stay current with React's evolution",
+    title: "Lifetime Access",
+    description: "Access all challenges and future updates at your own pace",
     icon: RefreshCcw,
   },
 ];
@@ -76,15 +77,15 @@ const features = [
 const testimonials = [
   {
     name: "Sarah Chen",
-    role: "Senior Frontend Developer",
+    role: "Frontend Developer",
     company: "Tech Corp",
-    text: "This course took my React skills to the next level. The projects are practical and the concepts are explained clearly.",
+    text: "The problem-solving approach really helped me understand React better. Breaking down each challenge step by step made everything click.",
   },
   {
     name: "Michael Rodriguez",
-    role: "Full Stack Developer",
+    role: "React Developer",
     company: "StartupX",
-    text: "Best React course I've taken. The Discord community is incredibly helpful and supportive.",
+    text: "These challenges helped me build a solid foundation in React. The whiteboarding sessions were especially helpful for understanding complex problems.",
   },
 ];
 
@@ -150,19 +151,19 @@ function RouteComponent() {
               <span>Limited Time Offer - 60% OFF</span>
             </div>
             <h1 className="text-5xl font-bold mb-4 text-white bg-clip-text">
-              React Mastery Course
+              20 Beginner React Challenges
             </h1>
             <p className="text-xl text-gray-300 mb-4">
-              Take your React skills to the next level
+              Master React through hands-on problem solving
             </p>
-            <div className="flex items-center justify-center gap-2 text-theme-400">
+            {/* <div className="flex items-center justify-center gap-2 text-theme-400">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-5 w-5 fill-current" />
                 ))}
               </div>
               <span className="text-gray-300">4.9/5 from 500+ students</span>
-            </div>
+            </div> */}
           </div>
 
           <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.1)] overflow-hidden">
@@ -170,10 +171,10 @@ function RouteComponent() {
               <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-8">
                   <h2 className="text-3xl font-bold text-white mb-2">
-                    Complete Package
+                    Complete Challenge Package
                   </h2>
                   <p className="text-gray-300">
-                    Get lifetime access to all course content
+                    Get lifetime access to all challenges and solutions
                   </p>
                 </div>
 
@@ -200,7 +201,7 @@ function RouteComponent() {
                 </div>
 
                 {/* Testimonials */}
-                <div className="mb-12">
+                {/* <div className="mb-12">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {testimonials.map((testimonial) => (
                       <div
@@ -221,7 +222,7 @@ function RouteComponent() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Guarantee */}
                 <div className="text-center mb-12 p-6 rounded-lg border border-theme-400/20 bg-white/5">
@@ -229,7 +230,7 @@ function RouteComponent() {
                     30-Day Money-Back Guarantee
                   </h3>
                   <p className="text-gray-300">
-                    Try the course risk-free. If you're not completely
+                    Try the challenges risk-free. If you're not completely
                     satisfied, get a full refund within 30 days.
                   </p>
                 </div>
