@@ -196,9 +196,11 @@ export function NavigationItems({
                                       {isSegmentCompleted(segment.id) && (
                                         <Check className="h-4 w-4 text-theme-500" />
                                       )}
-                                      {segment.isPremium && !isPremium && (
-                                        <Lock className="h-4 w-4" />
-                                      )}
+                                      {segment.isPremium &&
+                                        !isPremium &&
+                                        !isAdmin && (
+                                          <Lock className="h-4 w-4" />
+                                        )}
                                     </button>
                                   </div>
                                 </div>
@@ -235,7 +237,7 @@ export function NavigationItems({
                           {isSegmentCompleted(segment.id) && (
                             <Check className="h-4 w-4 text-theme-500" />
                           )}
-                          {segment.isPremium && !isPremium && (
+                          {segment.isPremium && !isPremium && !isAdmin && (
                             <Lock className="h-4 w-4" />
                           )}
                         </button>
