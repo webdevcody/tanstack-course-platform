@@ -19,5 +19,7 @@ RUN npm run build
 # Expose the port your app runs on (adjust if needed)
 EXPOSE 3000
 
+ENV NODE_OPTIONS="--expose-gc"
+
 # Start the application
 CMD ["npm", "start"]

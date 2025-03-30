@@ -21,59 +21,51 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
 
   let isDestroyed = false;
   let bytesTransferred = 0;
+  let controller: ReadableStreamDefaultController;
 
-  // Set a smaller highWaterMark on the nodeStream
-  nodeStream.pause();
-  nodeStream.setMaxListeners(1);
+  // Create cleanup function
+  const cleanup = () => {
+    if (!isDestroyed) {
+      isDestroyed = true;
+      activeStreams--;
+      nodeStream.destroy();
+      // Remove all listeners to prevent memory leaks
+      nodeStream.removeAllListeners();
+    }
+  };
 
   return new ReadableStream({
-    start(controller) {
-      // Set up data handling
+    start(c) {
+      controller = c;
+
       nodeStream.on("data", async (chunk) => {
+        if (isDestroyed) return;
+
         try {
-          if (isDestroyed) return;
+          nodeStream.pause(); // Pause immediately after receiving chunk
+          await controller.enqueue(chunk);
 
           bytesTransferred += chunk.length;
-          nodeStream.pause(); // Ensure stream is paused before processing
 
-          try {
-            await controller.enqueue(chunk);
-          } catch (error) {
-            console.error("Failed to enqueue chunk:", error);
-            isDestroyed = true;
-            nodeStream.destroy();
-            controller.error(error);
-            return;
+          // Force garbage collection more frequently
+          if (bytesTransferred % (5 * 1024 * 1024) === 0) {
+            if (global.gc) global.gc();
           }
-
-          if (bytesTransferred % (10 * 1024 * 1024) === 0) {
-            logMemoryUsage(`Transferred ${bytesTransferred / 1024 / 1024}MB`);
-          }
-        } catch (err) {
-          console.error("Error in data handler:", err);
-          isDestroyed = true;
-          activeStreams--;
-          nodeStream.destroy();
-          controller.error(err);
+        } catch (error) {
+          console.error("Chunk processing error:", error);
+          cleanup();
+          controller.error(error);
         }
       });
 
       nodeStream.on("end", () => {
-        if (isDestroyed) return;
-        isDestroyed = true;
-        activeStreams--;
-        logMemoryUsage(
-          `Stream End (${bytesTransferred / 1024 / 1024}MB transferred)`
-        );
+        cleanup();
         controller.close();
       });
 
       nodeStream.on("error", (err) => {
         console.error("Stream error:", err);
-        if (isDestroyed) return;
-        isDestroyed = true;
-        activeStreams--;
-        nodeStream.destroy();
+        cleanup();
         controller.error(err);
       });
     },
@@ -86,11 +78,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
 
     cancel() {
       console.log("Stream cancelled");
-      if (!isDestroyed) {
-        isDestroyed = true;
-        activeStreams--;
-        nodeStream.destroy();
-      }
+      cleanup();
     },
   });
 }
@@ -123,13 +111,15 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
     if (range) {
       const parts = range.replace(/bytes=/, "").split("-");
       const start = parseInt(parts[0], 10);
-      const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
+      const end = parts[1]
+        ? parseInt(parts[1], 10)
+        : Math.min(start + 1024 * 1024, stats.size - 1); // Limit chunk size to 1MB
       const chunksize = end - start + 1;
 
       const stream = createReadStream(filePath, {
         start,
         end,
-        highWaterMark: 64 * 1024, // Reduce buffer size to 64KB
+        highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
         autoClose: true,
       });
       const webStream = createWebStreamFromNodeStream(stream);
@@ -148,7 +138,7 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
     console.log("Starting full file request");
     // Handle full file request
     const stream = createReadStream(filePath, {
-      highWaterMark: 64 * 1024, // Reduce buffer size to 64KB
+      highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
       autoClose: true,
     });
     const webStream = createWebStreamFromNodeStream(stream);
