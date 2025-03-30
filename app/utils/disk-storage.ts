@@ -1,8 +1,6 @@
 import { writeFile } from "fs/promises";
 import path from "path";
 import fs from "fs/promises";
-import { createReadStream } from "fs";
-import { Readable } from "stream";
 
 export async function saveFile(key: string, file: Buffer | File) {
   const uploadDir = process.env.UPLOAD_DIR;
@@ -30,40 +28,6 @@ export async function saveFile(key: string, file: Buffer | File) {
     console.error(`Error saving file ${key}:`, error);
     throw new Error(
       `Failed to save file: ${error instanceof Error ? error.message : "Unknown error"}`
-    );
-  }
-}
-
-export async function getFile(key: string): Promise<Readable> {
-  const uploadDir = process.env.UPLOAD_DIR;
-
-  if (!uploadDir) {
-    throw new Error("UPLOAD_DIR environment variable is not set");
-  }
-
-  const filePath = path.join(uploadDir, key);
-
-  try {
-    // Check if file exists first
-    await fs.access(filePath);
-
-    // Create a readable stream with options
-    const fileStream = createReadStream(filePath, {
-      // Add a reasonable high water mark (buffer size)
-      highWaterMark: 1024 * 1024, // 1MB
-    });
-
-    // Handle stream errors
-    fileStream.on("error", (error) => {
-      console.error(`Stream error for file ${key}:`, error);
-      fileStream.destroy();
-    });
-
-    return fileStream;
-  } catch (error) {
-    console.error(`Error reading file ${key}:`, error);
-    throw new Error(
-      `Failed to read file: ${error instanceof Error ? error.message : "Unknown error"}`
     );
   }
 }

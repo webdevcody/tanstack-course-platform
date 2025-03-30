@@ -5,18 +5,39 @@ import { getAuthenticatedUser } from "~/utils/auth";
 import { stat } from "fs/promises";
 import { createReadStream, type ReadStream } from "fs";
 
+function logMemoryUsage(label: string) {
+  const used = process.memoryUsage();
+  console.log(`=== Memory Usage [${label}] ===`);
+  console.log(`Heap Used: ${Math.round(used.heapUsed / 1024 / 1024)}MB`);
+  console.log(`Heap Total: ${Math.round(used.heapTotal / 1024 / 1024)}MB`);
+  console.log(`RSS: ${Math.round(used.rss / 1024 / 1024)}MB`);
+}
+
+let activeStreams = 0;
+
 function createWebStreamFromNodeStream(nodeStream: ReadStream) {
+  activeStreams++;
+  logMemoryUsage(`Stream Start #${activeStreams}`);
+
   let isDestroyed = false;
+  let bytesTransferred = 0;
 
   return new ReadableStream({
     start(controller) {
       nodeStream.on("data", (chunk) => {
         try {
           if (!isDestroyed) {
+            bytesTransferred += chunk.length;
             controller.enqueue(chunk);
+
+            // Log every 10MB transferred
+            if (bytesTransferred % (10 * 1024 * 1024) === 0) {
+              logMemoryUsage(`Transferred ${bytesTransferred / 1024 / 1024}MB`);
+            }
           }
         } catch (err) {
           isDestroyed = true;
+          activeStreams--;
           nodeStream.destroy();
           controller.error(err);
         }
@@ -24,17 +45,24 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
 
       nodeStream.on("end", () => {
         isDestroyed = true;
+        activeStreams--;
+        logMemoryUsage(
+          `Stream End (${bytesTransferred / 1024 / 1024}MB transferred)`
+        );
         controller.close();
       });
 
       nodeStream.on("error", (err) => {
         isDestroyed = true;
+        activeStreams--;
         nodeStream.destroy();
         controller.error(err);
       });
     },
     cancel() {
+      console.log("Stream cancelled");
       isDestroyed = true;
+      activeStreams--;
       nodeStream.destroy();
     },
     pull(controller) {
@@ -76,7 +104,11 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;
       const chunksize = end - start + 1;
 
-      const stream = createReadStream(filePath, { start, end });
+      const stream = createReadStream(filePath, {
+        start,
+        end,
+        highWaterMark: 128 * 1024,
+      });
       const webStream = createWebStreamFromNodeStream(stream);
 
       return new Response(webStream, {
@@ -90,6 +122,7 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
       });
     }
 
+    console.log("Starting full file request");
     // Handle full file request
     const stream = createReadStream(filePath);
     const webStream = createWebStreamFromNodeStream(stream);
