@@ -45,6 +45,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { rel: "manifest", href: "/site.webmanifest", color: "#fffff" },
         { rel: "icon", href: "/favicon.ico" },
       ],
+      scripts: [
+        {
+          src: "https://umami-production-101d.up.railway.app/script.js",
+          defer: true,
+          "data-website-id": "bde4216e-7d46-49e4-8bfc-7f28d5a0ba17",
+        },
+      ],
     }),
     errorComponent: (props) => {
       return (
