@@ -109,36 +109,6 @@ function RouteComponent() {
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(74,222,128,0.05)_0%,transparent_65%)] pointer-events-none" />
-
-        <div className="w-full max-w-md relative z-10">
-          <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.1)] p-8">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-3">
-                Authentication Required
-              </h2>
-              <p className="text-gray-300 mb-6">
-                Please login to access the full course content and make a
-                purchase
-              </p>
-              <a href="/api/login/google">
-                <Button
-                  size="lg"
-                  className="font-semibold bg-theme-400 hover:bg-theme-500 text-black"
-                >
-                  Login with Google
-                </Button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(74,222,128,0.05)_0%,transparent_65%)] pointer-events-none" />
@@ -253,13 +223,26 @@ function RouteComponent() {
                   </div>
 
                   <div className="flex flex-col items-center gap-4">
-                    <Button
-                      size="lg"
-                      onClick={handlePurchase}
-                      className="w-full max-w-sm font-semibold bg-theme-400 hover:bg-theme-500 text-black text-lg py-6"
-                    >
-                      Get Instant Access
-                    </Button>
+                    {isAuthenticated ? (
+                      <Button
+                        size="lg"
+                        onClick={handlePurchase}
+                        className="w-full max-w-sm font-semibold bg-theme-400 hover:bg-theme-500 text-black text-lg py-6"
+                      >
+                        Get Instant Access
+                      </Button>
+                    ) : (
+                      <a
+                        href={`/api/login/google?redirect_uri=${encodeURIComponent("/purchase")}`}
+                      >
+                        <Button
+                          size="lg"
+                          className="w-full max-w-sm font-semibold bg-theme-400 hover:bg-theme-500 text-black text-lg py-6"
+                        >
+                          Login to Purchase
+                        </Button>
+                      </a>
+                    )}
 
                     <div className="flex items-center gap-2 text-gray-400">
                       <Lock className="h-4 w-4" />

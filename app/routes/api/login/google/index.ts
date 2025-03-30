@@ -7,6 +7,9 @@ const MAX_COOKIE_AGE_SECONDS = 60 * 10;
 
 export const APIRoute = createAPIFileRoute("/api/login/google")({
   GET: async ({ request, params }) => {
+    const url = new URL(request.url);
+    const redirectUri = url.searchParams.get("redirect_uri") || "/";
+
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
     const authorizationInfo = await googleAuth.createAuthorizationURL(
@@ -24,6 +27,14 @@ export const APIRoute = createAPIFileRoute("/api/login/google")({
     });
 
     setCookie("google_code_verifier", codeVerifier, {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: MAX_COOKIE_AGE_SECONDS,
+    });
+
+    setCookie("google_redirect_uri", redirectUri, {
       path: "/",
       httpOnly: true,
       secure: true,
