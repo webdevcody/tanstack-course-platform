@@ -20,8 +20,6 @@ services:
       - .env
     restart: always
     container_name: wdc-tanstack-starter-kit-app
-    ports:
-      - "3000:3000"
     volumes:
       - app_files:/app/files
     deploy:
