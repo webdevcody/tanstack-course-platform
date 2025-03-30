@@ -63,8 +63,7 @@ export const uploadVideoChunkFn = createServerFn({ method: "POST" })
 
       // Delete all chunk files
       for (let i = 0; i < totalChunks; i++) {
-        const chunkPath = path.join(uploadDir, `${videoKey}.part${i}`);
-        await deleteFile(chunkPath);
+        await deleteFile(`${videoKey}.part${i}`);
       }
     }
 

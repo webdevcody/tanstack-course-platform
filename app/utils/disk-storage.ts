@@ -78,14 +78,8 @@ export async function deleteFile(key: string) {
   const filePath = path.join(uploadDir, key);
 
   try {
-    // Check if file exists first
-    await fs.access(filePath);
     await fs.unlink(filePath);
   } catch (error) {
     console.error(`Error deleting file ${key}:`, error);
-    // Re-throw the error to let the caller handle it
-    throw new Error(
-      `Failed to delete file: ${error instanceof Error ? error.message : "Unknown error"}`
-    );
   }
 }
