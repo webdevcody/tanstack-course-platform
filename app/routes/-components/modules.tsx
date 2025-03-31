@@ -4,6 +4,9 @@ import { Badge } from "~/components/ui/badge";
 import { Lock } from "lucide-react";
 import { Stat } from "~/components/ui/stat";
 import { useRef, useState } from "react";
+import { createServerFn } from "@tanstack/start";
+import { getModules } from "~/data-access/modules";
+import { useQuery } from "@tanstack/react-query";
 
 function formatDuration(durationInMinutes: number) {
   const hours = Math.floor(durationInMinutes / 60);
@@ -21,6 +24,11 @@ function calculateDuration(segments: Segment[]) {
     return acc + minutes + seconds / 60;
   }, 0);
 }
+
+export const getModulesFn = createServerFn().handler(async ({ context }) => {
+  const modules = await getModules();
+  return modules;
+});
 
 export function ModulesSection({ segments }: { segments: Segment[] }) {
   const [activeCard, setActiveCard] = useState<{
@@ -63,6 +71,11 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
   // Sort segments within each module by order
   Object.keys(modules).forEach((moduleId) => {
     modules[moduleId].sort((a, b) => a.order - b.order);
+  });
+
+  const { data: moduleData } = useQuery({
+    queryKey: ["modules"],
+    queryFn: getModulesFn,
   });
 
   const moduleEntries = Object.entries(modules);
@@ -158,7 +171,10 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
                     <div className="flex items-center justify-between mb-6">
                       <div>
                         <h2 className="text-2xl font-bold mb-2">
-                          {moduleSegments[0]?.title.split(" - ")[0]}
+                          {
+                            moduleData?.find((m) => m.id === Number(moduleId))
+                              ?.title
+                          }
                         </h2>
                         <div className="flex items-center gap-4 text-sm text-gray-300">
                           <span>{moduleSegments.length} lessons</span>
