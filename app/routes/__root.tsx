@@ -24,9 +24,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { charSet: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         ...seo({
-          title:
-            "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
-          description: `TanStack Start is a type-safe, client-first, full-stack React framework. `,
+          title: "20 Beginner React Challenges | by WebDevCody",
+          description:
+            "A collection of 20 beginner React challenges to help you improve your skills and become a better React developer.",
         }),
       ],
       links: [

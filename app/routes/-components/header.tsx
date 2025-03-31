@@ -30,8 +30,15 @@ export function Header() {
           {/* Logo and Brand */}
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-semibold text-lg">
-                Beginner React Challenges
+              <img
+                src="/icon.png"
+                alt="Beginner React Challenges"
+                className="size-12"
+              />
+              <span className="font-semibold text-sm">
+                The 20 React
+                <br />
+                Challenges Course
               </span>
             </Link>
             <Link

@@ -43,6 +43,14 @@ services:
     depends_on:
       - wdc-tanstack-starter-kit-app
 
+  # tunnel:
+  #   container_name: cloudflared-tunnel
+  #   image: cloudflare/cloudflared
+  #   restart: unless-stopped
+  #   command: tunnel run
+  #   environment:
+  #     - TUNNEL_TOKEN=mytokengoeshere
+
 volumes:
   postgres:
   caddy_data:
