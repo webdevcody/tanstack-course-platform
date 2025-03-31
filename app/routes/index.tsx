@@ -2,11 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HeroSection } from "./-components/hero";
 import { CodePreviewSection } from "./-components/code-preview";
 import { ModulesSection } from "./-components/modules";
-import { TestimonialsSection } from "./-components/testimonials";
 import { PricingSection } from "./-components/pricing";
 import { FAQSection } from "./-components/faq";
-import { FooterSection } from "./-components/footer";
-import { NewsletterSection } from "./-components/newsletter";
 import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
 
@@ -33,7 +30,6 @@ function Home() {
       <PricingSection />
       {/* <NewsletterSection /> */}
       <FAQSection />
-      <FooterSection />
     </div>
   );
 }

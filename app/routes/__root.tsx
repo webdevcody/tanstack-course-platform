@@ -1,4 +1,9 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import {
+  Outlet,
+  createRootRouteWithContext,
+  useRouter,
+  useRouterState,
+} from "@tanstack/react-router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { HeadContent, Scripts } from "@tanstack/react-router";
@@ -9,6 +14,7 @@ import { NotFound } from "~/components/NotFound";
 import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
 import { Header } from "~/routes/-components/header";
+import { FooterSection } from "~/routes/-components/footer";
 import { ThemeProvider } from "~/components/ThemeProvider";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
@@ -74,6 +80,9 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const routerState = useRouterState();
+  const showFooter = !routerState.location.pathname.startsWith("/learn");
+
   return (
     <html suppressHydrationWarning>
       <head>
@@ -93,10 +102,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           }}
         />
       </head>
-      <body className="h-screen">
+      <body className="min-h-screen flex flex-col">
         <ThemeProvider>
           <Header />
-          <div className="h-[calc(100vh-64px)] mt-16">{children}</div>
+          <main className="flex-1 mt-16">{children}</main>
+          {showFooter && <FooterSection />}
           <TanStackRouterDevtools position="bottom-right" />
           <ReactQueryDevtools buttonPosition="bottom-left" />
           <Scripts />

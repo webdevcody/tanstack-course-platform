@@ -49,20 +49,20 @@ export function FooterSection() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="/terms"
+                <Link
+                  to="/terms-of-service"
                   className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
                 >
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/privacy"
+                <Link
+                  to="/privacy-policy"
                   className="hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

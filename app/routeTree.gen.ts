@@ -15,8 +15,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
 import { Route as UnauthorizedImport } from './routes/unauthorized'
 import { Route as UnauthenticatedImport } from './routes/unauthenticated'
+import { Route as TermsOfServiceImport } from './routes/terms-of-service'
 import { Route as SuccessImport } from './routes/success'
 import { Route as PurchaseImport } from './routes/purchase'
+import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
 import { Route as LoginImport } from './routes/login'
 import { Route as CancelImport } from './routes/cancel'
 import { Route as AboutImport } from './routes/about'
@@ -48,6 +50,12 @@ const UnauthenticatedRoute = UnauthenticatedImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const TermsOfServiceRoute = TermsOfServiceImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SuccessRoute = SuccessImport.update({
   id: '/success',
   path: '/success',
@@ -57,6 +65,12 @@ const SuccessRoute = SuccessImport.update({
 const PurchaseRoute = PurchaseImport.update({
   id: '/purchase',
   path: '/purchase',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PrivacyPolicyRoute = PrivacyPolicyImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -169,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyImport
+      parentRoute: typeof rootRoute
+    }
     '/purchase': {
       id: '/purchase'
       path: '/purchase'
@@ -181,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/success'
       fullPath: '/success'
       preLoaderRoute: typeof SuccessImport
+      parentRoute: typeof rootRoute
+    }
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceImport
       parentRoute: typeof rootRoute
     }
     '/unauthenticated': {
@@ -296,8 +324,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
   '/success': typeof SuccessRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -315,8 +345,10 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
   '/success': typeof SuccessRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -334,8 +366,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
   '/login': typeof LoginRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
   '/success': typeof SuccessRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
   '/unauthenticated': typeof UnauthenticatedRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/learn/add': typeof LearnAddRoute
@@ -356,8 +390,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/cancel'
     | '/login'
+    | '/privacy-policy'
     | '/purchase'
     | '/success'
+    | '/terms-of-service'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -374,8 +410,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/cancel'
     | '/login'
+    | '/privacy-policy'
     | '/purchase'
     | '/success'
+    | '/terms-of-service'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -391,8 +429,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/cancel'
     | '/login'
+    | '/privacy-policy'
     | '/purchase'
     | '/success'
+    | '/terms-of-service'
     | '/unauthenticated'
     | '/unauthorized'
     | '/learn/add'
@@ -412,8 +452,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CancelRoute: typeof CancelRoute
   LoginRoute: typeof LoginRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   PurchaseRoute: typeof PurchaseRoute
   SuccessRoute: typeof SuccessRoute
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
   UnauthenticatedRoute: typeof UnauthenticatedRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
   LearnAddRoute: typeof LearnAddRoute
@@ -429,8 +471,10 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CancelRoute: CancelRoute,
   LoginRoute: LoginRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   PurchaseRoute: PurchaseRoute,
   SuccessRoute: SuccessRoute,
+  TermsOfServiceRoute: TermsOfServiceRoute,
   UnauthenticatedRoute: UnauthenticatedRoute,
   UnauthorizedRoute: UnauthorizedRoute,
   LearnAddRoute: LearnAddRoute,
@@ -455,8 +499,10 @@ export const routeTree = rootRoute
         "/about",
         "/cancel",
         "/login",
+        "/privacy-policy",
         "/purchase",
         "/success",
+        "/terms-of-service",
         "/unauthenticated",
         "/unauthorized",
         "/learn/add",
@@ -479,11 +525,17 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
+    "/privacy-policy": {
+      "filePath": "privacy-policy.tsx"
+    },
     "/purchase": {
       "filePath": "purchase.tsx"
     },
     "/success": {
       "filePath": "success.tsx"
+    },
+    "/terms-of-service": {
+      "filePath": "terms-of-service.tsx"
     },
     "/unauthenticated": {
       "filePath": "unauthenticated.tsx"

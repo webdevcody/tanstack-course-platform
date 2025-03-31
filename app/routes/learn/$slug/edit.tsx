@@ -136,24 +136,22 @@ function RouteComponent() {
 
       <Title title="Edit Segment" />
 
-      <div className="max-w-2xl">
-        <SegmentForm
-          onSubmit={onSubmit}
-          defaultValues={{
-            title: segment.title,
-            content: segment.content || "",
-            video: undefined,
-            moduleTitle: segment.moduleTitle,
-            slug: segment.slug,
-            length: segment.length || "",
-            isPremium: segment.isPremium,
-          }}
-          moduleNames={moduleNames}
-          isSubmitting={isSubmitting}
-          submitButtonText="Update Segment"
-          submitButtonLoadingText="Updating..."
-        />
-      </div>
+      <SegmentForm
+        onSubmit={onSubmit}
+        defaultValues={{
+          title: segment.title,
+          content: segment.content || "",
+          video: undefined,
+          moduleTitle: segment.moduleTitle,
+          slug: segment.slug,
+          length: segment.length || "",
+          isPremium: segment.isPremium,
+        }}
+        moduleNames={moduleNames}
+        isSubmitting={isSubmitting}
+        submitButtonText="Update Segment"
+        submitButtonLoadingText="Updating..."
+      />
     </Container>
   );
 }
