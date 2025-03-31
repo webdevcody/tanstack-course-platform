@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { OAuth2RequestError } from "arctic";
 import { getAccountByGoogleIdUseCase } from "~/use-cases/accounts";
 import { GoogleUser } from "~/use-cases/types";

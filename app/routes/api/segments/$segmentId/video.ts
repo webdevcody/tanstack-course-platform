@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { AuthenticationError } from "~/use-cases/errors";
 import { getSegmentByIdUseCase } from "~/use-cases/segments";
 import { getAuthenticatedUser } from "~/utils/auth";

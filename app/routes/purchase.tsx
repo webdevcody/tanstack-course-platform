@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { stripe } from "~/lib/stripe";
 import { authenticatedMiddleware } from "~/lib/auth";
 import { env } from "~/utils/env";

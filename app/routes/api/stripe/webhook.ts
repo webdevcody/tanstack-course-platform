@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/start/api";
+import { createAPIFileRoute } from "@tanstack/react-start/api";
 import { stripe } from "~/lib/stripe";
 import { updateUserToPremiumUseCase } from "~/use-cases/users";
 import { env } from "~/utils/env";

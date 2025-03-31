@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { createContext, useContext, useEffect, useState } from "react";
 import { z } from "vinxi";
 import { getCookie, setCookie } from "vinxi/http";
@@ -12,10 +12,7 @@ type ThemeProviderProps = {
   storageKey?: string;
 };
 
-type ThemeProviderState = {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-};
+type ThemeProviderState = { theme: Theme; setTheme: (theme: Theme) => void };
 
 const THEME_COOKIE_NAME = "ui-theme";
 

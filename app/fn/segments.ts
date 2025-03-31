@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
 import { adminMiddleware } from "~/lib/auth";
 import { z } from "zod";

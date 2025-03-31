@@ -1,4 +1,4 @@
-import { createMiddleware } from "@tanstack/start";
+import { createMiddleware } from "@tanstack/react-start";
 import { validateRequest } from "~/utils/auth";
 import { redirect } from "@tanstack/react-router";
 import { type User } from "~/db/schema";

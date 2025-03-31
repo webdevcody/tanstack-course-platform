@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { unauthenticatedMiddleware } from "~/lib/auth";
 import { getSegments } from "~/data-access/segments";
 import { Button } from "~/components/ui/button";

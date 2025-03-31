@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
 
 const getFirstSegmentFn = createServerFn().handler(async () => {

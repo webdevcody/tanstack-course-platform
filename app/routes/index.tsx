@@ -7,7 +7,7 @@ import { PricingSection } from "./-components/pricing";
 import { FAQSection } from "./-components/faq";
 import { FooterSection } from "./-components/footer";
 import { NewsletterSection } from "./-components/newsletter";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
 
 const loaderFn = createServerFn().handler(async () => {

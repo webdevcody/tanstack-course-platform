@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { unauthenticatedMiddleware } from "~/lib/auth";
 import { isAdminUseCase } from "~/use-cases/users";
 import { validateRequest } from "~/utils/auth";

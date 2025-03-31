@@ -3,7 +3,7 @@ import {
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";

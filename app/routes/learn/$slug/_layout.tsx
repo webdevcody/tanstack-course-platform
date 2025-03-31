@@ -11,7 +11,7 @@ import {
   useSegment,
 } from "~/routes/learn/-components/segment-context";
 import { useEffect } from "react";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
 import { unauthenticatedMiddleware } from "~/lib/auth";
 import { queryOptions, useQuery } from "@tanstack/react-query";

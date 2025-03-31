@@ -4,7 +4,7 @@ import { Badge } from "~/components/ui/badge";
 import { Lock } from "lucide-react";
 import { Stat } from "~/components/ui/stat";
 import { useRef, useState } from "react";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { getModules } from "~/data-access/modules";
 import { useQuery } from "@tanstack/react-query";
 

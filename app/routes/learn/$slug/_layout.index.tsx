@@ -4,7 +4,7 @@ import {
   Link,
   useNavigate,
 } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { ArrowRight, CheckCircle, Edit, Trash2, Lock } from "lucide-react";
