@@ -30,16 +30,6 @@ export const APIRoute = createAPIFileRoute("/api/stripe/webhook")({
           console.log("Payment successful:", session.id);
           break;
         }
-        case "payment_intent.succeeded": {
-          const paymentIntent = event.data.object;
-          console.log("Payment intent succeeded:", paymentIntent.id);
-          break;
-        }
-        case "payment_intent.payment_failed": {
-          const paymentIntent = event.data.object;
-          console.log("Payment failed:", paymentIntent.id);
-          break;
-        }
       }
 
       return new Response(JSON.stringify({ received: true }), {
