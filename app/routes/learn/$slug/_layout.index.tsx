@@ -7,7 +7,7 @@ import {
 import { createServerFn } from "@tanstack/start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { ArrowRight, CheckCircle, Edit, Trash2 } from "lucide-react";
+import { ArrowRight, CheckCircle, Edit, Trash2, Lock } from "lucide-react";
 import React, { useMemo, useState, useEffect } from "react";
 import {
   deleteSegmentUseCase,
@@ -54,6 +54,7 @@ import { getUserInfoFn } from "~/routes/-components/header";
 import { useSegment } from "../-components/segment-context";
 import { setLastWatchedSegment } from "~/utils/local-storage";
 import { cn } from "~/lib/utils";
+import { Badge } from "~/components/ui/badge";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
@@ -384,7 +385,18 @@ function ViewSegment({
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
+          {isAdmin && (
+            <Badge
+              variant="outline"
+              className="bg-amber-950 text-amber-300 border-amber-800 flex items-center gap-1"
+            >
+              <Lock className="w-3 h-3" />
+              PREMIUM
+            </Badge>
+          )}
+        </div>
         {isAdmin && (
           <div className="gap-2 hidden md:flex">
             <Link

@@ -4,6 +4,7 @@ import {
   CircleCheck,
   Lock,
   GripVertical,
+  Star,
 } from "lucide-react";
 import type { Module, Progress, Segment } from "~/db/schema";
 import { cn } from "~/lib/utils";
@@ -195,6 +196,9 @@ export function NavigationItems({
                                       </span>
                                       {isSegmentCompleted(segment.id) && (
                                         <Check className="h-4 w-4 text-theme-500" />
+                                      )}
+                                      {segment.isPremium && isAdmin && (
+                                        <Star className="h-4 w-4 text-amber-500" />
                                       )}
                                       {segment.isPremium &&
                                         !isPremium &&
