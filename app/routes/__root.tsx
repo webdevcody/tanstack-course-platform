@@ -15,7 +15,6 @@ import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
 import { Header } from "~/routes/-components/header";
 import { FooterSection } from "~/routes/-components/footer";
-import { ThemeProvider } from "~/components/ThemeProvider";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -84,33 +83,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const showFooter = !routerState.location.pathname.startsWith("/learn");
 
   return (
-    <html suppressHydrationWarning>
+    <html className="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              let theme = document.cookie.match(/ui-theme=([^;]+)/)?.[1] || 'system';
-              let root = document.documentElement;
-              
-              if (theme === 'system') {
-                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-              }
-              
-              root.classList.add(theme);
-            `,
-          }}
-        />
       </head>
       <body className="min-h-screen flex flex-col">
-        <ThemeProvider>
-          <Header />
-          <main className="flex-1 mt-16">{children}</main>
-          {showFooter && <FooterSection />}
-          <TanStackRouterDevtools position="bottom-right" />
-          <ReactQueryDevtools buttonPosition="bottom-left" />
-          <Scripts />
-        </ThemeProvider>
+        <Header />
+        <main className="flex-1 mt-16">{children}</main>
+        {showFooter && <FooterSection />}
+        <TanStackRouterDevtools position="bottom-right" />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
+        <Scripts />
       </body>
     </html>
   );

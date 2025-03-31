@@ -3,7 +3,6 @@ import { Link, useRouter } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getCurrentUser } from "~/utils/session";
 import { Button } from "../../components/ui/button";
-import { ModeToggle } from "../../components/ModeToggle";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
 import { useState } from "react";
@@ -101,7 +100,6 @@ export function Header() {
                   Buy Now
                 </Button>
               </Link>
-              <ModeToggle />
             </div>
           </div>
 
@@ -137,9 +135,6 @@ export function Header() {
                       Buy Now
                     </Button>
                   </Link>
-                  <div className="pt-2">
-                    <ModeToggle />
-                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
