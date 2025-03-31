@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import type { Module, Progress, Segment } from "~/db/schema";
 import { cn } from "~/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSegment } from "./segment-context";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -46,11 +46,21 @@ export function NavigationItems({
   const [expandedModules, setExpandedModules] = useState<
     Record<string, boolean>
   >(() => {
-    const currentModule = modules.find((module) =>
-      module.segments.some((segment) => segment.id === currentSegmentId)
+    const currentModule = modules?.find((module) =>
+      module?.segments?.some((segment) => segment.id === currentSegmentId)
     );
     return currentModule ? { [currentModule.id]: true } : {};
   });
+
+  // Update expanded state when currentSegmentId changes
+  useEffect(() => {
+    const currentModule = modules?.find((module) =>
+      module?.segments?.some((segment) => segment.id === currentSegmentId)
+    );
+    if (currentModule) {
+      setExpandedModules((prev) => ({ ...prev, [currentModule.id]: true }));
+    }
+  }, [currentSegmentId, modules]);
 
   const reorderMutation = useMutation({
     mutationFn: (updates: { id: number; order: number }[]) =>
