@@ -38,7 +38,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
         if (isDestroyed) return;
 
         try {
-          nodeStream.pause(); // Pause immediately after receiving chunk
+          // nodeStream.pause(); // Pause immediately after receiving chunk
           await controller.enqueue(chunk);
 
           bytesTransferred += chunk.length;
