@@ -45,7 +45,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
 
           // Force garbage collection more frequently
           if (bytesTransferred % (5 * 1024 * 1024) === 0) {
-            if (global.gc) global.gc();
+            // if (global.gc) global.gc();
           }
         } catch (error) {
           console.error("Chunk processing error:", error);
