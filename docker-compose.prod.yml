@@ -22,12 +22,6 @@ services:
     container_name: wdc-tanstack-starter-kit-app
     volumes:
       - app_files:/app/files
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 4G
-    #     reservations:
-    #       memory: 2G
 
   caddy:
     image: caddy:2
