@@ -118,7 +118,7 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
         start,
         end,
         highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
-        autoClose: true,
+        // autoClose: true,
       });
       const webStream = createWebStreamFromNodeStream(stream);
 
@@ -136,7 +136,7 @@ export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
     // Handle full file request
     const stream = createReadStream(filePath, {
       highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
-      autoClose: true,
+      // autoClose: true,
     });
     const webStream = createWebStreamFromNodeStream(stream);
 
