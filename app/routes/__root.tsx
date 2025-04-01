@@ -82,12 +82,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState();
   const showFooter = !routerState.location.pathname.startsWith("/learn");
 
+  console.log(routerState);
+
   return (
     <html className="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body className="min-h-screen flex flex-col">
+        {routerState.status === "pending" && (
+          <div className="w-full h-1 bg-blue-400 absolute top-0 z-[100] animate-[loader_1s_ease-in-out_infinite]"></div>
+        )}
         <Header />
         <main className="flex-1 mt-16">{children}</main>
         {showFooter && <FooterSection />}

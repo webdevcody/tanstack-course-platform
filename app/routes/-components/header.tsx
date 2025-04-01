@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getCurrentUser } from "~/utils/session";
 import { Button } from "../../components/ui/button";
@@ -21,6 +21,7 @@ export function Header() {
     queryKey: ["userInfo"],
     queryFn: () => getUserInfoFn(),
   });
+  const routerState = useRouterState();
 
   return (
     <div className="fixed top-0 left-0 right-0 bg-black border-b z-50">
@@ -65,9 +66,11 @@ export function Header() {
               params={{ slug: continueSlug }}
               className={cn(
                 "hidden md:flex transition-colors ml-4",
-                "text-foreground/70 hover:text-foreground"
+                "text-foreground/70 hover:text-foreground",
+                routerState.location.pathname.startsWith("/learn")
+                  ? "font-bold text-theme-500"
+                  : ""
               )}
-              activeProps={{ className: "font-bold text-theme-500" }}
             >
               Course Content
             </Link>
