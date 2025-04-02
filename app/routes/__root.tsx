@@ -82,8 +82,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState();
   const showFooter = !routerState.location.pathname.startsWith("/learn");
 
-  console.log(routerState);
-
   return (
     <html className="dark" suppressHydrationWarning>
       <head>

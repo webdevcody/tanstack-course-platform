@@ -90,4 +90,5 @@ never interpolate the to string, instead use props:
 
 # Rules
 
-Never invoke backend code outside of a server function when in a .tsx file
+- Never invoke backend code outside of a server function when in a .tsx file
+- Never import next.js related code please

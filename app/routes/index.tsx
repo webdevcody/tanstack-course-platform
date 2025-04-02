@@ -6,6 +6,7 @@ import { PricingSection } from "./-components/pricing";
 import { FAQSection } from "./-components/faq";
 import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
+import { NewsletterSection } from "./-components/newsletter";
 
 const loaderFn = createServerFn().handler(async () => {
   const segments = await getSegments();
@@ -24,11 +25,11 @@ function Home() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <HeroSection />
+      <NewsletterSection />
       <ModulesSection segments={segments} />
       <CodePreviewSection />
       {/* <TestimonialsSection /> */}
       <PricingSection />
-      {/* <NewsletterSection /> */}
       <FAQSection />
     </div>
   );
