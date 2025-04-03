@@ -99,12 +99,38 @@ function CreateTestimonial() {
     },
   });
 
+  const toggleEmoji = (emoji: string) => {
+    let newEmojis: string[];
+    if (selectedEmojis.includes(emoji)) {
+      newEmojis = selectedEmojis.filter((e) => e !== emoji);
+    } else if (selectedEmojis.length < 3) {
+      newEmojis = [...selectedEmojis, emoji];
+    } else {
+      return; // Don't allow more than 3 emojis
+    }
+    setSelectedEmojis(newEmojis);
+    form.setValue("emojis", newEmojis.join(""), {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
+
   const onSubmit = async (values: TestimonialFormValues) => {
+    if (selectedEmojis.length === 0) {
+      form.setError("emojis", {
+        type: "manual",
+        message: "Please select at least one emoji",
+      });
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       await createTestimonialFn({
         data: {
-          ...values,
+          displayName: values.displayName,
+          content: values.content,
           emojis: selectedEmojis.join(""),
           permissionGranted: values.permissionGranted,
         },
@@ -125,19 +151,6 @@ function CreateTestimonial() {
   if (isSubmitted) {
     return <SuccessMessage />;
   }
-
-  const toggleEmoji = (emoji: string) => {
-    let newEmojis: string[];
-    if (selectedEmojis.includes(emoji)) {
-      newEmojis = selectedEmojis.filter((e) => e !== emoji);
-    } else if (selectedEmojis.length < 3) {
-      newEmojis = [...selectedEmojis, emoji];
-    } else {
-      return; // Don't allow more than 3 emojis
-    }
-    setSelectedEmojis(newEmojis);
-    form.setValue("emojis", newEmojis.join(""), { shouldValidate: true });
-  };
 
   return (
     <div className="max-w-2xl mx-auto p-6 mt-12">
@@ -221,7 +234,14 @@ function CreateTestimonial() {
         <div className="flex items-start space-x-2">
           <Checkbox
             id="permission"
-            {...form.register("permissionGranted")}
+            checked={form.watch("permissionGranted")}
+            onCheckedChange={(checked) => {
+              form.setValue("permissionGranted", checked === true, {
+                shouldValidate: true,
+                shouldDirty: true,
+                shouldTouch: true,
+              });
+            }}
             className={cn(
               form.formState.errors.permissionGranted && "border-red-500"
             )}
