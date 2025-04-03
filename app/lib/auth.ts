@@ -29,7 +29,9 @@ export const authenticatedMiddleware = createMiddleware()
       throw redirect({ to: "/unauthenticated" });
     }
 
-    return next({ context: { userId: user.id, isAdmin: isAdmin(user) } });
+    return next({
+      context: { userId: user.id, isAdmin: isAdmin(user), email: user.email },
+    });
   });
 
 export const adminMiddleware = createMiddleware()

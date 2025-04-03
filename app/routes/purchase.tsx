@@ -5,15 +5,11 @@ import { authenticatedMiddleware } from "~/lib/auth";
 import { env } from "~/utils/env";
 import { loadStripe } from "@stripe/stripe-js";
 import { publicEnv } from "~/utils/env-public";
-import { isAuthenticatedFn } from "~/fn/auth";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
-  Check,
   Lock,
   Star,
   Users,
-  Clock,
   Sparkles,
   Trophy,
   Code,
@@ -22,7 +18,6 @@ import {
 import { useAuth } from "~/hooks/use-auth";
 import { useContinueSlug } from "~/hooks/use-continue-slug";
 import { Link } from "@tanstack/react-router";
-import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/purchase")({
   component: RouteComponent,
@@ -31,11 +26,15 @@ export const Route = createFileRoute("/purchase")({
 const checkoutFn = createServerFn()
   .middleware([authenticatedMiddleware])
   .handler(async ({ context }) => {
+    if (!context.email) {
+      throw new Error("Email is required");
+    }
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [{ price: env.STRIPE_PRICE_ID, quantity: 1 }],
       mode: "payment",
       success_url: `${env.HOST_NAME}/success`,
+      customer_email: context.email,
       cancel_url: `${env.HOST_NAME}/purchase`,
       metadata: { userId: context.userId },
     });
