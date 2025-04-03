@@ -1,6 +1,23 @@
+import { createServerFn } from "@tanstack/react-start";
+import { getTestimonialsUseCase } from "~/use-cases/testimonials";
+import { useQuery } from "@tanstack/react-query";
+
+export const getTestimonialsFn = createServerFn().handler(async () => {
+  return await getTestimonialsUseCase();
+});
+
 export function TestimonialsSection() {
+  const { data: testimonials } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: getTestimonialsFn,
+  });
+
+  if (!testimonials) {
+    return null;
+  }
+
   return (
-    <section className="relative py-24 px-6">
+    <section className="relative py-24 px-6" id="testimonials">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-gray-900 to-black"></div>
 
       {/* Top border glow */}
@@ -20,104 +37,46 @@ export function TestimonialsSection() {
           through hands-on practice with our challenges
         </p>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
-            <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop"
-                  alt="Emma Thompson"
-                  className="w-full h-full object-cover"
-                />
+          {testimonials?.map((testimonial) => (
+            <div
+              key={testimonial.id}
+              className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm"
+            >
+              <div className="flex items-center mb-6">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
+                  {testimonial?.profile?.image ? (
+                    <img
+                      src={testimonial.profile.image}
+                      alt={testimonial.displayName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-theme-500/20 flex items-center justify-center">
+                      <span className="text-2xl">
+                        {testimonial.displayName.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="ml-4">
+                  <p className="font-semibold text-white">
+                    {testimonial.displayName}
+                  </p>
+                  <p className="text-sm text-theme-400">
+                    {new Date(testimonial.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="font-semibold text-white">Emma Thompson</p>
-                <p className="text-sm text-theme-400">Frontend Developer</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-6 italic">
-              "The challenges were exactly what I needed to improve my React
-              skills. Each project helped me understand different aspects of
-              React in a practical way."
-            </p>
-            <div className="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
-            <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop"
-                  alt="Alex Rivera"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="ml-4">
-                <p className="font-semibold text-white">Alex Rivera</p>
-                <p className="text-sm text-theme-400">React Developer</p>
+              <p className="text-gray-300 mb-6 italic">{testimonial.content}</p>
+              <div className="flex text-2xl">
+                {Array.from(testimonial.emojis).map((emoji, i) => (
+                  <span key={i} className="mr-2">
+                    {emoji}
+                  </span>
+                ))}
               </div>
             </div>
-            <p className="text-gray-300 mb-6 italic">
-              "The step-by-step guidance and solution code helped me understand
-              how to approach React problems. I now feel much more confident in
-              my React skills!"
-            </p>
-            <div className="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-gray-800/50 p-8 rounded-xl border border-theme-500/20 hover:border-theme-500/40 hover:transform hover:-translate-y-1 hover:bg-gray-800/60 transition-all duration-300 ease-in-out backdrop-blur-sm">
-            <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-theme-500/30">
-                <img
-                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop"
-                  alt="Sophie Chen"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="ml-4">
-                <p className="font-semibold text-white">Sophie Chen</p>
-                <p className="text-sm text-theme-400">Frontend Developer</p>
-              </div>
-            </div>
-            <p className="text-gray-300 mb-6 italic">
-              "The challenges helped me build a strong portfolio of React
-              projects. I was able to land my first React job thanks to the
-              skills I learned here!"
-            </p>
-            <div className="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

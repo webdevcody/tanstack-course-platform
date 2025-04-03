@@ -7,7 +7,14 @@ import {
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { Button, buttonVariants } from "~/components/ui/button";
-import { ArrowRight, CheckCircle, Edit, Trash2, Lock } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle,
+  Edit,
+  Trash2,
+  Lock,
+  MessageSquare,
+} from "lucide-react";
 import React, { useMemo, useState, useEffect } from "react";
 import {
   deleteSegmentUseCase,
@@ -551,6 +558,17 @@ function ViewSegment({
   );
 }
 
+function FloatingFeedbackButton() {
+  return (
+    <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
+      <Button size="lg" className="rounded-full shadow-lg">
+        <MessageSquare className="w-5 h-5 mr-2" />
+        Leave a Testimonial
+      </Button>
+    </Link>
+  );
+}
+
 function RouteComponent() {
   const { segment, segments, isPremium, isAdmin } = Route.useLoaderData();
 
@@ -560,10 +578,10 @@ function RouteComponent() {
         segments={segments}
         currentSegment={segment}
         currentSegmentId={segment.id}
-        // attachments={attachments}
         isPremium={isPremium}
         isAdmin={isAdmin}
       />
+      <FloatingFeedbackButton />
       <Toaster />
     </>
   );

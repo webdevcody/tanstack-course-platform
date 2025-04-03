@@ -109,17 +109,18 @@ export const progress = tableCreator(
   ]
 );
 
-export const modulesRelations = relations(modules, ({ many }) => ({
-  segments: many(segments),
-}));
-
-export const segmentsRelations = relations(segments, ({ one, many }) => ({
-  attachments: many(attachments),
-  module: one(modules, {
-    fields: [segments.moduleId],
-    references: [modules.id],
-  }),
-}));
+export const testimonials = tableCreator("testimonial", {
+  id: serial("id").primaryKey(),
+  userId: serial("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  emojis: text("emojis").notNull(),
+  displayName: text("displayName").notNull(),
+  permissionGranted: boolean("permissionGranted").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
 
 export const attachments = tableCreator("attachment", {
   id: serial("id").primaryKey(),
@@ -130,6 +131,25 @@ export const attachments = tableCreator("attachment", {
   fileKey: text("fileKey").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const modulesRelations = relations(modules, ({ many }) => ({
+  segments: many(segments),
+}));
+
+export const testimonialsRelations = relations(testimonials, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [testimonials.userId],
+    references: [profiles.userId],
+  }),
+}));
+
+export const segmentsRelations = relations(segments, ({ one, many }) => ({
+  attachments: many(attachments),
+  module: one(modules, {
+    fields: [segments.moduleId],
+    references: [modules.id],
+  }),
+}));
 
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
   segment: one(segments, {
@@ -149,3 +169,5 @@ export type Progress = typeof progress.$inferSelect;
 export type ProgressCreate = typeof progress.$inferInsert;
 export type Module = typeof modules.$inferSelect;
 export type ModuleCreate = typeof modules.$inferInsert;
+export type Testimonial = typeof testimonials.$inferSelect;
+export type TestimonialCreate = typeof testimonials.$inferInsert;

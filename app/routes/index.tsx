@@ -5,18 +5,21 @@ import { ModulesSection } from "./-components/modules";
 import { PricingSection } from "./-components/pricing";
 import { FAQSection } from "./-components/faq";
 import { createServerFn } from "@tanstack/react-start";
-import { getSegments } from "~/data-access/segments";
+import { getSegmentsUseCase } from "~/use-cases/segments";
 import { NewsletterSection } from "./-components/newsletter";
+import { TestimonialsSection } from "./-components/testimonials";
 
 const loaderFn = createServerFn().handler(async () => {
-  const segments = await getSegments();
-
+  const segments = await getSegmentsUseCase();
   return { segments };
 });
 
 export const Route = createFileRoute("/")({
   component: Home,
-  loader: () => loaderFn(),
+  loader: async () => {
+    const [segments] = await Promise.all([loaderFn()]);
+    return { ...segments };
+  },
 });
 
 function Home() {
@@ -28,7 +31,7 @@ function Home() {
       <NewsletterSection />
       <ModulesSection segments={segments} />
       <CodePreviewSection />
-      {/* <TestimonialsSection /> */}
+      <TestimonialsSection />
       <PricingSection />
       <FAQSection />
     </div>

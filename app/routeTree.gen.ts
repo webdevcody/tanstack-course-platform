@@ -20,6 +20,7 @@ import { Route as SuccessImport } from './routes/success'
 import { Route as PurchaseImport } from './routes/purchase'
 import { Route as PrivacyPolicyImport } from './routes/privacy-policy'
 import { Route as LoginImport } from './routes/login'
+import { Route as CreateTestimonialImport } from './routes/create-testimonial'
 import { Route as CancelImport } from './routes/cancel'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
@@ -77,6 +78,12 @@ const PrivacyPolicyRoute = PrivacyPolicyImport.update({
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CreateTestimonialRoute = CreateTestimonialImport.update({
+  id: '/create-testimonial',
+  path: '/create-testimonial',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -174,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/cancel'
       fullPath: '/cancel'
       preLoaderRoute: typeof CancelImport
+      parentRoute: typeof rootRoute
+    }
+    '/create-testimonial': {
+      id: '/create-testimonial'
+      path: '/create-testimonial'
+      fullPath: '/create-testimonial'
+      preLoaderRoute: typeof CreateTestimonialImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -323,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
+  '/create-testimonial': typeof CreateTestimonialRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
@@ -344,6 +359,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
+  '/create-testimonial': typeof CreateTestimonialRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
@@ -365,6 +381,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/cancel': typeof CancelRoute
+  '/create-testimonial': typeof CreateTestimonialRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/purchase': typeof PurchaseRoute
@@ -389,6 +406,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/cancel'
+    | '/create-testimonial'
     | '/login'
     | '/privacy-policy'
     | '/purchase'
@@ -409,6 +427,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/cancel'
+    | '/create-testimonial'
     | '/login'
     | '/privacy-policy'
     | '/purchase'
@@ -428,6 +447,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/cancel'
+    | '/create-testimonial'
     | '/login'
     | '/privacy-policy'
     | '/purchase'
@@ -451,6 +471,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   CancelRoute: typeof CancelRoute
+  CreateTestimonialRoute: typeof CreateTestimonialRoute
   LoginRoute: typeof LoginRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   PurchaseRoute: typeof PurchaseRoute
@@ -470,6 +491,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CancelRoute: CancelRoute,
+  CreateTestimonialRoute: CreateTestimonialRoute,
   LoginRoute: LoginRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   PurchaseRoute: PurchaseRoute,
@@ -498,6 +520,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/cancel",
+        "/create-testimonial",
         "/login",
         "/privacy-policy",
         "/purchase",
@@ -521,6 +544,9 @@ export const routeTree = rootRoute
     },
     "/cancel": {
       "filePath": "cancel.tsx"
+    },
+    "/create-testimonial": {
+      "filePath": "create-testimonial.tsx"
     },
     "/login": {
       "filePath": "login.tsx"

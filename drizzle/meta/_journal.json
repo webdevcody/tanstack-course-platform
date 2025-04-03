@@ -71,6 +71,13 @@
       "when": 1743137620459,
       "tag": "0009_wild_maria_hill",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1743707687250,
+      "tag": "0010_red_maestro",
+      "breakpoints": true
     }
   ]
 }
