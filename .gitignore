@@ -5,6 +5,7 @@ yarn.lock
 .DS_Store
 .cache
 .env
+.env.postgres
 .vercel
 .output
 .vinxi
