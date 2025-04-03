@@ -1,26 +1,16 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getCurrentUser } from "~/utils/session";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Button } from "../../components/ui/button";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../../components/ui/sheet";
 import { useState } from "react";
 import { useContinueSlug } from "~/hooks/use-continue-slug";
 import { cn } from "~/lib/utils";
-
-export const getUserInfoFn = createServerFn().handler(async () => {
-  const user = await getCurrentUser();
-  return { user };
-});
+import { useAuth } from "~/hooks/use-auth";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const continueSlug = useContinueSlug();
-  const userInfo = useSuspenseQuery({
-    queryKey: ["userInfo"],
-    queryFn: () => getUserInfoFn(),
-  });
+  const user = useAuth();
   const routerState = useRouterState();
 
   return (
@@ -79,7 +69,7 @@ export function Header() {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-4">
-              {userInfo.data.user ? (
+              {user ? (
                 <a href="/api/logout">
                   <Button
                     variant="outline"
@@ -98,11 +88,13 @@ export function Header() {
                   </Button>
                 </a>
               )}
-              <Link to="/purchase">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Buy Now
-                </Button>
-              </Link>
+              {!user?.isPremium && (
+                <Link to="/purchase">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Buy Now
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -124,7 +116,7 @@ export function Header() {
                   >
                     Home
                   </Link>
-                  {userInfo.data.user ? (
+                  {user ? (
                     <a href="/api/logout" className="py-2 text-lg">
                       Logout
                     </a>
@@ -133,11 +125,13 @@ export function Header() {
                       Login
                     </a>
                   )}
-                  <Link to="/purchase">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                      Buy Now
-                    </Button>
-                  </Link>
+                  {!user?.isPremium && (
+                    <Link to="/purchase">
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        Buy Now
+                      </Button>
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

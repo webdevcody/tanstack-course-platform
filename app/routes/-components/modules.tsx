@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { createServerFn } from "@tanstack/react-start";
 import { getModules } from "~/data-access/modules";
 import { useQuery } from "@tanstack/react-query";
+import { buttonVariants } from "~/components/ui/button";
 
 function formatDuration(durationInMinutes: number) {
   const hours = Math.floor(durationInMinutes / 60);
@@ -274,7 +275,10 @@ export function ModulesSection({ segments }: { segments: Segment[] }) {
             <Link
               to="/learn/$slug"
               params={{ slug: segments[0]?.slug }}
-              className="px-6 py-3 bg-theme-500 text-white font-medium rounded-lg hover:bg-theme-600 transition-colors inline-flex items-center gap-2"
+              className={buttonVariants({
+                variant: "default",
+                size: "lg",
+              })}
             >
               Start Watching Now
               <svg

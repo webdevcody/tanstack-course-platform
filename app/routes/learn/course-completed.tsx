@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useWindowSize } from "~/hooks/use-window-size";
 import Confetti from "react-confetti";
 import { Twitter, Github, MessageCircle } from "lucide-react";
+import { useNewsletterSubscription } from "~/hooks/use-newsletter-subscription";
 
 export const Route = createFileRoute("/learn/course-completed")({
   component: CourseCompleted,
@@ -14,10 +15,10 @@ export const Route = createFileRoute("/learn/course-completed")({
 
 function CourseCompleted() {
   const { toast } = useToast();
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
   const [confettiPieces, setConfettiPieces] = useState(100);
   const { width, height } = useWindowSize();
+  const { email, setEmail, isSubmitted, isLoading, handleSubmit } =
+    useNewsletterSubscription();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -27,12 +28,8 @@ function CourseCompleted() {
     return () => clearTimeout(timeout);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement newsletter signup and contact form submission
+  const handleNewsletterSuccess = () => {
     toast({ title: "Thank you!", description: "We'll be in touch soon." });
-    setEmail("");
-    setMessage("");
   };
 
   return (
@@ -87,28 +84,43 @@ function CourseCompleted() {
             Sign up for our newsletter to get notified about new courses,
             updates, and exclusive content.
           </p>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-200">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-gray-900/50 border-theme-400/20 focus:border-theme-400 text-white"
-              />
+
+          {isSubmitted ? (
+            <div className="max-w-xl mx-auto">
+              <div className="bg-theme-500/10 border border-theme-500/20 rounded-lg p-6">
+                <h3 className="text-2xl font-semibold text-theme-400 mb-2">
+                  Thank you for subscribing!
+                </h3>
+                <p className="text-gray-400">
+                  We'll keep you updated with new courses and exclusive content.
+                </p>
+              </div>
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-theme-400 hover:bg-theme-500 text-black font-semibold"
-            >
-              Subscribe to Newsletter
-            </Button>
-          </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-200">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-gray-900/50 border-theme-400/20 focus:border-theme-400 text-white"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-theme-400 hover:bg-theme-500 text-black font-semibold"
+                disabled={isLoading}
+              >
+                {isLoading ? "Subscribing..." : "Subscribe to Newsletter"}
+              </Button>
+            </form>
+          )}
         </div>
 
         <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.1)] p-6 space-y-4">

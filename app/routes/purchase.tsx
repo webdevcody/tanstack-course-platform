@@ -7,7 +7,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { publicEnv } from "~/utils/env-public";
 import { isAuthenticatedFn } from "~/fn/auth";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import {
   Check,
   Lock,
@@ -19,6 +19,10 @@ import {
   Code,
   RefreshCcw,
 } from "lucide-react";
+import { useAuth } from "~/hooks/use-auth";
+import { useContinueSlug } from "~/hooks/use-continue-slug";
+import { Link } from "@tanstack/react-router";
+import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/purchase")({
   component: RouteComponent,
@@ -90,10 +94,8 @@ const testimonials = [
 ];
 
 function RouteComponent() {
-  const { data: isAuthenticated } = useSuspenseQuery({
-    queryKey: ["isAuthenticated"],
-    queryFn: () => isAuthenticatedFn(),
-  });
+  const user = useAuth();
+  const continueSlug = useContinueSlug();
 
   const handlePurchase = async () => {
     const stripePromise = loadStripe(publicEnv.VITE_STRIPE_PUBLISHABLE_KEY);
@@ -223,14 +225,23 @@ function RouteComponent() {
                   </div>
 
                   <div className="flex flex-col items-center gap-4">
-                    {isAuthenticated ? (
-                      <Button
-                        size="lg"
-                        onClick={handlePurchase}
-                        className="w-full max-w-sm font-semibold bg-theme-400 hover:bg-theme-500 text-black text-lg py-6"
-                      >
-                        Get Instant Access
-                      </Button>
+                    {user ? (
+                      !user.isPremium ? (
+                        <Button size="lg" onClick={handlePurchase}>
+                          Get Instant Access
+                        </Button>
+                      ) : (
+                        <Link
+                          to="/learn/$slug"
+                          params={{ slug: continueSlug }}
+                          className={buttonVariants({
+                            variant: "default",
+                            size: "lg",
+                          })}
+                        >
+                          Continue with Course
+                        </Link>
+                      )
                     ) : (
                       <a
                         href={`/api/login/google?redirect_uri=${encodeURIComponent("/purchase")}`}

@@ -49,12 +49,11 @@ import {
   markAsWatchedUseCase,
   getAllProgressForUserUseCase,
 } from "~/use-cases/progress";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { getUserInfoFn } from "~/routes/-components/header";
 import { useSegment } from "../-components/segment-context";
 import { setLastWatchedSegment } from "~/utils/local-storage";
 import { cn } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
+import { useAuth } from "~/hooks/use-auth";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
@@ -187,11 +186,8 @@ function ViewSegment({
     setLastWatchedSegment(currentSegment.slug);
   }, [currentSegment.slug]);
 
-  const userInfo = useSuspenseQuery({
-    queryKey: ["userInfo"],
-    queryFn: () => getUserInfoFn(),
-  });
-  const isLoggedIn = userInfo.data?.user?.id;
+  const user = useAuth();
+  const isLoggedIn = !!user?.id;
 
   const nextSegment = useMemo(() => {
     // Find the current module and segment index
