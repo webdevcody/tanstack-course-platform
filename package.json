@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vinxi dev",
     "build": "vinxi build",
-    "start": "db:migrate && vinxi start",
+    "start": "npm run db:migrate && vinxi start",
     "db:push": "drizzle-kit push --config=drizzle.config.ts",
     "db:migrate": "tsx ./app/db/migrate.ts",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
