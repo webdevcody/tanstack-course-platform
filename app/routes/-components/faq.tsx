@@ -88,7 +88,7 @@ const faqData: FAQItemProps[] = [
     question: "How long does it take to complete all challenges?",
     answer: (
       <p className="text-gray-300">
-        The time varies depending on your experience and how much time you
+        The time varies depending on your experience level and how much time you
         dedicate. On average, each challenge should take a maximum time of an
         hour or two to solve yourself.
       </p>
