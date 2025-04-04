@@ -153,7 +153,7 @@ function CreateTestimonial() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 mt-12">
+    <div className="max-w-2xl mx-auto p-6 my-12">
       <h1 className="text-3xl font-bold mb-8">Share Your Experience</h1>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

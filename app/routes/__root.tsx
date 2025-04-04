@@ -15,6 +15,8 @@ import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
 import { Header } from "~/routes/-components/header";
 import { FooterSection } from "~/routes/-components/footer";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   {
@@ -82,15 +84,40 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState();
   const showFooter = !routerState.location.pathname.startsWith("/learn");
 
+  const prevPathnameRef = React.useRef("");
+
+  React.useEffect(() => {
+    const currentPathname = routerState.location.pathname;
+    const pathnameChanged = prevPathnameRef.current !== currentPathname;
+
+    if (pathnameChanged && routerState.status === "pending") {
+      NProgress.start();
+      prevPathnameRef.current = currentPathname;
+    }
+
+    if (routerState.status === "idle") {
+      NProgress.done();
+    }
+  }, [routerState.status, routerState.location.pathname]);
+
   return (
     <html className="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <style>{`
+          #nprogress .bar {
+            background: #22c55e !important;
+            height: 3px;
+          }
+          #nprogress .peg {
+            box-shadow: 0 0 10px #22c55e, 0 0 5px #22c55e;
+          }
+          #nprogress .spinner-icon {
+            display: none;
+          }
+        `}</style>
       </head>
       <body className="min-h-screen flex flex-col">
-        {routerState.status === "pending" && (
-          <div className="w-full h-1 bg-blue-400 absolute top-0 z-[100] animate-[loader_1s_ease-in-out_infinite]"></div>
-        )}
         <Header />
         <main className="flex-1 mt-16">{children}</main>
         {showFooter && <FooterSection />}
