@@ -1,13 +1,3 @@
 beginner-react-challenges.webdevcody.com {
     reverse_proxy wdc-tanstack-starter-kit-app:3000
 } 
-
-# This is a hack so I can get multiple projects deployed on the same vps... 
-survivethenightgame.com {
-    reverse_proxy website:3005
-}
-
-wss.survivethenightgame.com {
-    reverse_proxy game-server:3006
-    encode gzip
-}
