@@ -23,9 +23,17 @@ export const subscribeFn = createServerFn()
         body: `secret=${env.RECAPTCHA_SECRET_KEY}&response=${data.recaptchaToken}`,
       }
     );
-    const json = (await response.json()) as { success: boolean };
+    const json = (await response.json()) as {
+      success: boolean;
+      score: number;
+    };
+
     if (!json.success) {
       throw new Error("invalid recaptcha token");
+    }
+
+    if (json.score < 0.5) {
+      throw new Error("recaptcha score too low");
     }
 
     const params = new URLSearchParams();
