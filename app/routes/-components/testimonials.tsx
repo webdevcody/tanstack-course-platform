@@ -12,7 +12,7 @@ export function TestimonialsSection() {
     queryFn: getTestimonialsFn,
   });
 
-  if (!testimonials) {
+  if (!testimonials || testimonials.length === 0) {
     return null;
   }
 
