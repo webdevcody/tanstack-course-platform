@@ -6,3 +6,8 @@
 - after clicking the Next Video button, I need to invalidate the queryClient cache for the "progress" entries
 - refactor the approach to instead just fetch the array of progress entries instead of doing the left join stuff
 - rename progress to completed_segments
+
+# Tech Debt
+
+- clean up the code and put all .sh scripts in /infra directory
+- update the setup.sh script to also install docker compose, etc
