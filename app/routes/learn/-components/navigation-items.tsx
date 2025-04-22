@@ -208,7 +208,7 @@ export function NavigationItems({
                                         <Check className="h-4 w-4 text-theme-500" />
                                       )}
                                       {segment.isPremium && isAdmin && (
-                                        <Star className="h-4 w-4 text-amber-500" />
+                                        <Lock className="h-4 w-4 text-amber-500" />
                                       )}
                                       {segment.isPremium &&
                                         !isPremium &&

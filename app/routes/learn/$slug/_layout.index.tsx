@@ -390,7 +390,7 @@ function ViewSegment({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
-          {isAdmin && (
+          {isAdmin && currentSegment.isPremium && (
             <Badge
               variant="outline"
               className="bg-amber-950 text-amber-300 border-amber-800 flex items-center gap-1"
