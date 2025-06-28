@@ -1,8 +1,8 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { invalidateSession, validateRequest } from "~/utils/auth";
 import { deleteSessionTokenCookie } from "~/utils/session";
 
-export const APIRoute = createAPIFileRoute("/api/logout")({
+export const ServerRoute = createServerFileRoute("/api/logout").methods({
   GET: async ({ request, params }) => {
     const { session } = await validateRequest();
     if (!session) {

@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import {
   Outlet,
   createRootRouteWithContext,
@@ -60,7 +61,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         },
       ],
     }),
-    errorComponent: (props) => {
+    errorComponent: props => {
       return (
         <RootDocument>
           <DefaultCatchBoundary {...props} />
@@ -101,7 +102,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   }, [routerState.status, routerState.location.pathname]);
 
   return (
-    <html className="dark" suppressHydrationWarning>
+    <html className="dark font-inter" suppressHydrationWarning>
       <head>
         <HeadContent />
         <style>{`

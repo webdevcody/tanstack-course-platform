@@ -1,16 +1,18 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { OAuth2RequestError } from "arctic";
 import { getAccountByGoogleIdUseCase } from "~/use-cases/accounts";
 import { GoogleUser } from "~/use-cases/types";
 import { createGoogleUserUseCase } from "~/use-cases/users";
 import { googleAuth } from "~/utils/auth";
 import { setSession } from "~/utils/session";
-import { deleteCookie, getCookie } from "vinxi/http";
+import { deleteCookie, getCookie } from "@tanstack/react-start/server";
 
 const AFTER_LOGIN_URL = "/";
 
-export const APIRoute = createAPIFileRoute("/api/login/google/callback")({
-  GET: async ({ request, params }) => {
+export const ServerRoute = createServerFileRoute(
+  "/api/login/google/callback/"
+).methods({
+  GET: async ({ request }) => {
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
