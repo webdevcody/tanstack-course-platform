@@ -44,7 +44,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "css-select": "^5.1.0",
     "drizzle-orm": "^0.44.2",
     "entities": "^6.0.1",
     "framer-motion": "^12.19.2",
@@ -85,13 +84,5 @@
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4"
-  },
-  "resolutions": {
-    "css-select": "5.1.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "css-select": "5.1.0"
-    }
   }
 }
