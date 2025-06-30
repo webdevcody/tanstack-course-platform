@@ -1,8 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { createContext, useContext, useEffect, useState } from "react";
-import { z } from "vinxi";
-import { getCookie, setCookie } from "vinxi/http";
+import { z } from "zod";
+import { getCookie, setCookie } from "@tanstack/react-start/server";
 
 type Theme = "dark" | "light" | "system";
 
@@ -44,7 +44,7 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   useEffect(() => {
     window
       .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (event) => {
+      .addEventListener("change", event => {
         if (themeQuery.data === "system") {
           const newColorScheme = event.matches ? "dark" : "light";
           const root = window.document.documentElement;

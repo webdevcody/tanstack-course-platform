@@ -1,4 +1,4 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { AuthenticationError } from "~/use-cases/errors";
 import { getSegmentByIdUseCase } from "~/use-cases/segments";
 import { getAuthenticatedUser } from "~/utils/auth";
@@ -33,7 +33,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
     start(c) {
       controller = c;
 
-      nodeStream.on("data", async (chunk) => {
+      nodeStream.on("data", async chunk => {
         if (isDestroyed) return;
 
         try {
@@ -51,7 +51,7 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
         controller.close();
       });
 
-      nodeStream.on("error", (err) => {
+      nodeStream.on("error", err => {
         console.error("Stream error:", err);
         cleanup();
         controller.error(err);
@@ -70,7 +70,9 @@ function createWebStreamFromNodeStream(nodeStream: ReadStream) {
   });
 }
 
-export const APIRoute = createAPIFileRoute("/api/segments/$segmentId/video")({
+export const ServerRoute = createServerFileRoute(
+  "/api/segments/$segmentId/video"
+).methods({
   GET: async ({ request, params }) => {
     // Validate access
     const user = await getAuthenticatedUser();

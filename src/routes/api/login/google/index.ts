@@ -1,18 +1,18 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { generateCodeVerifier, generateState } from "arctic";
 import { googleAuth } from "~/utils/auth";
-import { setCookie } from "vinxi/http";
+import { setCookie } from "@tanstack/react-start/server";
 
 const MAX_COOKIE_AGE_SECONDS = 60 * 10;
 
-export const APIRoute = createAPIFileRoute("/api/login/google")({
-  GET: async ({ request, params }) => {
+export const ServerRoute = createServerFileRoute("/api/login/google/").methods({
+  GET: async ({ request }) => {
     const url = new URL(request.url);
     const redirectUri = url.searchParams.get("redirect_uri") || "/";
 
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
-    const authorizationInfo = await googleAuth.createAuthorizationURL(
+    const authorizationInfo = googleAuth.createAuthorizationURL(
       state,
       codeVerifier,
       ["profile", "email"]
