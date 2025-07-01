@@ -13,7 +13,7 @@ import { eq } from "drizzle-orm";
 import { getOrCreateModuleUseCase } from "./modules";
 import { database } from "~/db";
 import { segments } from "~/db/schema";
-import { deleteFile } from "~/utils/disk-storage";
+import { getStorage } from "~/utils/storage";
 
 export async function getSegmentsUseCase() {
   return getSegments();
@@ -56,12 +56,13 @@ export async function updateSegmentUseCase(
   segmentId: number,
   data: SegmentUpdate & { moduleTitle: string }
 ) {
+  const storage = getStorage();
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
 
   // Handle video deletion if updating video
   if (segment.videoKey && data.videoKey) {
-    await deleteFile(segment.videoKey);
+    await storage.delete(segment.videoKey);
   }
 
   // Get or create the module
@@ -72,19 +73,20 @@ export async function updateSegmentUseCase(
 }
 
 export async function deleteSegmentUseCase(segmentId: number) {
+  const storage = getStorage();
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
 
   // Delete video file if it exists
   if (segment.videoKey) {
-    await deleteFile(segment.videoKey);
+    await storage.delete(segment.videoKey);
   }
 
   // Get and delete all attachment files
   const attachments = await getSegmentAttachments(segmentId);
   await Promise.all(
-    attachments.map(async (attachment) => {
-      await deleteFile(attachment.fileKey);
+    attachments.map(async attachment => {
+      await storage.delete(attachment.fileKey);
       // await deleteAttachment(attachment.id);
     })
   );
@@ -96,7 +98,7 @@ export async function deleteSegmentUseCase(segmentId: number) {
 export async function reorderSegmentsUseCase(
   updates: { id: number; order: number }[]
 ) {
-  return database.transaction(async (tx) => {
+  return database.transaction(async tx => {
     const results = [];
     for (const update of updates) {
       const [result] = await tx

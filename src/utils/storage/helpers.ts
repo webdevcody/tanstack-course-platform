@@ -1,6 +1,5 @@
-import { Segment } from "~/db/schema";
+import type { Segment } from "~/db/schema";
 import { uploadVideoChunkFn } from "~/fn/storage";
-import { generateRandomUUID } from "./uuid";
 
 export function getStorageUrl(segmentId: Segment["id"]) {
   return `/api/segments/${segmentId}/video`;

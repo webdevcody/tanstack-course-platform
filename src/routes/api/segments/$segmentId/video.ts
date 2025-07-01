@@ -4,6 +4,7 @@ import { getSegmentByIdUseCase } from "~/use-cases/segments";
 import { getAuthenticatedUser } from "~/utils/auth";
 import { stat } from "fs/promises";
 import { createReadStream, type ReadStream } from "fs";
+import { getStorage } from "~/utils/storage";
 
 function logMemoryUsage(label: string) {
   const used = process.memoryUsage();
@@ -91,56 +92,28 @@ export const ServerRoute = createServerFileRoute(
       }
     }
 
-    // Get file info
-    const uploadDir = process.env.UPLOAD_DIR;
-    if (!uploadDir)
-      throw new Error("UPLOAD_DIR environment variable is not set");
-    const filePath = `${uploadDir}/${segment.videoKey}`;
-    const stats = await stat(filePath);
+    const storage = getStorage();
 
-    // Handle range request
-    const range = request.headers.get("range");
-    if (range) {
-      const parts = range.replace(/bytes=/, "").split("-");
-      const start = parseInt(parts[0], 10);
-      const end = parts[1]
-        ? parseInt(parts[1], 10)
-        : Math.min(start + 1024 * 1024, stats.size - 1); // Limit chunk size to 1MB
-      const chunksize = end - start + 1;
+    const rangeHeader = request.headers.get("range");
+    const startRange = rangeHeader?.replace(/bytes=/, "").split("-")[0];
+    const endRange = rangeHeader?.replace(/bytes=/, "").split("-")[1];
+    const range = rangeHeader
+      ? {
+          start: startRange ? Number(startRange) : undefined,
+          end: endRange ? Number(endRange) : undefined,
+        }
+      : undefined;
 
-      const stream = createReadStream(filePath, {
-        start,
-        end,
-        highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
-        autoClose: true,
-      });
-      const webStream = createWebStreamFromNodeStream(stream);
+    const { stream, contentLength, contentType, contentRange } =
+      await storage.getStream(segment.videoKey, range);
 
-      return new Response(webStream, {
-        status: 206,
-        headers: {
-          "Content-Range": `bytes ${start}-${end}/${stats.size}`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": chunksize.toString(),
-          "Content-Type": "video/mp4",
-        },
-      });
-    }
-
-    // Handle full file request
-    const stream = createReadStream(filePath, {
-      highWaterMark: 16 * 1024, // Reduce buffer size to 16KB
-      autoClose: true,
-    });
-    const webStream = createWebStreamFromNodeStream(stream);
-
-    return new Response(webStream, {
+    return new Response(stream, {
       headers: {
-        "Content-Type": "video/mp4",
-        "Content-Length": stats.size.toString(),
+        "Content-Type": contentType,
+        "Content-Length": contentLength.toString(),
         "Accept-Ranges": "bytes",
         "Cache-Control": "public, max-age=31536000, immutable",
-        ETag: `"${stats.mtimeMs}"`,
+        ...(contentRange ? { "Content-Range": contentRange } : {}),
       },
     });
   },
