@@ -7,7 +7,7 @@ export function isAdmin(user: User | null) {
   return user?.isAdmin ?? false;
 }
 
-export const logMiddleware = createMiddleware().server(
+export const logMiddleware = createMiddleware({ type: "function" }).server(
   async ({ next, context, functionId }) => {
     const now = Date.now();
 
@@ -20,7 +20,7 @@ export const logMiddleware = createMiddleware().server(
   }
 );
 
-export const authenticatedMiddleware = createMiddleware()
+export const authenticatedMiddleware = createMiddleware({ type: "function" })
   .middleware([logMiddleware])
   .server(async ({ next }) => {
     const { user } = await validateRequest();
@@ -34,7 +34,7 @@ export const authenticatedMiddleware = createMiddleware()
     });
   });
 
-export const adminMiddleware = createMiddleware()
+export const adminMiddleware = createMiddleware({ type: "function" })
   .middleware([logMiddleware])
   .server(async ({ next }) => {
     const { user } = await validateRequest();
@@ -50,7 +50,7 @@ export const adminMiddleware = createMiddleware()
     return next({ context: { userId: user.id } });
   });
 
-export const userIdMiddleware = createMiddleware()
+export const userIdMiddleware = createMiddleware({ type: "function" })
   .middleware([logMiddleware])
   .server(async ({ next }) => {
     const { user } = await validateRequest();
@@ -58,7 +58,7 @@ export const userIdMiddleware = createMiddleware()
     return next({ context: { userId: user?.id } });
   });
 
-export const unauthenticatedMiddleware = createMiddleware()
+export const unauthenticatedMiddleware = createMiddleware({ type: "function" })
   .middleware([logMiddleware])
   .server(async ({ next }) => {
     const { user } = await validateRequest();
