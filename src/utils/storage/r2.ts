@@ -62,8 +62,8 @@ export class R2Storage implements IStorage {
   }
 
   async getStream(
-    key: string,
-    rangeHeader: string | null
+    _key: string,
+    _rangeHeader: string | null
   ): Promise<StreamFileResponse> {
     throw new Error(
       "getStream is not supported for R2. Use getPresignedUrl instead."

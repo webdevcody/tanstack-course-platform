@@ -65,8 +65,8 @@ export class DiskStorage implements IStorage {
     };
   }
 
-  async getPresignedUrl(key: string) {
-    return `http://localhost:3000/api/segments/${key}/video`;
+  async getPresignedUrl(_key: string): Promise<string> {
+    throw new Error("getPresignedUrl is not supported for disk storage");
   }
 
   async combineChunks(finalKey: string, partKeys: string[]) {
