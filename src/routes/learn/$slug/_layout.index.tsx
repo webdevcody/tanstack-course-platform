@@ -25,7 +25,6 @@ import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
-import { getStorageUrl } from "~/utils/storage/helpers";
 import { useDropzone } from "react-dropzone";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/hooks/use-toast";
@@ -444,7 +443,7 @@ function ViewSegment({
 
       {currentSegment.videoKey && (
         <div className="w-full">
-          <VideoPlayer url={getStorageUrl(currentSegment.id)} />
+          <VideoPlayer segmentId={currentSegment.id} />
         </div>
       )}
 

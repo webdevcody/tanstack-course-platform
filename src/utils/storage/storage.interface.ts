@@ -1,7 +1,11 @@
-export interface IStorageProvider {
+export interface IStorage {
   upload(key: string, data: Buffer): Promise<void>;
   delete(key: string): Promise<void>;
-  getStream(key: string, range?: StreamFileRange): Promise<StreamFileResponse>;
+  getStream(
+    key: string,
+    rangeHeader: string | null
+  ): Promise<StreamFileResponse>;
+  getPresignedUrl(key: string): Promise<string>;
   combineChunks(finalKey: string, partKeys: string[]): Promise<void>;
 }
 
@@ -10,7 +14,7 @@ export type StreamFileRange = Partial<{
   end: number;
 }>;
 
-type StreamFileResponse = {
+export type StreamFileResponse = {
   stream: ReadableStream;
   contentLength: number;
   contentType: string;

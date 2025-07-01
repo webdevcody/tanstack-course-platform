@@ -20,7 +20,7 @@ export const uploadVideoChunkFn = createServerFn({ method: "POST" })
   .middleware([adminMiddleware])
   .validator(z.instanceof(FormData))
   .handler(async ({ data: formData }) => {
-    const storage = getStorage();
+    const { storage } = getStorage();
     const chunkIndex = Number(formData.get("chunkIndex"));
     const totalChunks = Number(formData.get("totalChunks"));
     const videoKey = formData.get("videoKey") as string;

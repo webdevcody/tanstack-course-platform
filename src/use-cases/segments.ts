@@ -56,7 +56,7 @@ export async function updateSegmentUseCase(
   segmentId: number,
   data: SegmentUpdate & { moduleTitle: string }
 ) {
-  const storage = getStorage();
+  const { storage } = getStorage();
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
 
@@ -73,7 +73,7 @@ export async function updateSegmentUseCase(
 }
 
 export async function deleteSegmentUseCase(segmentId: number) {
-  const storage = getStorage();
+  const { storage } = getStorage();
   const segment = await getSegmentById(segmentId);
   if (!segment) throw new Error("Segment not found");
 

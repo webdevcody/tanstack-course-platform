@@ -1,9 +1,23 @@
-import path from "node:path";
-import fs, { ReadStream } from "node:fs";
-import type { IStorageProvider, StreamFileRange } from "./storage-provider";
+import type {
+  IStorage,
+  StreamFileRange,
+  StreamFileResponse,
+} from "./storage.interface";
 
-export class DiskStorage implements IStorageProvider {
-  constructor(private readonly uploadDir: string) {}
+import path from "node:path";
+import fs, { type ReadStream } from "node:fs";
+
+export class DiskStorage implements IStorage {
+  private readonly uploadDir: string;
+
+  constructor() {
+    const uploadDir = process.env.UPLOAD_DIR;
+    if (!uploadDir) {
+      throw new Error("UPLOAD_DIR is not set");
+    }
+
+    this.uploadDir = uploadDir;
+  }
 
   private getPath(key: string) {
     return path.join(this.uploadDir, key);
@@ -20,7 +34,20 @@ export class DiskStorage implements IStorageProvider {
     } catch {}
   }
 
-  async getStream(key: string, range?: StreamFileRange) {
+  async getStream(
+    key: string,
+    rangeHeader: string | null
+  ): Promise<StreamFileResponse> {
+    // Range handling
+    const startRange = rangeHeader?.replace(/bytes=/, "").split("-")[0];
+    const endRange = rangeHeader?.replace(/bytes=/, "").split("-")[1];
+    const range = rangeHeader
+      ? {
+          start: startRange ? Number(startRange) : undefined,
+          end: endRange ? Number(endRange) : undefined,
+        }
+      : undefined;
+
     const filePath = this.getPath(key);
     const stats = await fs.promises.stat(filePath);
     const contentLength = stats.size;
@@ -36,6 +63,10 @@ export class DiskStorage implements IStorageProvider {
         ? `bytes ${range.start}-${range.end}/${contentLength}`
         : undefined,
     };
+  }
+
+  async getPresignedUrl(key: string) {
+    return `http://localhost:3000/api/segments/${key}/video`;
   }
 
   async combineChunks(finalKey: string, partKeys: string[]) {
@@ -114,8 +145,4 @@ function logMemoryUsage(label: string) {
   console.log(`Heap Used: ${Math.round(used.heapUsed / 1024 / 1024)}MB`);
   console.log(`Heap Total: ${Math.round(used.heapTotal / 1024 / 1024)}MB`);
   console.log(`RSS: ${Math.round(used.rss / 1024 / 1024)}MB`);
-}
-
-if (!process.env.UPLOAD_DIR) {
-  throw new Error("UPLOAD_DIR is not set");
 }
