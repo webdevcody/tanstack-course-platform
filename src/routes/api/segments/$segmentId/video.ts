@@ -33,12 +33,6 @@ export const ServerRoute = createServerFileRoute(
     const { stream, contentLength, contentType, contentRange } =
       await storage.getStream(segment.videoKey, rangeHeader);
 
-    console.log({
-      contentLength,
-      contentType,
-      contentRange,
-    });
-
     return new Response(stream, {
       headers: {
         "Content-Type": contentType,
