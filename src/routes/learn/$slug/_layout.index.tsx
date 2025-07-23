@@ -25,7 +25,6 @@ import { type Segment, type Attachment } from "~/db/schema";
 import { MarkdownContent } from "~/routes/learn/-components/markdown-content";
 import { Navigation } from "~/routes/learn/-components/navigation";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
-import { getStorageUrl } from "~/utils/storage";
 import { useDropzone } from "react-dropzone";
 import { Toaster } from "~/components/ui/toaster";
 import { useToast } from "~/hooks/use-toast";
@@ -141,7 +140,7 @@ function FileDropzone({ onDrop }: { onDrop: (file: File) => void }) {
       "text/plain": [".txt"],
     },
     maxFiles: 1,
-    onDrop: async (acceptedFiles) => {
+    onDrop: async acceptedFiles => {
       const file = acceptedFiles[0];
       if (!file) return;
       onDrop(file);
@@ -199,16 +198,16 @@ function ViewSegment({
   const nextSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      (segment) => segment.id === currentSegmentId
+      segment => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter((s) => s.moduleId === currentModule)
+      .filter(s => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      (s) => s.id === currentSegmentId
+      s => s.id === currentSegmentId
     );
 
     // If there's a next segment in the current module
@@ -229,7 +228,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach((moduleId) => {
+    Object.keys(modules).forEach(moduleId => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -250,16 +249,16 @@ function ViewSegment({
   const previousSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      (segment) => segment.id === currentSegmentId
+      segment => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter((s) => s.moduleId === currentModule)
+      .filter(s => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      (s) => s.id === currentSegmentId
+      s => s.id === currentSegmentId
     );
 
     // If there's a previous segment in the current module
@@ -280,7 +279,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach((moduleId) => {
+    Object.keys(modules).forEach(moduleId => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -444,7 +443,7 @@ function ViewSegment({
 
       {currentSegment.videoKey && (
         <div className="w-full">
-          <VideoPlayer url={getStorageUrl(currentSegment.id)} />
+          <VideoPlayer segmentId={currentSegment.id} />
         </div>
       )}
 

@@ -21,7 +21,7 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "../-components/segment-form";
-import { uploadVideoChunk } from "~/utils/storage";
+import { uploadVideoChunk } from "~/utils/storage/helpers";
 import { getModuleById } from "~/data-access/modules";
 import { getModulesUseCase } from "~/use-cases/modules";
 import { generateRandomUUID } from "~/utils/uuid";
@@ -64,7 +64,7 @@ const getUniqueModuleNamesFn = createServerFn()
   .middleware([authenticatedMiddleware])
   .handler(async () => {
     const modules = await getModulesUseCase();
-    return modules.map((module) => module.title);
+    return modules.map(module => module.title);
   });
 
 export const Route = createFileRoute("/learn/$slug/edit")({

@@ -1,10 +1,4 @@
-import { Segment } from "~/db/schema";
 import { uploadVideoChunkFn } from "~/fn/storage";
-import { generateRandomUUID } from "./uuid";
-
-export function getStorageUrl(segmentId: Segment["id"]) {
-  return `/api/segments/${segmentId}/video`;
-}
 
 export async function uploadVideoChunk(key: string, file: File) {
   const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks

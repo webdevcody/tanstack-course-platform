@@ -1,27 +1,26 @@
 import { createServerFn } from "@tanstack/react-start";
 import { adminMiddleware } from "~/lib/auth";
 import { z } from "zod";
-import { generateRandomUUID } from "~/utils/uuid";
-import { deleteFile, saveFile } from "~/utils/disk-storage";
-import path from "path";
-import fs from "fs/promises";
+import { getStorage } from "~/utils/storage";
 
-export const uploadVideoFn = createServerFn({ method: "POST" })
-  .middleware([adminMiddleware])
-  .validator(z.instanceof(FormData))
-  .handler(async ({ data: formData }) => {
-    const videoKey = `${generateRandomUUID()}.mp4`;
-    const file = formData.get("file") as File;
-    if (!(file instanceof File)) throw new Error("[file] not found");
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await saveFile(videoKey, buffer);
-    return { videoKey };
-  });
+// Unused old upload server function
+// export const uploadVideoFn = createServerFn({ method: "POST" })
+//   .middleware([adminMiddleware])
+//   .validator(z.instanceof(FormData))
+//   .handler(async ({ data: formData }) => {
+//     const videoKey = `${generateRandomUUID()}.mp4`;
+//     const file = formData.get("file") as File;
+//     if (!(file instanceof File)) throw new Error("[file] not found");
+//     const buffer = Buffer.from(await file.arrayBuffer());
+//     await saveFile(videoKey, buffer);
+//     return { videoKey };
+//   });
 
 export const uploadVideoChunkFn = createServerFn({ method: "POST" })
   .middleware([adminMiddleware])
   .validator(z.instanceof(FormData))
   .handler(async ({ data: formData }) => {
+    const { storage } = getStorage();
     const chunkIndex = Number(formData.get("chunkIndex"));
     const totalChunks = Number(formData.get("totalChunks"));
     const videoKey = formData.get("videoKey") as string;
@@ -41,30 +40,14 @@ export const uploadVideoChunkFn = createServerFn({ method: "POST" })
 
     // Save chunk with index in filename
     const chunkPath = `${videoKey}.part${chunkIndex}`;
-    await saveFile(chunkPath, chunkBuffer);
+    await storage.upload(chunkPath, chunkBuffer);
 
-    // If this is the last chunk, combine all chunks
+    // If this is the last chunk, combine all chunks and delete the chunks
     if (chunkIndex === totalChunks - 1) {
-      const uploadDir = process.env.UPLOAD_DIR;
-      if (!uploadDir)
-        throw new Error("UPLOAD_DIR environment variable is not set");
-
-      // Combine all chunks
-      const chunks = [];
-      for (let i = 0; i < totalChunks; i++) {
-        const chunkPath = path.join(uploadDir, `${videoKey}.part${i}`);
-        const chunkData = await fs.readFile(chunkPath);
-        chunks.push(chunkData);
-      }
-
-      // Combine chunks and save final file
-      const finalBuffer = Buffer.concat(chunks);
-      await saveFile(videoKey, finalBuffer);
-
-      // Delete all chunk files
-      for (let i = 0; i < totalChunks; i++) {
-        await deleteFile(`${videoKey}.part${i}`);
-      }
+      await storage.combineChunks(
+        videoKey,
+        Array.from({ length: totalChunks }, (_, i) => `${videoKey}.part${i}`)
+      );
     }
 
     return { videoKey };
