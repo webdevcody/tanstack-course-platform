@@ -23,3 +23,5 @@ yarn.lock
 /playwright/.cache/
 files/*
 backups/*
+.nitro/
+.tanstack/
