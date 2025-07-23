@@ -14,10 +14,12 @@
     "db:clear": "tsx ./src/db/clear.ts",
     "db:seed": "tsx ./src/db/seed.ts",
     "db:reset": "npm run db:clear && npm run db:migrate && npm run db:seed",
-    "stripe:webhook": "stripe listen --forward-to http://localhost:3000/api/stripe/webhook"
+    "stripe:webhook": "stripe listen --forward-to http://localhost:3000/api/stripe/webhook",
+    "upload:videos": "tsx ./scripts/upload-videos-to-r2.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.840.0",
+    "@aws-sdk/lib-storage": "^3.850.0",
     "@aws-sdk/s3-request-presigner": "^3.840.0",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^5.1.1",

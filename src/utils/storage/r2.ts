@@ -10,9 +10,11 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
 
 export class R2Storage implements IStorage {
   private readonly client: S3Client;
@@ -41,15 +43,72 @@ export class R2Storage implements IStorage {
     });
   }
 
-  async upload(key: string, data: Buffer) {
-    await this.client.send(
-      new PutObjectCommand({
+  async upload(
+    key: string,
+    data: Buffer,
+    onProgress?: (progress: number) => void
+  ) {
+    const command = new PutObjectCommand({
+      Bucket: this.bucket,
+      Key: key,
+      Body: data,
+      ContentType: "video/mp4",
+    });
+
+    if (onProgress) {
+      // For now, we'll simulate progress since S3/R2 doesn't provide real-time progress
+      // We could implement multipart uploads for better progress tracking
+      onProgress(50); // Simulate 50% progress
+      await this.client.send(command);
+      onProgress(100); // Complete
+    } else {
+      await this.client.send(command);
+    }
+  }
+
+  async uploadWithProgress(
+    key: string,
+    data: Buffer,
+    onProgress?: (progress: {
+      loaded: number;
+      total: number;
+      percentage: number;
+    }) => void
+  ) {
+    const totalSize = data.length;
+
+    // Use the Upload class from @aws-sdk/lib-storage for proper multipart uploads
+    const upload = new Upload({
+      client: this.client,
+      params: {
         Bucket: this.bucket,
         Key: key,
         Body: data,
         ContentType: "video/mp4",
-      })
-    );
+      },
+      // Configure multipart upload settings
+      partSize: 5 * 1024 * 1024, // 5MB parts (minimum for S3)
+      queueSize: 4, // Number of parts to upload concurrently
+    });
+
+    // Listen to upload progress events
+    upload.on("httpUploadProgress", (progress) => {
+      if (
+        onProgress &&
+        progress.loaded !== undefined &&
+        progress.total !== undefined
+      ) {
+        const percentage = Math.round((progress.loaded / progress.total) * 100);
+        onProgress({
+          loaded: progress.loaded,
+          total: progress.total,
+          percentage,
+        });
+      }
+    });
+
+    // Execute the upload
+    await upload.done();
   }
 
   async delete(key: string) {
@@ -59,6 +118,26 @@ export class R2Storage implements IStorage {
         Key: key,
       })
     );
+  }
+
+  async exists(key: string): Promise<boolean> {
+    try {
+      await this.client.send(
+        new HeadObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        })
+      );
+      return true;
+    } catch (error: any) {
+      if (
+        error.name === "NotFound" ||
+        error.$metadata?.httpStatusCode === 404
+      ) {
+        return false;
+      }
+      throw error;
+    }
   }
 
   async getStream(

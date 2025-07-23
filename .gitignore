@@ -22,3 +22,4 @@ yarn.lock
 /blob-report/
 /playwright/.cache/
 files/*
+backups/*
