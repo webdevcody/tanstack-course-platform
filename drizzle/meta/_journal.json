@@ -78,6 +78,13 @@
       "when": 1743707687250,
       "tag": "0010_red_maestro",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1753620741968,
+      "tag": "0011_clear_christian_walker",
+      "breakpoints": true
     }
   ]
 }

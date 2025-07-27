@@ -89,6 +89,21 @@ export const segments = tableCreator(
   (table) => [index("segments_slug_idx").on(table.slug)]
 );
 
+export const comments = tableCreator("comment", {
+  id: serial("id").primaryKey(),
+  userId: serial("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  segmentId: serial("segmentId")
+    .notNull()
+    .references(() => segments.id, {
+      onDelete: "cascade",
+    }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const progress = tableCreator(
   "progress",
   {
@@ -148,6 +163,18 @@ export const segmentsRelations = relations(segments, ({ one, many }) => ({
   module: one(modules, {
     fields: [segments.moduleId],
     references: [modules.id],
+  }),
+  comments: many(comments),
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+  segment: one(segments, {
+    fields: [comments.segmentId],
+    references: [segments.id],
   }),
 }));
 
