@@ -4,7 +4,7 @@ import { comments } from "~/db/schema";
 
 export type CommentsWithUser = Awaited<ReturnType<typeof getComments>>;
 
-export async function getComments({ segmentId }: { segmentId: number }) {
+export async function getComments(segmentId: number) {
   return database.query.comments.findMany({
     where: eq(comments.segmentId, segmentId),
     with: {
