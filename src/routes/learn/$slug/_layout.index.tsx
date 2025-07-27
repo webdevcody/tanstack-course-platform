@@ -57,15 +57,23 @@ import {
 } from "~/use-cases/progress";
 import { useSegment } from "../-components/segment-context";
 import { setLastWatchedSegment } from "~/utils/local-storage";
-import { cn } from "~/lib/utils";
+import { cn, getTimeAgo } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
 import { useAuth } from "~/hooks/use-auth";
+import { getCommentsFn } from "~/fn/comments";
+import { type Comment } from "~/db/schema";
+import { CommentsWithUser } from "~/data-access/comments";
+import { CommentForm } from "./-components/comment-form";
+import { CommentList } from "./-components/comment-list";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
     const { segment, segments, progress } = await getSegmentInfoFn({
       data: { slug: params.slug },
+    });
+    const comments = await getCommentsFn({
+      data: { segmentId: segment.id },
     });
     const isPremium = await isUserPremiumFn();
     const isAdmin = await isAdminFn();
@@ -78,7 +86,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
       throw redirect({ to: "/learn/not-found" });
     }
 
-    return { segment, segments, progress, isPremium, isAdmin };
+    return { segment, segments, progress, isPremium, isAdmin, comments };
   },
 });
 
@@ -140,7 +148,7 @@ function FileDropzone({ onDrop }: { onDrop: (file: File) => void }) {
       "text/plain": [".txt"],
     },
     maxFiles: 1,
-    onDrop: async acceptedFiles => {
+    onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (!file) return;
       onDrop(file);
@@ -174,6 +182,7 @@ function ViewSegment({
   // attachments,
   isPremium,
   isAdmin,
+  comments,
 }: {
   segments: Segment[];
   currentSegment: Segment;
@@ -181,11 +190,13 @@ function ViewSegment({
   // attachments: Attachment[];
   isPremium: boolean;
   isAdmin: boolean;
+  comments: CommentsWithUser;
 }) {
   const { toast } = useToast();
   const router = useRouter();
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const { setCurrentSegmentId } = useSegment();
 
   useEffect(() => {
@@ -198,16 +209,16 @@ function ViewSegment({
   const nextSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      segment => segment.id === currentSegmentId
+      (segment) => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter(s => s.moduleId === currentModule)
+      .filter((s) => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      s => s.id === currentSegmentId
+      (s) => s.id === currentSegmentId
     );
 
     // If there's a next segment in the current module
@@ -228,7 +239,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach(moduleId => {
+    Object.keys(modules).forEach((moduleId) => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -249,16 +260,16 @@ function ViewSegment({
   const previousSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      segment => segment.id === currentSegmentId
+      (segment) => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter(s => s.moduleId === currentModule)
+      .filter((s) => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      s => s.id === currentSegmentId
+      (s) => s.id === currentSegmentId
     );
 
     // If there's a previous segment in the current module
@@ -279,7 +290,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach(moduleId => {
+    Object.keys(modules).forEach((moduleId) => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -384,6 +395,28 @@ function ViewSegment({
     }
   };
 
+  const handleSubmitComment = async (commentText: string) => {
+    try {
+      setIsSubmittingComment(true);
+      // TODO: Implement comment submission
+      // await createCommentFn({ data: { segmentId: currentSegmentId, content: commentText } });
+      toast({
+        title: "Comment posted successfully!",
+        description: "Your comment has been added.",
+      });
+      router.invalidate();
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+      toast({
+        title: "Failed to post comment",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -452,38 +485,48 @@ function ViewSegment({
       )}
 
       {isLoggedIn && (
-        <div className="flex justify-between">
-          <Button
-            disabled={isFirstSegment}
-            onClick={() => {
-              if (previousSegment) {
-                setCurrentSegmentId(previousSegment.id);
-              }
-            }}
-          >
-            <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
-            Previous Lesson
-          </Button>
-          <Button
-            onClick={async () => {
-              await markedAsWatchedFn({
-                data: { segmentId: currentSegmentId },
-              });
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <Button
+              disabled={isFirstSegment}
+              onClick={() => {
+                if (previousSegment) {
+                  setCurrentSegmentId(previousSegment.id);
+                }
+              }}
+            >
+              <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
+              Previous Lesson
+            </Button>
+            <Button
+              onClick={async () => {
+                await markedAsWatchedFn({
+                  data: { segmentId: currentSegmentId },
+                });
 
-              if (isLastSegment) {
-                navigate({ to: "/learn/course-completed" });
-              } else if (nextSegment) {
-                setCurrentSegmentId(nextSegment.id);
-              }
-            }}
-          >
-            {isLastSegment ? "Complete Course" : "Next Video"}{" "}
-            {isLastSegment ? (
-              <CheckCircle className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowRight className="ml-2 h-4 w-4" />
-            )}
-          </Button>
+                if (isLastSegment) {
+                  navigate({ to: "/learn/course-completed" });
+                } else if (nextSegment) {
+                  setCurrentSegmentId(nextSegment.id);
+                }
+              }}
+            >
+              {isLastSegment ? "Complete Course" : "Next Video"}{" "}
+              {isLastSegment ? (
+                <CheckCircle className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowRight className="ml-2 h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">Comments</h2>
+            <CommentForm
+              onSubmit={handleSubmitComment}
+              isLoading={isSubmittingComment}
+            />
+            <CommentList comments={comments} />
+          </div>
         </div>
       )}
 
@@ -557,19 +600,20 @@ function ViewSegment({
   );
 }
 
-function FloatingFeedbackButton() {
-  return (
-    <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
-      <Button size="lg" className="rounded-full shadow-lg">
-        <MessageSquare className="w-5 h-5 mr-2" />
-        Leave a Testimonial
-      </Button>
-    </Link>
-  );
-}
+// function FloatingFeedbackButton() {
+//   return (
+//     <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
+//       <Button size="lg" className="rounded-full shadow-lg">
+//         <MessageSquare className="w-5 h-5 mr-2" />
+//         Leave a Testimonial
+//       </Button>
+//     </Link>
+//   );
+// }
 
 function RouteComponent() {
-  const { segment, segments, isPremium, isAdmin } = Route.useLoaderData();
+  const { segment, segments, isPremium, isAdmin, comments } =
+    Route.useLoaderData();
 
   return (
     <>
@@ -579,8 +623,9 @@ function RouteComponent() {
         currentSegmentId={segment.id}
         isPremium={isPremium}
         isAdmin={isAdmin}
+        comments={comments}
       />
-      <FloatingFeedbackButton />
+      {/* <FloatingFeedbackButton /> */}
       <Toaster />
     </>
   );

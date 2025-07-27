@@ -198,3 +198,5 @@ export type Module = typeof modules.$inferSelect;
 export type ModuleCreate = typeof modules.$inferInsert;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type TestimonialCreate = typeof testimonials.$inferInsert;
+export type Comment = typeof comments.$inferSelect;
+export type CommentCreate = typeof comments.$inferInsert;
