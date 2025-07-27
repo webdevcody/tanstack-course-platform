@@ -15,7 +15,7 @@ import {
   Lock,
   MessageSquare,
 } from "lucide-react";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, Suspense } from "react";
 import {
   deleteSegmentUseCase,
   getSegmentBySlugUseCase,
@@ -60,11 +60,9 @@ import { setLastWatchedSegment } from "~/utils/local-storage";
 import { cn, getTimeAgo } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
 import { useAuth } from "~/hooks/use-auth";
-import { getCommentsFn } from "~/fn/comments";
-import { type Comment } from "~/db/schema";
-import { CommentsWithUser } from "~/data-access/comments";
 import { CommentForm } from "./-components/comment-form";
 import { CommentList } from "./-components/comment-list";
+import { getCommentsQuery } from "~/lib/queries/comments";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
@@ -72,9 +70,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
     const { segment, segments, progress } = await getSegmentInfoFn({
       data: { slug: params.slug },
     });
-    const comments = await getCommentsFn({
-      data: { segmentId: segment.id },
-    });
+    queryClient.ensureQueryData(getCommentsQuery(segment.id));
     const isPremium = await isUserPremiumFn();
     const isAdmin = await isAdminFn();
 
@@ -86,7 +82,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
       throw redirect({ to: "/learn/not-found" });
     }
 
-    return { segment, segments, progress, isPremium, isAdmin, comments };
+    return { segment, segments, progress, isPremium, isAdmin };
   },
 });
 
@@ -182,7 +178,6 @@ function ViewSegment({
   // attachments,
   isPremium,
   isAdmin,
-  comments,
 }: {
   segments: Segment[];
   currentSegment: Segment;
@@ -190,7 +185,6 @@ function ViewSegment({
   // attachments: Attachment[];
   isPremium: boolean;
   isAdmin: boolean;
-  comments: CommentsWithUser;
 }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -521,11 +515,10 @@ function ViewSegment({
           </div>
           <div className="space-y-4">
             <h2 className="text-xl font-bold">Comments</h2>
-            <CommentForm
-              onSubmit={handleSubmitComment}
-              isLoading={isSubmittingComment}
-            />
-            <CommentList comments={comments} />
+            <CommentForm />
+            <Suspense fallback={<div>Loading...</div>}>
+              <CommentList />
+            </Suspense>
           </div>
         </div>
       )}
@@ -600,20 +593,19 @@ function ViewSegment({
   );
 }
 
-// function FloatingFeedbackButton() {
-//   return (
-//     <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
-//       <Button size="lg" className="rounded-full shadow-lg">
-//         <MessageSquare className="w-5 h-5 mr-2" />
-//         Leave a Testimonial
-//       </Button>
-//     </Link>
-//   );
-// }
+function FloatingFeedbackButton() {
+  return (
+    <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
+      <Button size="lg" className="rounded-full shadow-lg">
+        <MessageSquare className="w-5 h-5 mr-2" />
+        Leave a Testimonial
+      </Button>
+    </Link>
+  );
+}
 
 function RouteComponent() {
-  const { segment, segments, isPremium, isAdmin, comments } =
-    Route.useLoaderData();
+  const { segment, segments, isPremium, isAdmin } = Route.useLoaderData();
 
   return (
     <>
@@ -623,9 +615,8 @@ function RouteComponent() {
         currentSegmentId={segment.id}
         isPremium={isPremium}
         isAdmin={isAdmin}
-        comments={comments}
       />
-      {/* <FloatingFeedbackButton /> */}
+      <FloatingFeedbackButton />
       <Toaster />
     </>
   );

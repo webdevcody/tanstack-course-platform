@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { database } from "~/db";
-import { comments } from "~/db/schema";
+import { CommentCreate, comments } from "~/db/schema";
 
 export type CommentsWithUser = Awaited<ReturnType<typeof getComments>>;
 
@@ -12,4 +12,8 @@ export async function getComments(segmentId: number) {
     },
     orderBy: [desc(comments.createdAt)],
   });
+}
+
+export async function createComment(comment: CommentCreate) {
+  return database.insert(comments).values(comment);
 }

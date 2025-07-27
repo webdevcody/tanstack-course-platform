@@ -3,16 +3,18 @@ import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Smile } from "lucide-react";
 import { useAuth } from "~/hooks/use-auth";
+import { createCommentFn } from "~/fn/comments";
+import { useLoaderData, useRouter } from "@tanstack/react-router";
+import { useCreateComment } from "~/hooks/mutations/use-create-comment";
+import { toast } from "~/hooks/use-toast";
 
-interface CommentFormProps {
-  onSubmit: (comment: string) => void;
-  isLoading?: boolean;
-}
-
-export function CommentForm({ onSubmit, isLoading = false }: CommentFormProps) {
+export function CommentForm() {
   const [commentText, setCommentText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useAuth();
+  const { segment } = useLoaderData({ from: "/learn/$slug/_layout/" });
+  const router = useRouter();
+  const { mutate: createComment, isPending } = useCreateComment();
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -28,10 +30,25 @@ export function CommentForm({ onSubmit, isLoading = false }: CommentFormProps) {
   }, [commentText]);
 
   const handleSubmit = () => {
-    if (commentText.trim() && !isLoading) {
-      onSubmit(commentText.trim());
-      setCommentText("");
-    }
+    createComment(
+      {
+        segmentId: segment.id,
+        content: commentText.trim(),
+      },
+      {
+        onSuccess: () => {
+          setCommentText("");
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description:
+              "Something went wrong, please try again later or contact support.",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
@@ -65,7 +82,7 @@ export function CommentForm({ onSubmit, isLoading = false }: CommentFormProps) {
               onKeyDown={handleKeyDown}
               className="min-h-[32px] max-h-32 resize-none border-0 border-b border-muted-foreground/25 rounded-none px-0 py-2 focus-visible:ring-0 focus-visible:border-primary"
               style={{ height: "auto" }}
-              disabled={isLoading}
+              disabled={isPending}
             />
           </div>
         </div>
@@ -74,16 +91,16 @@ export function CommentForm({ onSubmit, isLoading = false }: CommentFormProps) {
             variant="ghost"
             size="sm"
             onClick={handleCancel}
-            disabled={!commentText.trim() || isLoading}
+            disabled={!commentText.trim() || isPending}
           >
             Cancel
           </Button>
           <Button
             size="sm"
             onClick={handleSubmit}
-            disabled={!commentText.trim() || isLoading}
+            disabled={!commentText.trim() || isPending}
           >
-            {isLoading ? "Posting..." : "Comment"}
+            {isPending ? "Posting..." : "Comment"}
           </Button>
         </div>
       </div>

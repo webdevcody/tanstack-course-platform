@@ -1,11 +1,12 @@
 import { getTimeAgo } from "~/lib/utils";
-import { type CommentsWithUser } from "~/data-access/comments";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getCommentsQuery } from "~/lib/queries/comments";
+import { useLoaderData } from "@tanstack/react-router";
 
-interface CommentListProps {
-  comments: CommentsWithUser;
-}
+export function CommentList() {
+  const { segment } = useLoaderData({ from: "/learn/$slug/_layout/" });
+  const { data: comments } = useSuspenseQuery(getCommentsQuery(segment.id));
 
-export function CommentList({ comments }: CommentListProps) {
   if (comments.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
