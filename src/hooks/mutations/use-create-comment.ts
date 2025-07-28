@@ -28,6 +28,8 @@ export function useCreateComment() {
         segmentId: segment.id,
         createdAt: new Date(),
         updatedAt: new Date(),
+        parentId: variables.parentId ?? null,
+        children: [],
       };
       queryClient.setQueryData(getCommentsQuery(segment.id).queryKey, (old) => [
         newComment,
@@ -35,7 +37,7 @@ export function useCreateComment() {
       ]);
       return { previousComments };
     },
-    onError: (error, variables, context) => {
+    onError: (_, __, context) => {
       queryClient.setQueryData(
         getCommentsQuery(segment.id).queryKey,
         context?.previousComments

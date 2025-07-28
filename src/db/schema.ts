@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  AnyPgColumn,
   boolean,
   index,
   integer,
@@ -99,6 +100,9 @@ export const comments = tableCreator("comment", {
     .references(() => segments.id, {
       onDelete: "cascade",
     }),
+  parentId: integer("parentId").references((): AnyPgColumn => comments.id, {
+    onDelete: "cascade",
+  }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -167,7 +171,7 @@ export const segmentsRelations = relations(segments, ({ one, many }) => ({
   comments: many(comments),
 }));
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const commentsRelations = relations(comments, ({ one, many }) => ({
   user: one(users, {
     fields: [comments.userId],
     references: [users.id],
@@ -175,6 +179,14 @@ export const commentsRelations = relations(comments, ({ one }) => ({
   segment: one(segments, {
     fields: [comments.segmentId],
     references: [segments.id],
+  }),
+  parent: one(comments, {
+    relationName: "parent",
+    fields: [comments.parentId],
+    references: [comments.id],
+  }),
+  children: many(comments, {
+    relationName: "parent",
   }),
 }));
 

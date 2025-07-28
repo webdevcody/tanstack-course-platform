@@ -389,28 +389,6 @@ function ViewSegment({
     }
   };
 
-  const handleSubmitComment = async (commentText: string) => {
-    try {
-      setIsSubmittingComment(true);
-      // TODO: Implement comment submission
-      // await createCommentFn({ data: { segmentId: currentSegmentId, content: commentText } });
-      toast({
-        title: "Comment posted successfully!",
-        description: "Your comment has been added.",
-      });
-      router.invalidate();
-    } catch (error) {
-      console.error("Failed to post comment:", error);
-      toast({
-        title: "Failed to post comment",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmittingComment(false);
-    }
-  };
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
