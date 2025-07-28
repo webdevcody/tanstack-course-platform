@@ -1,0 +1,2 @@
+ALTER TABLE "app_comment" ADD COLUMN "repliedToId" integer;--> statement-breakpoint
+ALTER TABLE "app_comment" ADD CONSTRAINT "app_comment_repliedToId_app_user_id_fk" FOREIGN KEY ("repliedToId") REFERENCES "public"."app_user"("id") ON DELETE cascade ON UPDATE no action;

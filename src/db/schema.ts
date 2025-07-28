@@ -103,6 +103,9 @@ export const comments = tableCreator("comment", {
   parentId: integer("parentId").references((): AnyPgColumn => comments.id, {
     onDelete: "cascade",
   }),
+  repliedToId: integer("repliedToId").references((): AnyPgColumn => users.id, {
+    onDelete: "cascade",
+  }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -187,6 +190,10 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   }),
   children: many(comments, {
     relationName: "parent",
+  }),
+  repliedTo: one(users, {
+    fields: [comments.repliedToId],
+    references: [users.id],
   }),
 }));
 

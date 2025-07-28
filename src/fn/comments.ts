@@ -19,6 +19,7 @@ const createCommentSchema = z.object({
   segmentId: z.number(),
   content: z.string(),
   parentId: z.number().nullable(),
+  repliedToId: z.number().nullable(),
 });
 
 export type CreateCommentSchema = z.infer<typeof createCommentSchema>;
@@ -32,6 +33,7 @@ export const createCommentFn = createServerFn({ method: "POST" })
       segmentId: data.segmentId,
       content: data.content,
       parentId: data.parentId,
+      repliedToId: data.repliedToId,
     });
   });
 

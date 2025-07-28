@@ -27,6 +27,7 @@ import { useDeleteComment } from "~/hooks/mutations/use-delete-comment";
 import { toast } from "~/hooks/use-toast";
 import { useEditComment } from "~/hooks/mutations/use-edit-comment";
 import { useCreateComment } from "~/hooks/mutations/use-create-comment";
+import { CommentsWithUser } from "~/data-access/comments";
 
 interface CommentItemProps {
   comment: any;
@@ -132,8 +133,6 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
 
   const handleSubmitReply = () => {
     if (replyContent.trim()) {
-      // Find the root parent ID - if this comment is a child, get its parent's ID
-      // If this comment is a root comment, use its own ID
       const rootParentId = comment.parentId || comment.id;
 
       createComment(
@@ -141,6 +140,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
           segmentId: segment.id,
           content: replyContent,
           parentId: rootParentId,
+          repliedToId: comment.user.id,
         },
         {
           onSuccess: () => {
@@ -185,6 +185,14 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
               <p className="text-sm font-bold">{comment.user.email}</p>
               <p className="text-sm text-muted-foreground">
                 {getTimeAgo(comment.createdAt)}
+                {comment.repliedTo && (
+                  <span className="ml-2">
+                    • replying to{" "}
+                    <span className="font-medium">
+                      ({comment.repliedTo.email})
+                    </span>
+                  </span>
+                )}
               </p>
             </div>
             {user && comment.user.email === user.email && (
@@ -344,13 +352,16 @@ export function CommentList() {
     );
   }
 
-  const renderCommentTree = (commentTree: any[], level: number = 0) => {
+  const renderCommentTree = (
+    commentTree: CommentsWithUser,
+    level: number = 0
+  ) => {
     return commentTree.map((comment) => (
       <div key={comment.id}>
         <CommentItem comment={comment} level={level} />
         {comment.children && comment.children.length > 0 && (
           <div className="border-l-2 border-muted ml-4">
-            {comment.children.map((child: any) => (
+            {comment.children.map((child) => (
               <CommentItem key={child.id} comment={child} level={1} />
             ))}
           </div>

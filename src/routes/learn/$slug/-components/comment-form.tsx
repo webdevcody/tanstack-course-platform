@@ -32,6 +32,7 @@ export function CommentForm() {
         segmentId: segment.id,
         content: commentText.trim(),
         parentId: null,
+        repliedToId: null,
       },
       {
         onSuccess: () => {

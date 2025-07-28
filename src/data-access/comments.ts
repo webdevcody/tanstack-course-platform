@@ -12,6 +12,7 @@ export async function getComments(segmentId: number) {
       children: {
         with: {
           user: true,
+          repliedTo: true,
         },
       },
     },

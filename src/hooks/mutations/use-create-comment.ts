@@ -29,6 +29,7 @@ export function useCreateComment() {
         createdAt: new Date(),
         updatedAt: new Date(),
         parentId: variables.parentId ?? null,
+        repliedToId: variables.repliedToId ?? null,
         children: [],
       };
       queryClient.setQueryData(getCommentsQuery(segment.id).queryKey, (old) => [
