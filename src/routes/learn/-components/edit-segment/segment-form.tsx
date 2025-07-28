@@ -34,9 +34,8 @@ import {
 } from "lucide-react";
 import { AutoComplete } from "~/components/ui/autocomplete";
 import { Switch } from "~/components/ui/switch";
-import { useState } from "react";
 import type { UploadProgress } from "~/utils/storage/helpers";
-import { useAddSegment } from "./use-add-segment";
+import { useEditSegment } from "./use-edit-segment";
 import { useLoaderData } from "@tanstack/react-router";
 
 export const formSchema = z.object({
@@ -54,17 +53,18 @@ export const formSchema = z.object({
 export type SegmentFormValues = z.infer<typeof formSchema>;
 
 export function SegmentForm() {
-  const { moduleNames } = useLoaderData({ from: "/learn/add" });
-  const { onSubmit, isSubmitting, uploadProgress } = useAddSegment();
+  const { segment, moduleNames } = useLoaderData({ from: "/learn/$slug/edit" });
+  const { onSubmit, isSubmitting, uploadProgress } = useEditSegment(segment);
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      content: "",
+      title: segment.title,
+      content: segment.content ?? "",
       video: undefined,
-      slug: "",
-      moduleTitle: "",
-      isPremium: false,
+      slug: segment.slug,
+      moduleTitle: segment.moduleTitle,
+      isPremium: segment.isPremium,
     },
   });
 
@@ -72,11 +72,9 @@ export function SegmentForm() {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header Section */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Create New Content
-        </h1>
+        <h1 className="text-3xl font-bold tracking-tight">Edit Content</h1>
         <p className="text-muted-foreground text-lg">
-          Add a new segment to your course with rich content and media
+          Update your course segment with rich content and media
         </p>
       </div>
 
@@ -90,7 +88,7 @@ export function SegmentForm() {
                 Basic Information
               </CardTitle>
               <CardDescription>
-                Set the fundamental details for your content segment
+                Update the fundamental details for your content segment
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -186,7 +184,7 @@ export function SegmentForm() {
                 Content
               </CardTitle>
               <CardDescription>
-                Write your lesson content using Markdown for rich formatting
+                Update your lesson content using Markdown for rich formatting
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -222,7 +220,7 @@ export function SegmentForm() {
                 Media Content
               </CardTitle>
               <CardDescription>
-                Upload a video to enhance your lesson experience
+                Upload a new video to replace the existing one (optional)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -246,7 +244,7 @@ export function SegmentForm() {
                                   or drag and drop
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                  MP4 files only
+                                  MP4 files only (replaces existing video)
                                 </p>
                               </div>
                               <Input
@@ -329,7 +327,7 @@ export function SegmentForm() {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Upload an MP4 video file to accompany your lesson content
+                      Upload an MP4 video file to replace the existing video
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -388,12 +386,12 @@ export function SegmentForm() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Creating...
+                  Updating...
                 </>
               ) : (
                 <>
-                  <FileText className="mr-2 h-5 w-5" />
-                  Create Content
+                  <Edit className="mr-2 h-5 w-5" />
+                  Update Content
                 </>
               )}
             </Button>
