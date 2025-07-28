@@ -21,7 +21,10 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "../-components/segment-form";
-import { uploadVideoWithPresignedUrl } from "~/utils/storage/helpers";
+import {
+  uploadVideoWithPresignedUrl,
+  type UploadProgress,
+} from "~/utils/storage/helpers";
 import { getModuleById } from "~/data-access/modules";
 import { getModulesUseCase } from "~/use-cases/modules";
 import { generateRandomUUID } from "~/utils/uuid";
@@ -83,15 +86,24 @@ function RouteComponent() {
   const slug = params.slug;
   const { segment, moduleNames } = Route.useLoaderData();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
+    null
+  );
 
   const onSubmit = async (values: SegmentFormValues) => {
     try {
       setIsSubmitting(true);
       let videoKey = undefined;
+      let videoDuration = segment.length || undefined; // Keep existing length if no new video
 
       if (values.video) {
         videoKey = `${generateRandomUUID()}.mp4`;
-        await uploadVideoWithPresignedUrl(videoKey, values.video);
+        const uploadResult = await uploadVideoWithPresignedUrl(
+          videoKey,
+          values.video,
+          progress => setUploadProgress(progress)
+        );
+        videoDuration = uploadResult.duration;
       }
 
       await updateSegmentFn({
@@ -103,7 +115,7 @@ function RouteComponent() {
             videoKey: videoKey,
             moduleTitle: values.moduleTitle,
             slug: values.slug,
-            length: values.length || undefined,
+            length: videoDuration,
             isPremium: values.isPremium,
           },
         },
@@ -116,6 +128,7 @@ function RouteComponent() {
       // TODO: Show error toast
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -144,13 +157,13 @@ function RouteComponent() {
           video: undefined,
           moduleTitle: segment.moduleTitle,
           slug: segment.slug,
-          length: segment.length || "",
           isPremium: segment.isPremium,
         }}
         moduleNames={moduleNames}
         isSubmitting={isSubmitting}
         submitButtonText="Update Segment"
         submitButtonLoadingText="Updating..."
+        uploadProgress={uploadProgress}
       />
     </Container>
   );

@@ -17,7 +17,10 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "./-components/segment-form";
-import { uploadVideoWithPresignedUrl } from "~/utils/storage/helpers";
+import {
+  uploadVideoWithPresignedUrl,
+  type UploadProgress,
+} from "~/utils/storage/helpers";
 import { getModulesUseCase } from "~/use-cases/modules";
 import { generateRandomUUID } from "~/utils/uuid";
 
@@ -76,16 +79,25 @@ const getUniqueModuleNamesFn = createServerFn()
 function RouteComponent() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
+    null
+  );
   const { moduleNames } = Route.useLoaderData();
 
   const onSubmit = async (values: SegmentFormValues) => {
     try {
       setIsSubmitting(true);
       let videoKey;
+      let videoDuration;
 
       if (values.video) {
         videoKey = `${generateRandomUUID()}.mp4`;
-        await uploadVideoWithPresignedUrl(videoKey, values.video);
+        const uploadResult = await uploadVideoWithPresignedUrl(
+          videoKey,
+          values.video,
+          progress => setUploadProgress(progress)
+        );
+        videoDuration = uploadResult.duration;
       }
 
       const segment = await createSegmentFn({
@@ -94,7 +106,7 @@ function RouteComponent() {
           content: values.content,
           slug: values.title.toLowerCase().replace(/ /g, "-"),
           moduleTitle: values.moduleTitle,
-          length: values.length || undefined,
+          length: videoDuration,
           videoKey,
           isPremium: values.isPremium,
         },
@@ -107,6 +119,7 @@ function RouteComponent() {
       // TODO: Show error toast
     } finally {
       setIsSubmitting(false);
+      setUploadProgress(null);
     }
   };
 
@@ -129,13 +142,13 @@ function RouteComponent() {
           video: undefined,
           slug: "",
           moduleTitle: "",
-          length: "",
           isPremium: false,
         }}
         moduleNames={moduleNames}
         isSubmitting={isSubmitting}
         submitButtonText="Create Content"
         submitButtonLoadingText="Creating..."
+        uploadProgress={uploadProgress}
       />
     </Container>
   );

@@ -13,9 +13,12 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
+import { Progress } from "~/components/ui/progress";
 import { Loader2 } from "lucide-react";
 import { AutoComplete } from "~/components/ui/autocomplete";
 import { Switch } from "~/components/ui/switch";
+import { useState } from "react";
+import type { UploadProgress } from "~/utils/storage/helpers";
 
 export const formSchema = z.object({
   title: z
@@ -26,7 +29,6 @@ export const formSchema = z.object({
   video: z.instanceof(File).optional(),
   moduleTitle: z.string().min(1, "Module ID is required"),
   slug: z.string().min(2, "Slug must be at least 2 characters"),
-  length: z.string().optional(),
   isPremium: z.boolean().default(false),
 });
 
@@ -39,6 +41,7 @@ interface SegmentFormProps {
   isSubmitting: boolean;
   submitButtonText: string;
   submitButtonLoadingText: string;
+  uploadProgress?: UploadProgress | null;
 }
 
 export function SegmentForm({
@@ -48,6 +51,7 @@ export function SegmentForm({
   isSubmitting,
   submitButtonText,
   submitButtonLoadingText,
+  uploadProgress,
 }: SegmentFormProps) {
   const form = useForm({ resolver: zodResolver(formSchema), defaultValues });
 
@@ -122,13 +126,29 @@ export function SegmentForm({
                 <Input
                   type="file"
                   accept="video/mp4"
-                  onChange={(e) => onChange(e.target.files?.[0])}
+                  onChange={e => onChange(e.target.files?.[0])}
                   {...field}
                 />
               </FormControl>
               <FormDescription>
                 Upload a video to accompany your content.
               </FormDescription>
+              {uploadProgress && (
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Uploading video...</span>
+                    <span>{uploadProgress.percentage}%</span>
+                  </div>
+                  <Progress
+                    value={uploadProgress.percentage}
+                    className="w-full"
+                  />
+                  <div className="text-xs text-muted-foreground">
+                    {Math.round(uploadProgress.loaded / 1024 / 1024)} MB /{" "}
+                    {Math.round(uploadProgress.total / 1024 / 1024)} MB
+                  </div>
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -146,7 +166,7 @@ export function SegmentForm({
                   onSelectedValueChange={field.onChange}
                   searchValue={field.value}
                   onSearchValueChange={field.onChange}
-                  items={moduleNames.map((name) => ({
+                  items={moduleNames.map(name => ({
                     value: name,
                     label: name,
                   }))}
@@ -157,23 +177,6 @@ export function SegmentForm({
               </FormControl>
               <FormDescription>
                 Select an existing module or enter a new one.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="length"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Length (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="2:54" {...field} />
-              </FormControl>
-              <FormDescription>
-                Estimated length of the segment (e.g. "5 minutes", "2 hours")
               </FormDescription>
               <FormMessage />
             </FormItem>
