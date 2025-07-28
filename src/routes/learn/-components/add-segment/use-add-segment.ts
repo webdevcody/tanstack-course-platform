@@ -35,7 +35,7 @@ export function useAddSegment() {
         data: {
           title: values.title,
           content: values.content,
-          slug: values.title.toLowerCase().replace(/ /g, "-"),
+          slug: values.slug,
           moduleTitle: values.moduleTitle,
           length: videoDuration,
           videoKey,
