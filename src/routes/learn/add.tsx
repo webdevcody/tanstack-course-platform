@@ -3,10 +3,9 @@ import { assertAuthenticatedFn } from "~/fn/auth";
 import {
   getUniqueModuleNamesFn,
   AddSegmentHeader,
-  useAddSegment,
+  SegmentForm,
 } from "./-components/add-segment";
 import { Container } from "./-components/container";
-import { SegmentForm } from "./-components/segment-form";
 
 export const Route = createFileRoute("/learn/add")({
   component: RouteComponent,
@@ -18,29 +17,12 @@ export const Route = createFileRoute("/learn/add")({
 });
 
 function RouteComponent() {
-  const { moduleNames } = Route.useLoaderData();
-  const { onSubmit, isSubmitting, uploadProgress } = useAddSegment();
-
   return (
-    <Container>
+    <div className="container mx-auto">
       <AddSegmentHeader />
-
-      <SegmentForm
-        onSubmit={onSubmit}
-        defaultValues={{
-          title: "",
-          content: "",
-          video: undefined,
-          slug: "",
-          moduleTitle: "",
-          isPremium: false,
-        }}
-        moduleNames={moduleNames}
-        isSubmitting={isSubmitting}
-        submitButtonText="Create Content"
-        submitButtonLoadingText="Creating..."
-        uploadProgress={uploadProgress}
-      />
-    </Container>
+      <Container>
+        <SegmentForm />
+      </Container>
+    </div>
   );
 }
