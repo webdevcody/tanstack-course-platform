@@ -1,7 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { authenticatedMiddleware, unauthenticatedMiddleware } from "~/lib/auth";
 import { z } from "zod";
-import { createComment, getComments } from "~/data-access/comments";
+import {
+  createComment,
+  deleteComment,
+  getComments,
+} from "~/data-access/comments";
 
 export const getCommentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -26,4 +30,11 @@ export const createCommentFn = createServerFn({ method: "POST" })
       segmentId: data.segmentId,
       content: data.content,
     });
+  });
+
+export const deleteCommentFn = createServerFn({ method: "POST" })
+  .middleware([authenticatedMiddleware])
+  .validator(z.object({ commentId: z.number() }))
+  .handler(async ({ data, context }) => {
+    return deleteComment(data.commentId);
   });

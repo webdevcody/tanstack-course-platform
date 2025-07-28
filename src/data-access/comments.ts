@@ -17,3 +17,7 @@ export async function getComments(segmentId: number) {
 export async function createComment(comment: CommentCreate) {
   return database.insert(comments).values(comment);
 }
+
+export async function deleteComment(commentId: number) {
+  return database.delete(comments).where(eq(comments.id, commentId));
+}

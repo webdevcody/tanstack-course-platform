@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { Smile } from "lucide-react";
 import { useAuth } from "~/hooks/use-auth";
-import { createCommentFn } from "~/fn/comments";
-import { useLoaderData, useRouter } from "@tanstack/react-router";
+import { useLoaderData } from "@tanstack/react-router";
 import { useCreateComment } from "~/hooks/mutations/use-create-comment";
 import { toast } from "~/hooks/use-toast";
 
@@ -13,7 +11,6 @@ export function CommentForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const user = useAuth();
   const { segment } = useLoaderData({ from: "/learn/$slug/_layout/" });
-  const router = useRouter();
   const { mutate: createComment, isPending } = useCreateComment();
 
   // Auto-resize textarea
