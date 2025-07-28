@@ -13,6 +13,7 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
+    "verbatimModuleSyntax": false,
     "paths": {
       "~/*": ["./src/*"]
     }

@@ -1,23 +1,65 @@
-import { uploadVideoChunkFn } from "~/fn/storage";
+import { getPresignedUploadUrlFn } from "~/fn/storage";
+import { getVideoDuration, formatDuration } from "~/utils/video-duration";
 
-export async function uploadVideoChunk(key: string, file: File) {
-  const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
-  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+export interface UploadProgress {
+  loaded: number;
+  total: number;
+  percentage: number;
+}
 
-  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-    const start = chunkIndex * CHUNK_SIZE;
-    const end = Math.min(start + CHUNK_SIZE, file.size);
-    const chunk = file.slice(start, end);
+export interface UploadResult {
+  videoKey: string;
+  duration: string; // formatted duration like "2:34"
+  durationSeconds: number; // raw duration in seconds
+}
 
-    // Create FormData and append all necessary data
-    const formData = new FormData();
-    formData.append("chunkIndex", chunkIndex.toString());
-    formData.append("totalChunks", totalChunks.toString());
-    formData.append("videoKey", key);
-    formData.append("chunk", new File([chunk], file.name, { type: file.type }));
+export async function uploadVideoWithPresignedUrl(
+  key: string,
+  file: File,
+  onProgress?: (progress: UploadProgress) => void
+): Promise<UploadResult> {
+  // Calculate video duration first
+  const durationSeconds = await getVideoDuration(file);
+  const duration = formatDuration(durationSeconds);
 
-    await uploadVideoChunkFn({ data: formData });
-  }
+  // Get presigned URL from server
+  const { presignedUrl } = await getPresignedUploadUrlFn({
+    data: { videoKey: key },
+  });
 
-  return key;
+  // Create XMLHttpRequest for progress tracking
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.onprogress = event => {
+      if (event.lengthComputable && onProgress) {
+        const progress: UploadProgress = {
+          loaded: event.loaded,
+          total: event.total,
+          percentage: Math.round((event.loaded / event.total) * 100),
+        };
+        onProgress(progress);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve({
+          videoKey: key,
+          duration,
+          durationSeconds,
+        });
+      } else {
+        reject(new Error(`Upload failed: ${xhr.statusText}`));
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Upload failed: Network error"));
+    };
+
+    xhr.open("PUT", presignedUrl);
+    xhr.setRequestHeader("Content-Type", "video/mp4");
+    xhr.send(file);
+  });
 }

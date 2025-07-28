@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
 
 export default defineConfig({
   server: { port: 3000 },
@@ -10,6 +11,7 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     tsConfigPaths(),
-    tanstackStart({ target: "node-server" }),
+    tanstackStart({ target: "node-server", customViteReactPlugin: true }),
+    viteReact(),
   ],
 });

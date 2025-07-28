@@ -36,7 +36,7 @@ async function uploadVideosToR2() {
 
     // Read all files in the backups/videos directory
     const files = await readdir(BACKUPS_DIR);
-    const videoFiles = files.filter((file) => file.endsWith(".mp4"));
+    const videoFiles = files.filter(file => file.endsWith(".mp4"));
 
     console.log(`📁 Found ${videoFiles.length} video files to process`);
 
@@ -88,27 +88,9 @@ async function uploadVideosToR2() {
         // Read the file
         const fileBuffer = await readFile(filePath);
 
-        // Upload to R2 with progress tracking
-        let lastProgressPercentage = 0;
-        await r2Storage.uploadWithProgress(key, fileBuffer, (progress) => {
-          // Only update if progress has changed significantly
-          if (progress.percentage > lastProgressPercentage) {
-            process.stdout.write("\r");
-            const fileProgressBar = createProgressBar(
-              progress.percentage,
-              100,
-              25
-            );
-            const loadedMB = (progress.loaded / 1024 / 1024).toFixed(1);
-            const totalMB = (progress.total / 1024 / 1024).toFixed(1);
-            const progressText = `📁 File Progress: ${fileProgressBar} ${progress.percentage}% (${loadedMB}/${totalMB} MB)`;
-            process.stdout.write(progressText);
-            lastProgressPercentage = progress.percentage;
-          }
-        });
-
-        // Clear the progress line and move to next line
-        process.stdout.write("\n");
+        // Upload to R2
+        console.log(`⏳ Uploading ${formatFileSize(fileSize)}...`);
+        await r2Storage.upload(key, fileBuffer);
 
         uploadedSize += fileSize;
         const sizeProgress = formatFileSize(uploadedSize);
