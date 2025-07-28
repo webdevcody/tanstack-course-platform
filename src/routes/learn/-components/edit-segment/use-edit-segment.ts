@@ -7,6 +7,7 @@ import {
   type UploadProgress,
 } from "~/utils/storage/helpers";
 import { generateRandomUUID } from "~/utils/uuid";
+import { usePreventTabClose } from "~/hooks/use-prevent-tab-close";
 
 export function useEditSegment(segment: any) {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ export function useEditSegment(segment: any) {
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
     null
   );
+
+  usePreventTabClose(isSubmitting);
 
   const onSubmit = async (values: SegmentFormValues) => {
     try {
