@@ -6,7 +6,7 @@ export interface IStorage {
     rangeHeader: string | null
   ): Promise<StreamFileResponse>;
   getPresignedUrl(key: string): Promise<string>;
-  combineChunks(finalKey: string, partKeys: string[]): Promise<void>;
+  getPresignedUploadUrl(key: string): Promise<string>;
 }
 
 export type StreamFileRange = Partial<{

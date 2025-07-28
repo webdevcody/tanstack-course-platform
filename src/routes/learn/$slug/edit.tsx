@@ -21,7 +21,7 @@ import {
   SegmentForm,
   type SegmentFormValues,
 } from "../-components/segment-form";
-import { uploadVideoChunk } from "~/utils/storage/helpers";
+import { uploadVideoWithPresignedUrl } from "~/utils/storage/helpers";
 import { getModuleById } from "~/data-access/modules";
 import { getModulesUseCase } from "~/use-cases/modules";
 import { generateRandomUUID } from "~/utils/uuid";
@@ -91,7 +91,7 @@ function RouteComponent() {
 
       if (values.video) {
         videoKey = `${generateRandomUUID()}.mp4`;
-        await uploadVideoChunk(videoKey, values.video);
+        await uploadVideoWithPresignedUrl(videoKey, values.video);
       }
 
       await updateSegmentFn({

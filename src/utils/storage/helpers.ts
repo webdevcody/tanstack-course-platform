@@ -1,22 +1,25 @@
-import { uploadVideoChunkFn } from "~/fn/storage";
+import { getPresignedUploadUrlFn } from "~/fn/storage";
 
-export async function uploadVideoChunk(key: string, file: File) {
-  const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
-  const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+export async function uploadVideoWithPresignedUrl(
+  key: string,
+  file: File
+): Promise<string> {
+  // Get presigned URL from server
+  const { presignedUrl } = await getPresignedUploadUrlFn({
+    data: { videoKey: key },
+  });
 
-  for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-    const start = chunkIndex * CHUNK_SIZE;
-    const end = Math.min(start + CHUNK_SIZE, file.size);
-    const chunk = file.slice(start, end);
+  // Upload directly to R2 using presigned URL
+  const response = await fetch(presignedUrl, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": "video/mp4",
+    },
+  });
 
-    // Create FormData and append all necessary data
-    const formData = new FormData();
-    formData.append("chunkIndex", chunkIndex.toString());
-    formData.append("totalChunks", totalChunks.toString());
-    formData.append("videoKey", key);
-    formData.append("chunk", new File([chunk], file.name, { type: file.type }));
-
-    await uploadVideoChunkFn({ data: formData });
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.statusText}`);
   }
 
   return key;
