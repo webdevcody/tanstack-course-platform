@@ -1,25 +1,13 @@
-import {
-  createFileRoute,
-  useNavigate,
-  useRouter,
-} from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-import { Button } from "~/components/ui/button";
-import { adminMiddleware, authenticatedMiddleware } from "~/lib/auth";
-import { addSegmentUseCase } from "~/use-cases/segments";
+import { createFileRoute } from "@tanstack/react-router";
 import { assertAuthenticatedFn } from "~/fn/auth";
-import { ChevronLeft } from "lucide-react";
-import { getSegments } from "~/data-access/segments";
-import { useState } from "react";
-import { Container } from "./-components/container";
 import {
-  SegmentForm,
-  type SegmentFormValues,
-} from "./-components/segment-form";
-import { uploadVideoChunk } from "~/utils/storage/helpers";
-import { getModulesUseCase } from "~/use-cases/modules";
-import { generateRandomUUID } from "~/utils/uuid";
+  getUniqueModuleNamesFn,
+  AddSegmentHeader,
+  useAddSegment,
+} from "./-components/add-segment";
+import { Container } from "./-components/container";
+import { SegmentForm } from "./-components/segment-form";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/learn/add")({
   component: RouteComponent,
@@ -30,113 +18,33 @@ export const Route = createFileRoute("/learn/add")({
   },
 });
 
-const createSegmentFn = createServerFn()
-  .middleware([adminMiddleware])
-  .validator(
-    z.object({
-      title: z.string(),
-      content: z.string().optional(),
-      videoKey: z.string().optional(),
-      slug: z.string(),
-      moduleTitle: z.string(),
-      length: z.string().optional(),
-      isPremium: z.boolean(),
-    })
-  )
-  .handler(async ({ data }) => {
-    // Get all segments to determine the next order number
-    const segments = await getSegments();
-    const maxOrder = segments.reduce(
-      (max, segment) => Math.max(max, segment.order),
-      -1
-    );
-    const nextOrder = maxOrder + 1;
-
-    const segment = await addSegmentUseCase({
-      title: data.title,
-      content: data.content,
-      slug: data.slug,
-      order: nextOrder,
-      moduleTitle: data.moduleTitle,
-      videoKey: data.videoKey,
-      length: data.length,
-      isPremium: data.isPremium,
-    });
-
-    return segment;
-  });
-
-const getUniqueModuleNamesFn = createServerFn()
-  .middleware([authenticatedMiddleware])
-  .handler(async () => {
-    const modules = await getModulesUseCase();
-    return modules.map(module => module.title);
-  });
-
 function RouteComponent() {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { moduleNames } = Route.useLoaderData();
-
-  const onSubmit = async (values: SegmentFormValues) => {
-    try {
-      setIsSubmitting(true);
-      let videoKey;
-
-      if (values.video) {
-        videoKey = `${generateRandomUUID()}.mp4`;
-        await uploadVideoChunk(videoKey, values.video);
-      }
-
-      const segment = await createSegmentFn({
-        data: {
-          title: values.title,
-          content: values.content,
-          slug: values.title.toLowerCase().replace(/ /g, "-"),
-          moduleTitle: values.moduleTitle,
-          length: values.length || undefined,
-          videoKey,
-          isPremium: values.isPremium,
-        },
-      });
-
-      // Navigate to the new segment
-      navigate({ to: "/learn/$slug", params: { slug: segment.slug } });
-    } catch (error) {
-      console.error("Failed to create segment:", error);
-      // TODO: Show error toast
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const router = useRouter();
+  const { onSubmit, isSubmitting, uploadProgress } = useAddSegment();
 
   return (
-    <Container>
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="outline" onClick={() => router.history.back()}>
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Back to Course
-        </Button>
-      </div>
-
-      <SegmentForm
-        onSubmit={onSubmit}
-        defaultValues={{
-          title: "",
-          content: "",
-          video: undefined,
-          slug: "",
-          moduleTitle: "",
-          length: "",
-          isPremium: false,
-        }}
-        moduleNames={moduleNames}
-        isSubmitting={isSubmitting}
-        submitButtonText="Create Content"
-        submitButtonLoadingText="Creating..."
-      />
-    </Container>
+    <div className="container mx-auto">
+      <AddSegmentHeader />
+      <Container>
+        <SegmentForm
+          headerTitle="Create New Content"
+          headerDescription="Add a new segment to your course with rich content and media"
+          buttonText="Create Content"
+          loadingText="Creating..."
+          buttonIcon={Plus}
+          moduleNames={moduleNames}
+          onSubmit={onSubmit}
+          isSubmitting={isSubmitting}
+          uploadProgress={uploadProgress}
+          defaultValues={{
+            title: "",
+            content: "",
+            slug: "",
+            moduleTitle: "",
+            isPremium: false,
+          }}
+        />
+      </Container>
+    </div>
   );
 }
