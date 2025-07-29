@@ -1,0 +1,2 @@
+ALTER TABLE "app_comment" ADD COLUMN "parentId" integer;--> statement-breakpoint
+ALTER TABLE "app_comment" ADD CONSTRAINT "app_comment_parentId_app_comment_id_fk" FOREIGN KEY ("parentId") REFERENCES "public"."app_comment"("id") ON DELETE cascade ON UPDATE no action;

@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  AnyPgColumn,
   boolean,
   index,
   integer,
@@ -89,6 +90,27 @@ export const segments = tableCreator(
   (table) => [index("segments_slug_idx").on(table.slug)]
 );
 
+export const comments = tableCreator("comment", {
+  id: serial("id").primaryKey(),
+  userId: serial("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  segmentId: serial("segmentId")
+    .notNull()
+    .references(() => segments.id, {
+      onDelete: "cascade",
+    }),
+  parentId: integer("parentId").references((): AnyPgColumn => comments.id, {
+    onDelete: "cascade",
+  }),
+  repliedToId: integer("repliedToId").references((): AnyPgColumn => users.id, {
+    onDelete: "cascade",
+  }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const progress = tableCreator(
   "progress",
   {
@@ -149,6 +171,30 @@ export const segmentsRelations = relations(segments, ({ one, many }) => ({
     fields: [segments.moduleId],
     references: [modules.id],
   }),
+  comments: many(comments),
+}));
+
+export const commentsRelations = relations(comments, ({ one, many }) => ({
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+  segment: one(segments, {
+    fields: [comments.segmentId],
+    references: [segments.id],
+  }),
+  parent: one(comments, {
+    relationName: "parent",
+    fields: [comments.parentId],
+    references: [comments.id],
+  }),
+  children: many(comments, {
+    relationName: "parent",
+  }),
+  repliedTo: one(users, {
+    fields: [comments.repliedToId],
+    references: [users.id],
+  }),
 }));
 
 export const attachmentsRelations = relations(attachments, ({ one }) => ({
@@ -171,3 +217,5 @@ export type Module = typeof modules.$inferSelect;
 export type ModuleCreate = typeof modules.$inferInsert;
 export type Testimonial = typeof testimonials.$inferSelect;
 export type TestimonialCreate = typeof testimonials.$inferInsert;
+export type Comment = typeof comments.$inferSelect;
+export type CommentCreate = typeof comments.$inferInsert;

@@ -15,7 +15,7 @@ import {
   Lock,
   MessageSquare,
 } from "lucide-react";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, Suspense } from "react";
 import {
   deleteSegmentUseCase,
   getSegmentBySlugUseCase,
@@ -57,9 +57,12 @@ import {
 } from "~/use-cases/progress";
 import { useSegment } from "../-components/segment-context";
 import { setLastWatchedSegment } from "~/utils/local-storage";
-import { cn } from "~/lib/utils";
+import { cn, getTimeAgo } from "~/lib/utils";
 import { Badge } from "~/components/ui/badge";
 import { useAuth } from "~/hooks/use-auth";
+import { CommentForm } from "./-components/comment-form";
+import { CommentList } from "./-components/comment-list";
+import { getCommentsQuery } from "~/lib/queries/comments";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
@@ -67,6 +70,7 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
     const { segment, segments, progress } = await getSegmentInfoFn({
       data: { slug: params.slug },
     });
+    queryClient.ensureQueryData(getCommentsQuery(segment.id));
     const isPremium = await isUserPremiumFn();
     const isAdmin = await isAdminFn();
 
@@ -140,7 +144,7 @@ function FileDropzone({ onDrop }: { onDrop: (file: File) => void }) {
       "text/plain": [".txt"],
     },
     maxFiles: 1,
-    onDrop: async acceptedFiles => {
+    onDrop: async (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (!file) return;
       onDrop(file);
@@ -186,6 +190,7 @@ function ViewSegment({
   const router = useRouter();
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const { setCurrentSegmentId } = useSegment();
 
   useEffect(() => {
@@ -198,16 +203,16 @@ function ViewSegment({
   const nextSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      segment => segment.id === currentSegmentId
+      (segment) => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter(s => s.moduleId === currentModule)
+      .filter((s) => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      s => s.id === currentSegmentId
+      (s) => s.id === currentSegmentId
     );
 
     // If there's a next segment in the current module
@@ -228,7 +233,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach(moduleId => {
+    Object.keys(modules).forEach((moduleId) => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -249,16 +254,16 @@ function ViewSegment({
   const previousSegment = useMemo(() => {
     // Find the current module and segment index
     const currentModule = segments.find(
-      segment => segment.id === currentSegmentId
+      (segment) => segment.id === currentSegmentId
     )?.moduleId;
     if (!currentModule) return null;
 
     // Get all segments in the current module and sort by order
     const currentModuleSegments = segments
-      .filter(s => s.moduleId === currentModule)
+      .filter((s) => s.moduleId === currentModule)
       .sort((a, b) => a.order - b.order);
     const currentIndex = currentModuleSegments.findIndex(
-      s => s.id === currentSegmentId
+      (s) => s.id === currentSegmentId
     );
 
     // If there's a previous segment in the current module
@@ -279,7 +284,7 @@ function ViewSegment({
     );
 
     // Sort segments within each module by order
-    Object.keys(modules).forEach(moduleId => {
+    Object.keys(modules).forEach((moduleId) => {
       modules[Number(moduleId)].sort((a, b) => a.order - b.order);
     });
 
@@ -452,38 +457,47 @@ function ViewSegment({
       )}
 
       {isLoggedIn && (
-        <div className="flex justify-between">
-          <Button
-            disabled={isFirstSegment}
-            onClick={() => {
-              if (previousSegment) {
-                setCurrentSegmentId(previousSegment.id);
-              }
-            }}
-          >
-            <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
-            Previous Lesson
-          </Button>
-          <Button
-            onClick={async () => {
-              await markedAsWatchedFn({
-                data: { segmentId: currentSegmentId },
-              });
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <Button
+              disabled={isFirstSegment}
+              onClick={() => {
+                if (previousSegment) {
+                  setCurrentSegmentId(previousSegment.id);
+                }
+              }}
+            >
+              <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
+              Previous Lesson
+            </Button>
+            <Button
+              onClick={async () => {
+                await markedAsWatchedFn({
+                  data: { segmentId: currentSegmentId },
+                });
 
-              if (isLastSegment) {
-                navigate({ to: "/learn/course-completed" });
-              } else if (nextSegment) {
-                setCurrentSegmentId(nextSegment.id);
-              }
-            }}
-          >
-            {isLastSegment ? "Complete Course" : "Next Video"}{" "}
-            {isLastSegment ? (
-              <CheckCircle className="ml-2 h-4 w-4" />
-            ) : (
-              <ArrowRight className="ml-2 h-4 w-4" />
-            )}
-          </Button>
+                if (isLastSegment) {
+                  navigate({ to: "/learn/course-completed" });
+                } else if (nextSegment) {
+                  setCurrentSegmentId(nextSegment.id);
+                }
+              }}
+            >
+              {isLastSegment ? "Complete Course" : "Next Video"}{" "}
+              {isLastSegment ? (
+                <CheckCircle className="ml-2 h-4 w-4" />
+              ) : (
+                <ArrowRight className="ml-2 h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">Comments</h2>
+            <CommentForm />
+            <Suspense fallback={<div>Loading...</div>}>
+              <CommentList />
+            </Suspense>
+          </div>
         </div>
       )}
 
