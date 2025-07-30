@@ -25,7 +25,7 @@ function RouteComponent() {
   const { onSubmit, isSubmitting, uploadProgress } = useEditSegment(segment);
 
   return (
-    <div className="container mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-theme-50/30 via-transparent to-theme-100/20 dark:from-theme-950/20 dark:via-transparent dark:to-theme-900/10 rounded-3xl ">
       <EditSegmentHeader />
       <Container>
         <SegmentForm

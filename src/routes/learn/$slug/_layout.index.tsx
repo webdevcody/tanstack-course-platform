@@ -14,6 +14,9 @@ import {
   Trash2,
   Lock,
   MessageSquare,
+  BookOpen,
+  Clock,
+  FileText,
 } from "lucide-react";
 import React, { useMemo, useState, useEffect, Suspense } from "react";
 import {
@@ -63,6 +66,7 @@ import { useAuth } from "~/hooks/use-auth";
 import { CommentForm } from "./-components/comment-form";
 import { CommentList } from "./-components/comment-list";
 import { getCommentsQuery } from "~/lib/queries/comments";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/learn/$slug/_layout/")({
   component: RouteComponent,
@@ -191,7 +195,23 @@ function ViewSegment({
   const navigate = useNavigate();
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [activeTab, setActiveTab] = useState<"content" | "comments">("content");
   const { setCurrentSegmentId } = useSegment();
+
+  // Check if there are existing comments to determine initial form visibility
+  const { data: existingComments } = useQuery(
+    getCommentsQuery(currentSegmentId)
+  );
+  const [showCommentForm, setShowCommentForm] = useState(
+    () => existingComments && existingComments.length > 0
+  );
+
+  // Update form visibility when comments data changes
+  useEffect(() => {
+    if (existingComments && existingComments.length > 0) {
+      setShowCommentForm(true);
+    }
+  }, [existingComments]);
 
   useEffect(() => {
     setLastWatchedSegment(currentSegment.slug);
@@ -309,67 +329,105 @@ function ViewSegment({
   // Show upgrade placeholder for premium segments if user is not premium and not admin
   if (currentSegment.isPremium && !isPremium && !isAdmin) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
-        <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
-        <div className="max-w-md space-y-4">
-          <p className="text-muted-foreground">
-            This content is available exclusively for premium members. Upgrade
-            your account to unlock all premium content and enhance your learning
-            experience.
-          </p>
-          <Link to="/purchase" className={buttonVariants({ size: "lg" })}>
-            Buy Now
-          </Link>
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Premium Content Header */}
+        <div className="module-card p-8 text-center">
+          <div className="relative">
+            {/* Background decoration */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-xl"></div>
+
+            {/* Content */}
+            <div className="py-8 relative space-y-6">
+              {/* Premium badge and lock icon */}
+              <div className="flex items-center justify-center space-x-4">
+                <div className="p-4 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 shadow-elevation-2">
+                  <Lock className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                </div>
+                <Badge
+                  variant="outline"
+                  className="bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 px-4 py-2 text-sm font-semibold"
+                >
+                  PREMIUM CONTENT
+                </Badge>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold text-foreground leading-tight">
+                  {currentSegment.title}
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  This lesson is part of our premium curriculum
+                </p>
+              </div>
+
+              {/* Description */}
+              <div className="max-w-lg mx-auto space-y-4">
+                <p className="text-muted-foreground leading-relaxed">
+                  Unlock access to this exclusive content and enhance your
+                  learning journey. Premium members get access to advanced
+                  topics, downloadable resources, and priority support.
+                </p>
+
+                {/* Benefits list */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-theme-500" />
+                    <span>Advanced content</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-theme-500" />
+                    <span>Downloadable resources</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-theme-500" />
+                    <span>Priority support</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <CheckCircle className="h-4 w-4 text-theme-500" />
+                    <span>All future updates</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <div className="space-y-3">
+                <Link
+                  to="/purchase"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-theme-500 to-theme-600 hover:from-theme-600 hover:to-theme-700 text-white font-semibold rounded-lg shadow-elevation-2 hover:shadow-elevation-3 transition-all duration-300 text-lg"
+                >
+                  Upgrade to Premium
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <p className="text-xs text-muted-foreground">
+                  30-day money-back guarantee
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional info card */}
+        <div className="module-card p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-900 dark:to-theme-800">
+              <BookOpen className="h-5 w-5 text-theme-600 dark:text-theme-400" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-foreground mb-2">
+                What you'll learn
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                This premium lesson covers advanced concepts that will take your
+                skills to the next level. Join thousands of developers who have
+                upgraded their knowledge with our comprehensive curriculum.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
-
-  // const handleFileSelect = async (file: File) => {
-  //   try {
-  //     setIsUploading(true);
-  //     const fileKey = generateRandomUUID();
-  //     await uploadFile(fileKey, file);
-
-  //     await createAttachmentFn({
-  //       data: { segmentId: currentSegmentId, fileName: file.name, fileKey },
-  //     });
-
-  //     toast({
-  //       title: "File uploaded successfully!",
-  //       description: "The file has been attached to this content.",
-  //     });
-  //     router.invalidate();
-  //   } catch (error) {
-  //     console.error("Failed to upload file:", error);
-  //     toast({
-  //       title: "Failed to upload file",
-  //       description: "Please try again.",
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     setIsUploading(false);
-  //   }
-  // };
-
-  // const handleDeleteAttachment = async (attachmentId: number) => {
-  //   if (!confirm("Are you sure you want to delete this attachment?")) return;
-
-  //   try {
-  //     await deleteAttachmentFn({ data: { attachmentId } });
-  //     toast({
-  //       title: "File deleted successfully!",
-  //       description: "The file has been deleted.",
-  //     });
-  //     router.invalidate();
-  //   } catch (error) {
-  //     console.error("Failed to delete attachment:", error);
-  //     toast({
-  //       title: "Failed to delete attachment",
-  //       description: "Please try again.",
-  //     });
-  //   }
-  // };
 
   const handleDeleteSegment = async () => {
     try {
@@ -390,166 +448,82 @@ function ViewSegment({
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">{currentSegment.title}</h1>
-          {isAdmin && currentSegment.isPremium && (
-            <Badge
-              variant="outline"
-              className="bg-amber-950 text-amber-300 border-amber-800 flex items-center gap-1"
-            >
-              <Lock className="w-3 h-3" />
-              PREMIUM
-            </Badge>
-          )}
-        </div>
-        {isAdmin && (
-          <div className="gap-2 hidden md:flex">
-            <Link
-              to="/learn/$slug/edit"
-              params={{ slug: currentSegment.slug }}
-              className={buttonVariants({ variant: "outline" })}
-            >
-              <Edit className="mr-2 h-4 w-4" /> Edit Segment
-            </Link>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive-outline">
-                  <Trash2 className="mr-2 h-4 w-4" /> Delete Segment
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    this content and all its associated files and attachments.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel
-                    className={buttonVariants({ variant: "gray-outline" })}
-                  >
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDeleteSegment}
-                    className={buttonVariants({ variant: "destructive" })}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        )}
-      </div>
-
-      {currentSegment.videoKey && (
-        <div className="w-full">
-          <VideoPlayer segmentId={currentSegment.id} />
-        </div>
-      )}
-
-      {currentSegment.content && (
-        <MarkdownContent content={currentSegment.content} />
-      )}
-
-      {isLoggedIn && (
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <Button
-              disabled={isFirstSegment}
-              onClick={() => {
-                if (previousSegment) {
-                  setCurrentSegmentId(previousSegment.id);
-                }
-              }}
-            >
-              <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
-              Previous Lesson
-            </Button>
-            <Button
-              onClick={async () => {
-                await markedAsWatchedFn({
-                  data: { segmentId: currentSegmentId },
-                });
-
-                if (isLastSegment) {
-                  navigate({ to: "/learn/course-completed" });
-                } else if (nextSegment) {
-                  setCurrentSegmentId(nextSegment.id);
-                }
-              }}
-            >
-              {isLastSegment ? "Complete Course" : "Next Video"}{" "}
-              {isLastSegment ? (
-                <CheckCircle className="ml-2 h-4 w-4" />
-              ) : (
-                <ArrowRight className="ml-2 h-4 w-4" />
+    <div className="max-w-5xl mx-auto space-y-4">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-900 dark:to-theme-800">
+              <BookOpen className="h-6 w-6 text-theme-600 dark:text-theme-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground leading-tight">
+                {currentSegment.title}
+              </h1>
+              {currentSegment.length && (
+                <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {currentSegment.length}
+                </p>
               )}
-            </Button>
+            </div>
           </div>
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">Comments</h2>
-            <CommentForm />
-            <Suspense fallback={<div>Loading...</div>}>
-              <CommentList />
-            </Suspense>
-          </div>
-        </div>
-      )}
 
-      {/* focusing on videos for now */}
-      {/* <div className="space-y-4">
-        <h2 className="text-xl font-bold">Documents</h2>
-
-        <div className="space-y-4">
-          <FileDropzone onDrop={handleFileSelect} />
-          {isUploading && (
-            <p className="text-center text-muted-foreground">
-              Uploading file...
-            </p>
-          )}
-        </div>
-
-        {attachments.length > 0 ? (
-          <div className="space-y-2">
-            {attachments.map((attachment) => (
-              <div
-                key={attachment.id}
-                className="flex items-center justify-between p-4 rounded-lg border"
+          <div className="flex items-center gap-3">
+            {isAdmin && currentSegment.isPremium && (
+              <Badge
+                variant="outline"
+                className="bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 flex items-center gap-1"
               >
-                <a
-                  href={getStorageUrl(attachment.fileKey)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
+                <Lock className="w-3 h-3" />
+                PREMIUM
+              </Badge>
+            )}
+
+            {isAdmin && (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/learn/$slug/edit"
+                  params={{ slug: currentSegment.slug }}
                 >
-                  {attachment.fileName}
-                </a>
+                  <Button className="module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3">
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant={"destructive"} size="icon">
+                    <Button
+                      variant="outline"
+                      className="btn-red-border-gradient px-4 py-2 flex items-center gap-2 text-sm font-medium rounded-md !bg-transparent !border-red-500"
+                    >
                       <Trash2 className="h-4 w-4" />
+                      Delete
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
+                  <AlertDialogContent className="bg-background border border-border shadow-elevation-3 rounded-xl max-w-md mx-auto">
+                    <AlertDialogHeader className="space-y-4 p-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800">
+                          <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
+                        </div>
+                        <AlertDialogTitle className="text-xl font-semibold text-foreground leading-tight">
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                      </div>
+                      <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed">
                         This action cannot be undone. This will permanently
-                        delete this attachment.
+                        delete this content and all its associated files and
+                        attachments.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogFooter className="flex gap-3 p-6 pt-0">
+                      <AlertDialogCancel className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-200 border border-border rounded-md hover:bg-muted">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={() => handleDeleteAttachment(attachment.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        onClick={handleDeleteSegment}
+                        className="btn-gradient-red px-4 py-2 text-sm font-medium rounded-md"
                       >
                         Delete
                       </AlertDialogAction>
@@ -557,14 +531,181 @@ function ViewSegment({
                   </AlertDialogContent>
                 </AlertDialog>
               </div>
-            ))}
+            )}
           </div>
-        ) : (
-          <p className="text-muted-foreground">
-            No documents have been uploaded yet.
-          </p>
-        )}
-      </div> */}
+        </div>
+      </div>
+
+      {/* Video Section */}
+      {currentSegment.videoKey && (
+        <div className="relative">
+          <div className="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-elevation-3 border border-gray-200 dark:border-gray-700">
+            <VideoPlayer segmentId={currentSegment.id} />
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Section - Moved here after video */}
+      <div className="flex justify-between items-center gap-4 mb-8">
+        <Button
+          disabled={isFirstSegment}
+          onClick={() => {
+            if (previousSegment) {
+              setCurrentSegmentId(previousSegment.id);
+            }
+          }}
+          className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
+        >
+          <ArrowRight className="h-4 w-4 rotate-180" />
+          Previous Lesson
+        </Button>
+
+        <Button
+          className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
+          onClick={async () => {
+            await markedAsWatchedFn({
+              data: { segmentId: currentSegmentId },
+            });
+
+            if (isLastSegment) {
+              navigate({ to: "/learn/course-completed" });
+            } else if (nextSegment) {
+              setCurrentSegmentId(nextSegment.id);
+            }
+          }}
+        >
+          {isLastSegment ? (
+            <>
+              Complete Course
+              <CheckCircle className="ml-2 h-4 w-4" />
+            </>
+          ) : (
+            <>
+              Next Video
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Tabs Section */}
+      <div className="module-card overflow-hidden">
+        {/* Tab Headers */}
+        <div className="flex border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setActiveTab("content")}
+            className={cn(
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 cursor-pointer",
+              activeTab === "content"
+                ? "border-theme-500 text-theme-600 dark:text-theme-400 bg-theme-50 dark:bg-theme-950/30"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <FileText className="h-4 w-4" />
+            Lesson Content
+          </button>
+          <button
+            onClick={() => setActiveTab("comments")}
+            className={cn(
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-all duration-200 border-b-2 cursor-pointer",
+              activeTab === "comments"
+                ? "border-theme-500 text-theme-600 dark:text-theme-400 bg-theme-50 dark:bg-theme-950/30"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <MessageSquare className="h-4 w-4" />
+            Discussion
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === "content" && currentSegment.content && (
+            <div className="animate-fade-in">
+              <MarkdownContent content={currentSegment.content} />
+            </div>
+          )}
+
+          {activeTab === "content" && !currentSegment.content && (
+            <div className="text-center py-8 text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No lesson content available for this segment.</p>
+            </div>
+          )}
+
+          {activeTab === "comments" && (
+            <div className="animate-fade-in space-y-8">
+              {/* Comment Form Section */}
+              {showCommentForm && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-theme-600 dark:text-theme-400" />
+                      Join the Discussion
+                    </h3>
+                    {isLoggedIn && (
+                      <div className="text-sm text-muted-foreground">
+                        Share your thoughts
+                      </div>
+                    )}
+                  </div>
+                  <CommentForm
+                    autoFocus={showCommentForm && activeTab === "comments"}
+                  />
+                </div>
+              )}
+
+              {/* Comments List Section */}
+              <div
+                className={
+                  showCommentForm ? "border-t border-border/60 pt-6" : ""
+                }
+              >
+                <Suspense
+                  fallback={
+                    <div className="space-y-4">
+                      {/* Loading header */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="h-5 w-5 rounded bg-muted animate-pulse"></div>
+                          <div className="h-5 w-24 rounded bg-muted animate-pulse"></div>
+                        </div>
+                        <div className="h-4 w-20 rounded bg-muted animate-pulse"></div>
+                      </div>
+
+                      {/* Loading comments */}
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="module-card animate-pulse">
+                          <div className="p-4">
+                            <div className="flex gap-3">
+                              <div className="h-10 w-10 rounded-full bg-muted"></div>
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="h-4 w-24 rounded bg-muted"></div>
+                                  <div className="h-3 w-16 rounded bg-muted"></div>
+                                </div>
+                                <div className="space-y-1">
+                                  <div className="h-4 w-full rounded bg-muted"></div>
+                                  <div className="h-4 w-3/4 rounded bg-muted"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  }
+                >
+                  <CommentList
+                    showCommentForm={showCommentForm}
+                    onStartDiscussion={() => setShowCommentForm(true)}
+                  />
+                </Suspense>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <Navigation prevSegment={null} nextSegment={null} />
     </div>
@@ -574,7 +715,10 @@ function ViewSegment({
 function FloatingFeedbackButton() {
   return (
     <Link to="/create-testimonial" className="fixed bottom-6 right-6 z-50">
-      <Button size="lg" className="rounded-full shadow-lg">
+      <Button
+        size="lg"
+        className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
+      >
         <MessageSquare className="w-5 h-5 mr-2" />
         Leave a Testimonial
       </Button>

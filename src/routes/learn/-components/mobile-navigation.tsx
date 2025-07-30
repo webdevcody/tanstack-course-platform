@@ -9,6 +9,7 @@ import {
 import { Menu, Plus } from "lucide-react";
 import type { Module, Progress, Segment } from "~/db/schema";
 import { NavigationItems } from "./navigation-items";
+import { UserMenu } from "./user-menu";
 import { useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 interface ModuleWithSegments extends Module {
@@ -36,16 +37,30 @@ export function MobileNavigation({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="md:hidden ml-6 mt-4">
+        <Button variant="outline" className="lg:hidden ml-6 mt-4">
           <Menu className="size-6" /> Quick Navigation
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pl-1 pr-0">
+      <SheetContent side="left" className="pl-1 pr-0 flex flex-col">
         <SheetHeader>
           <SheetTitle>Course Content</SheetTitle>
         </SheetHeader>
-        <div className="my-4 px-4">
+
+        {/* Brand Header */}
+        <div className="px-4 pb-2">
+          <div className="flex items-center gap-2">
+            <img
+              src="/icon.png"
+              alt="Beginner React Challenges"
+              className="size-6"
+            />
+            <span className="font-semibold text-xs">
+              The 20 React Challenges Course
+            </span>
+          </div>
+        </div>
+        <div className="flex-1 my-4 px-4 overflow-y-auto">
           <NavigationItems
             modules={modules}
             currentSegmentId={currentSegmentId}
@@ -68,6 +83,9 @@ export function MobileNavigation({
             </Button>
           )}
         </div>
+
+        {/* User menu at the bottom */}
+        <UserMenu className="mt-auto" />
       </SheetContent>
     </Sheet>
   );

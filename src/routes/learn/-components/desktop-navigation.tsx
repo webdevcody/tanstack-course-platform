@@ -8,6 +8,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
+import { UserMenu } from "./user-menu";
 import type { Module, Progress, Segment } from "~/db/schema";
 import { useRouter } from "@tanstack/react-router";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
@@ -79,18 +80,32 @@ export function DesktopNavigation({
   };
 
   return (
-    <Sidebar className="hidden lg:block">
-      <SidebarContent className="pt-20">
-        <SidebarGroup>
+    <Sidebar className="hidden lg:block w-80 xl:w-[380px]">
+      <SidebarContent className="pt-6 w-full flex flex-col h-full">
+        {/* Brand Header */}
+        <div className="px-4">
+          <div className="flex items-center gap-2">
+            <img
+              src="/icon.png"
+              alt="Beginner React Challenges"
+              className="size-12"
+            />
+            <span className="font-semibold">
+              The 20 React Challenges Course
+            </span>
+          </div>
+        </div>
+
+        <SidebarGroup className="flex-1">
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="w-full">
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="modules">
                   {(provided) => (
                     <div
                       {...provided.droppableProps}
                       ref={provided.innerRef}
-                      className="space-y-4"
+                      className="space-y-2 w-full"
                     >
                       {modules.map((module, index) => (
                         <Draggable
@@ -117,6 +132,7 @@ export function DesktopNavigation({
                                 dragHandleProps={
                                   isAdmin ? provided.dragHandleProps : undefined
                                 }
+                                className="w-full"
                               />
                             </div>
                           )}
@@ -130,20 +146,21 @@ export function DesktopNavigation({
 
               {isAdmin && (
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-4"
+                  className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
                   onClick={() => {
                     router.navigate({ to: "/learn/add" });
                   }}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Add Segment
+                  New Segment
                 </Button>
               )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* User menu at the bottom */}
+        <UserMenu />
       </SidebarContent>
     </Sidebar>
   );

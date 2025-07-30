@@ -61,7 +61,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         },
       ],
     }),
-    errorComponent: props => {
+    errorComponent: (props) => {
       return (
         <RootDocument>
           <DefaultCatchBoundary {...props} />
@@ -84,6 +84,7 @@ function RootComponent() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const routerState = useRouterState();
   const showFooter = !routerState.location.pathname.startsWith("/learn");
+  const showHeader = !routerState.location.pathname.startsWith("/learn");
 
   const prevPathnameRef = React.useRef("");
 
@@ -119,8 +120,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         `}</style>
       </head>
       <body className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 mt-16">{children}</main>
+        {showHeader && <Header />}
+        <main className={`flex-1 ${showHeader ? "mt-16" : ""}`}>
+          {children}
+        </main>
         {showFooter && <FooterSection />}
         <TanStackRouterDevtools position="bottom-right" />
         <ReactQueryDevtools buttonPosition="bottom-left" />

@@ -94,23 +94,33 @@ export function SegmentForm({
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-12">
       {/* Header Section */}
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">{headerTitle}</h1>
-        <p className="text-muted-foreground text-lg">{headerDescription}</p>
+      <div className="text-center space-y-4 animate-fade-in">
+        <div className="relative inline-block">
+          <h1 className="text-4xl font-bold tracking-tight text-gradient mb-2">
+            {headerTitle}
+          </h1>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-theme-400 to-theme-600 rounded-full animate-scale-in" />
+        </div>
+        <p className="text-muted-foreground text-xl max-w-2xl mx-auto leading-relaxed">
+          {headerDescription}
+        </p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Basic Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Edit className="h-5 w-5" />
+          <Card className="module-card animate-slide-up border-theme-200/40 dark:border-theme-800/40">
+            <CardHeader className="relative">
+              <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-theme-400 animate-pulse" />
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-theme-500 to-theme-600 shadow-glow-sm">
+                  <Edit className="h-5 w-5 text-white" />
+                </div>
                 Basic Information
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Set the fundamental details for your content segment
               </CardDescription>
             </CardHeader>
@@ -128,7 +138,7 @@ export function SegmentForm({
                       <FormControl>
                         <Input
                           placeholder="Enter a compelling title"
-                          className="text-base"
+                          className="text-base border-theme-200/40 dark:border-theme-800/40 focus:border-theme-500 dark:focus:border-theme-400 transition-colors duration-200 bg-gradient-to-r from-transparent to-theme-50/20 dark:to-theme-950/20"
                           {...field}
                         />
                       </FormControl>
@@ -152,7 +162,7 @@ export function SegmentForm({
                       <FormControl>
                         <Input
                           placeholder="url-friendly-slug"
-                          className="text-base font-mono"
+                          className="text-base font-mono border-theme-200/40 dark:border-theme-800/40 focus:border-theme-500 dark:focus:border-theme-400 transition-colors duration-200 bg-gradient-to-r from-transparent to-theme-50/20 dark:to-theme-950/20"
                           {...field}
                         />
                       </FormControl>
@@ -180,7 +190,7 @@ export function SegmentForm({
                         onSelectedValueChange={field.onChange}
                         searchValue={field.value}
                         onSearchValueChange={field.onChange}
-                        items={moduleNames.map(name => ({
+                        items={moduleNames.map((name) => ({
                           value: name,
                           label: name,
                         }))}
@@ -200,13 +210,19 @@ export function SegmentForm({
           </Card>
 
           {/* Content Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+          <Card
+            className="module-card animate-slide-up border-theme-200/40 dark:border-theme-800/40"
+            style={{ animationDelay: "0.1s" }}
+          >
+            <CardHeader className="relative">
+              <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                  <FileText className="h-5 w-5 text-white" />
+                </div>
                 Content
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Write your lesson content using Markdown for rich formatting
               </CardDescription>
             </CardHeader>
@@ -220,7 +236,7 @@ export function SegmentForm({
                     <FormControl>
                       <Textarea
                         placeholder="# Welcome to the lesson&#10;&#10;Write your content here using **Markdown** formatting...&#10;&#10;- Bullet points&#10;- Code blocks&#10;- And more!"
-                        className="min-h-[300px] text-base font-mono"
+                        className="min-h-[300px] text-base font-mono border-theme-200/40 dark:border-theme-800/40 focus:border-theme-500 dark:focus:border-theme-400 transition-colors duration-200 bg-gradient-to-br from-transparent via-theme-50/10 to-theme-100/20 dark:via-theme-950/10 dark:to-theme-900/20 resize-none"
                         {...field}
                       />
                     </FormControl>
@@ -236,13 +252,19 @@ export function SegmentForm({
           </Card>
 
           {/* Media Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="h-5 w-5" />
+          <Card
+            className="module-card animate-slide-up border-theme-200/40 dark:border-theme-800/40"
+            style={{ animationDelay: "0.2s" }}
+          >
+            <CardHeader className="relative">
+              <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-purple-400 animate-pulse" />
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg">
+                  <Video className="h-5 w-5 text-white" />
+                </div>
                 Media Content
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Upload a video to enhance your lesson experience
               </CardDescription>
             </CardHeader>
@@ -257,23 +279,27 @@ export function SegmentForm({
                       <div className="space-y-4">
                         {!value ? (
                           <div className="flex items-center justify-center w-full">
-                            <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                                <p className="mb-2 text-sm text-muted-foreground">
-                                  <span className="font-semibold">
+                            <label className="group flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-theme-300/40 dark:border-theme-700/40 rounded-xl cursor-pointer bg-gradient-to-br from-theme-50/30 to-transparent dark:from-theme-950/20 hover:from-theme-100/50 dark:hover:from-theme-900/30 transition-all duration-300 hover:border-theme-400/60 dark:hover:border-theme-600/60 hover:shadow-elevation-2">
+                              <div className="flex flex-col items-center justify-center pt-6 pb-6">
+                                <div className="relative mb-4">
+                                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-theme-500/20 to-theme-600/20 group-hover:from-theme-500/30 group-hover:to-theme-600/30 transition-all duration-300">
+                                    <Upload className="w-6 h-6 text-theme-600 dark:text-theme-400 group-hover:scale-110 transition-transform duration-300" />
+                                  </div>
+                                </div>
+                                <p className="mb-2 text-base text-foreground">
+                                  <span className="font-semibold text-theme-600 dark:text-theme-400">
                                     Click to upload
                                   </span>{" "}
                                   or drag and drop
                                 </p>
-                                <p className="text-xs text-muted-foreground">
-                                  MP4 files only
+                                <p className="text-sm text-muted-foreground">
+                                  MP4 files only (Max 500MB)
                                 </p>
                               </div>
                               <Input
                                 type="file"
                                 accept="video/mp4"
-                                onChange={e => onChange(e.target.files?.[0])}
+                                onChange={(e) => onChange(e.target.files?.[0])}
                                 className="hidden"
                                 {...field}
                               />
@@ -360,13 +386,19 @@ export function SegmentForm({
           </Card>
 
           {/* Settings Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Crown className="h-5 w-5" />
+          <Card
+            className="module-card animate-slide-up border-amber-200/40 dark:border-amber-800/40"
+            style={{ animationDelay: "0.3s" }}
+          >
+            <CardHeader className="relative">
+              <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg">
+                  <Crown className="h-5 w-5 text-white" />
+                </div>
                 Content Settings
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Configure access permissions and content visibility
               </CardDescription>
             </CardHeader>
@@ -375,22 +407,32 @@ export function SegmentForm({
                 control={form.control}
                 name="isPremium"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-6 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 border-yellow-200 dark:border-yellow-800">
-                    <div className="space-y-1">
-                      <FormLabel className="text-base font-semibold flex items-center gap-2">
-                        <Crown className="h-4 w-4 text-yellow-600" />
-                        Premium Content
+                  <FormItem className="relative overflow-hidden flex flex-row items-center justify-between rounded-xl border p-8 bg-gradient-to-br from-amber-50 via-yellow-50/80 to-orange-50/60 dark:from-amber-950/30 dark:via-yellow-950/20 dark:to-orange-950/10 border-amber-200/60 dark:border-amber-800/40 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-300">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-400/10 to-transparent rounded-full blur-xl" />
+                    <div className="relative space-y-2">
+                      <FormLabel className="text-lg font-bold flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg">
+                          <Crown className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="bg-gradient-to-r from-amber-600 to-amber-500 bg-clip-text text-transparent">
+                          Premium Content
+                        </span>
                       </FormLabel>
-                      <FormDescription className="text-sm">
-                        Mark this segment as premium content. Only users with
-                        premium access will be able to view this content.
+                      <FormDescription className="text-base text-amber-700 dark:text-amber-300 leading-relaxed mr-8">
+                        Mark this segment as premium content.
+                        <br />
+                        Only users with premium access will be able to view this
+                        content.
                       </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <div className="relative">
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-amber-500 data-[state=checked]:to-amber-600 scale-125"
+                        />
+                      </div>
                     </FormControl>
                   </FormItem>
                 )}
@@ -399,25 +441,31 @@ export function SegmentForm({
           </Card>
 
           {/* Action Section */}
-          <div className="flex justify-center pt-4">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              size="lg"
-              className="min-w-[200px] text-base"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  {loadingText}
-                </>
-              ) : (
-                <>
-                  <ButtonIcon className="mr-2 h-5 w-5" />
-                  {buttonText}
-                </>
-              )}
-            </Button>
+          <div
+            className="flex justify-center pt-8 animate-slide-up"
+            style={{ animationDelay: "0.4s" }}
+          >
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-theme-400 via-theme-500 to-theme-600 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-300" />
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                size="lg"
+                className="relative min-w-[240px] text-base btn-gradient py-4 px-8 font-semibold shadow-elevation-3 transform hover:scale-105 transition-all duration-300"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                    {loadingText}
+                  </>
+                ) : (
+                  <>
+                    <ButtonIcon className="mr-3 h-5 w-5" />
+                    {buttonText}
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

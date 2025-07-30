@@ -82,7 +82,7 @@ function LayoutContent() {
   return (
     <div className="flex w-full">
       {/* Desktop Navigation */}
-      <div className="hidden md:block w-80 flex-shrink-0">
+      <div className="hidden lg:block w-80 xl:w-[380px] flex-shrink-0">
         <DesktopNavigation
           modules={modulesWithSegments ?? []}
           currentSegmentId={segment.id}
@@ -92,7 +92,7 @@ function LayoutContent() {
         />
       </div>
 
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-w-0">
         {/* Mobile Navigation */}
         <MobileNavigation
           modules={modulesWithSegments ?? []}
@@ -102,7 +102,7 @@ function LayoutContent() {
           isPremium={isPremium}
         />
 
-        <main className="w-full p-6 pt-4">
+        <main className="w-full p-4 lg:p-6">
           <Outlet />
         </main>
       </div>
