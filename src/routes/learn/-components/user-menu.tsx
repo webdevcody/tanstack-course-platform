@@ -16,7 +16,7 @@ export function UserMenu({ className }: UserMenuProps) {
       <div className={className}>
         <div className="p-4 border-t">
           <a href="/api/login/google">
-            <Button variant="outline" className="w-full">
+            <Button className="w-full">
               <User className="mr-2 h-4 w-4" />
               Login
             </Button>
@@ -45,19 +45,19 @@ export function UserMenu({ className }: UserMenuProps) {
         <Separator />
 
         {/* Navigation */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <Link to="/">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button
+              variant="outline"
+              className="text-center w-full justify-center"
+            >
               <Home className="mr-2 h-4 w-4" />
               Back to Home
             </Button>
           </Link>
 
           <a href="/api/logout" className="block">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-400/10"
-            >
+            <Button className="w-full justify-center module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>

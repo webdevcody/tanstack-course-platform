@@ -5,6 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getSegments } from "~/data-access/segments";
 import { VideoPlayer } from "~/routes/learn/-components/video-player";
 import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 
 const getFirstVideoSegmentFn = createServerFn().handler(async () => {
   const segments = await getSegments();
@@ -25,8 +26,8 @@ export function HeroSection() {
 
   return (
     <section className="relative h-screen overflow-hidden w-full">
-      {/* Modern gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-800"></div>
+      {/* Modern gradient background - using theme colors */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900"></div>
 
       {/* Subtle pattern overlay */}
       <div className="absolute inset-0 opacity-5">
@@ -40,11 +41,11 @@ export function HeroSection() {
         ></div>
       </div>
 
-      {/* Floating background elements */}
+      {/* Floating background elements - using theme colors */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-theme-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-theme-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-theme-600/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       {/* Content */}
@@ -61,15 +62,9 @@ export function HeroSection() {
                 </div>
 
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 text-white leading-tight">
-                  20{" "}
-                  <span className="text-transparent bg-gradient-to-r from-theme-400 to-theme-300 bg-clip-text">
-                    Beginner
-                  </span>{" "}
-                  React
+                  20 <span className="text-gradient">Beginner</span> React
                   <br />
-                  <span className="text-transparent bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text">
-                    Challenges
-                  </span>
+                  <span className="text-gradient">Challenges</span>
                 </h1>
 
                 <p className="text-xl text-slate-300 mb-12 leading-relaxed max-w-xl">
@@ -81,20 +76,15 @@ export function HeroSection() {
 
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link to="/purchase">
-                    <Button
-                      size="lg"
-                      className="bg-gradient-to-r from-theme-500 to-theme-400 hover:from-theme-600 hover:to-theme-500 text-black font-semibold w-full sm:w-auto px-8 py-4 text-lg rounded-xl shadow-lg shadow-theme-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-theme-500/40 hover:scale-[1.02]"
-                    >
+                    <Button variant={"secondary"} size="lg">
+                      <ShoppingCart className="mr-2 h-4 w-4" />
                       Buy Now
                     </Button>
                   </Link>
                   <Link to={"/learn/$slug"} params={{ slug: continueSlug }}>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full sm:w-auto px-8 py-4 text-lg rounded-xl bg-white/5 backdrop-blur-sm border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-[1.02]"
-                    >
+                    <Button size="lg">
                       Continue Learning
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </Link>
                 </div>
@@ -122,13 +112,13 @@ export function HeroSection() {
                   <div className="w-full max-w-lg lg:max-w-xl">
                     {/* Video container with glass morphism effect */}
                     <div className="relative p-1 rounded-2xl bg-gradient-to-br from-white/20 via-white/10 to-white/5 backdrop-blur-sm">
-                      <div className="rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm shadow-2xl">
+                      <div className="rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm shadow-elevation-3">
                         <VideoPlayer segmentId={firstVideoSegment.id} />
                       </div>
 
-                      {/* Decorative elements */}
+                      {/* Decorative elements - using theme colors */}
                       <div className="absolute -top-4 -right-4 w-8 h-8 bg-theme-400/30 rounded-full blur-sm"></div>
-                      <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-blue-400/30 rounded-full blur-sm"></div>
+                      <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-theme-500/30 rounded-full blur-sm"></div>
                     </div>
                   </div>
                 )}

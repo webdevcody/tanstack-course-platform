@@ -14,36 +14,43 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { adminMiddleware } from "~/lib/auth";
-import { deleteSegmentUseCase } from "~/use-cases/segments";
+import { deleteModuleUseCase } from "~/use-cases/modules";
 import { useToast } from "~/hooks/use-toast";
+import { useRouter } from "@tanstack/react-router";
 
-// TODO: there is a bug when trying to delet a segment
-export const deleteSegmentFn = createServerFn()
+export const deleteModuleFn = createServerFn()
   .middleware([adminMiddleware])
-  .validator(z.object({ segmentId: z.coerce.number() }))
+  .validator(z.object({ moduleId: z.coerce.number() }))
   .handler(async ({ data }) => {
-    await deleteSegmentUseCase(data.segmentId);
+    await deleteModuleUseCase(data.moduleId);
   });
 
-interface DeleteVideoButtonProps {
-  currentSegmentId: number;
+interface DeleteModuleButtonProps {
+  moduleId: number;
+  moduleTitle: string;
 }
 
-export function DeleteVideoButton({
-  currentSegmentId,
-}: DeleteVideoButtonProps) {
+export function DeleteModuleButton({
+  moduleId,
+  moduleTitle,
+}: DeleteModuleButtonProps) {
   const { toast } = useToast();
+  const router = useRouter();
 
-  const handleDeleteSegment = async () => {
+  const handleDeleteModule = async () => {
     try {
-      await deleteSegmentFn({ data: { segmentId: currentSegmentId } });
+      await deleteModuleFn({ data: { moduleId } });
+
       toast({
-        title: "Content deleted successfully!",
-        description: "You will be redirected to the content list.",
+        title: "Module deleted successfully!",
+        description: `"${moduleTitle}" has been permanently deleted.`,
       });
+
+      // Refresh the page to update the module list
+      router.invalidate();
     } catch (error) {
       toast({
-        title: "Failed to delete content",
+        title: "Failed to delete module",
         description: "Please try again.",
         variant: "destructive",
       });
@@ -54,26 +61,30 @@ export function DeleteVideoButton({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="outline"
-          className="btn-red-border-gradient px-4 py-2 flex items-center gap-2 text-sm font-medium rounded-md !bg-transparent !border-red-500"
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
         >
           <Trash2 className="h-4 w-4" />
-          Delete
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="bg-background border border-border shadow-elevation-3 rounded-xl max-w-md mx-auto">
+      <AlertDialogContent
+        animation="slide-left"
+        className="bg-background border border-border shadow-elevation-3 rounded-xl max-w-md mx-auto"
+      >
         <AlertDialogHeader className="space-y-4 p-6">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800">
               <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <AlertDialogTitle className="text-xl font-semibold text-foreground leading-tight">
-              Are you absolutely sure?
+              Delete Module
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-muted-foreground text-sm leading-relaxed">
-            This action cannot be undone. This will permanently delete this
-            content and all its associated files and attachments.
+            Are you sure you want to delete the module{" "}
+            <strong>"{moduleTitle}"</strong>? This action cannot be undone and
+            will permanently delete the module and all its associated segments.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex gap-3 p-6 pt-0">
@@ -81,10 +92,10 @@ export function DeleteVideoButton({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            onClick={handleDeleteSegment}
+            onClick={handleDeleteModule}
             className="btn-gradient-red px-4 py-2 text-sm font-medium rounded-md"
           >
-            Delete
+            Delete Module
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -11,8 +11,12 @@ export function useContinueSlug() {
       const lastWatched = getLastWatchedSegment();
       if (lastWatched) {
         setCourseLink(lastWatched);
-      } else if (firstSegment.data) {
+      } else if (firstSegment.data?.slug) {
         setCourseLink(firstSegment.data.slug);
+      } else {
+        // If no first segment is available, set to empty string
+        // This will be handled by the header component
+        setCourseLink("");
       }
     };
 

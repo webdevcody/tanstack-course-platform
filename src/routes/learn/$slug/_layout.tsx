@@ -16,6 +16,8 @@ import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
 import { unauthenticatedMiddleware } from "~/lib/auth";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { getAllProgressForUserUseCase } from "~/use-cases/progress";
+import { NavigationSkeleton } from "../-components/navigation-skeleton";
+import { MobileNavigationSkeleton } from "../-components/mobile-navigation-skeleton";
 
 const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -48,12 +50,12 @@ export const Route = createFileRoute("/learn/$slug/_layout")({
 });
 
 function LayoutContent() {
-  const { openMobile, setOpenMobile } = useSidebar();
   const { segment, isPremium, isAdmin, progress } = Route.useLoaderData();
   const navigate = useNavigate();
   const { currentSegmentId, setCurrentSegmentId } = useSegment();
 
-  const { data: modulesWithSegments } = useQuery(modulesQueryOptions);
+  const { data: modulesWithSegments, isLoading: isModulesLoading } =
+    useQuery(modulesQueryOptions);
 
   // Combined effect to handle both initialization and navigation
   useEffect(() => {
@@ -79,28 +81,39 @@ function LayoutContent() {
     setCurrentSegmentId,
   ]);
 
+  // Don't render navigation until modules data is loaded to prevent layout shifts
+  const shouldRenderNavigation = !isModulesLoading && modulesWithSegments;
+
   return (
     <div className="flex w-full">
       {/* Desktop Navigation */}
       <div className="hidden lg:block w-80 xl:w-[380px] flex-shrink-0">
-        <DesktopNavigation
-          modules={modulesWithSegments ?? []}
-          currentSegmentId={segment.id}
-          isAdmin={isAdmin}
-          progress={progress}
-          isPremium={isPremium}
-        />
+        {shouldRenderNavigation ? (
+          <DesktopNavigation
+            modules={modulesWithSegments}
+            currentSegmentId={segment.id}
+            isAdmin={isAdmin}
+            progress={progress}
+            isPremium={isPremium}
+          />
+        ) : (
+          <NavigationSkeleton />
+        )}
       </div>
 
       <div className="flex-1 w-full min-w-0">
         {/* Mobile Navigation */}
-        <MobileNavigation
-          modules={modulesWithSegments ?? []}
-          currentSegmentId={segment.id}
-          progress={progress}
-          isAdmin={isAdmin}
-          isPremium={isPremium}
-        />
+        {shouldRenderNavigation ? (
+          <MobileNavigation
+            modules={modulesWithSegments}
+            currentSegmentId={segment.id}
+            progress={progress}
+            isAdmin={isAdmin}
+            isPremium={isPremium}
+          />
+        ) : (
+          <MobileNavigationSkeleton />
+        )}
 
         <main className="w-full p-4 lg:p-6">
           <Outlet />

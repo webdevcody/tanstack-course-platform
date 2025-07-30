@@ -5,8 +5,6 @@ import {
   Sidebar,
   SidebarContent,
 } from "~/components/ui/sidebar";
-import { Button } from "~/components/ui/button";
-import { Plus } from "lucide-react";
 import { NavigationItems } from "./navigation-items";
 import { UserMenu } from "./user-menu";
 import type { Module, Progress, Segment } from "~/db/schema";
@@ -15,6 +13,7 @@ import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { reorderModulesFn } from "~/fn/modules";
 import { cn } from "~/lib/utils";
+import { NewModuleButton } from "./new-module-button";
 
 interface ModuleWithSegments extends Module {
   segments: Segment[];
@@ -144,17 +143,7 @@ export function DesktopNavigation({
                 </Droppable>
               </DragDropContext>
 
-              {isAdmin && (
-                <Button
-                  className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
-                  onClick={() => {
-                    router.navigate({ to: "/learn/add" });
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Segment
-                </Button>
-              )}
+              {isAdmin && <NewModuleButton />}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
