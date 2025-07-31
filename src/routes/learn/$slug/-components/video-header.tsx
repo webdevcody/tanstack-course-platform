@@ -24,8 +24,8 @@ import { useLoaderData } from '@tanstack/react-router';
 import { toast } from '~/hooks/use-toast';
 import { useNavigate } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getCompletedUserProgressForSegmentFn } from '~/fn/progress';
-import { deleteSegmentFn } from './delete-video-button';
+import { deleteSegmentFn } from './delete-segment-button';
+import { getCompletedUserProgressQuery } from '~/lib/queries/progress';
 
 export function VideoHeader() {
   const navigate = useNavigate();
@@ -33,13 +33,9 @@ export function VideoHeader() {
     from: '/learn/$slug/_layout/',
   });
 
-  const { data: progress } = useSuspenseQuery({
-    queryKey: ['progress', segment.id] as const,
-    queryFn: ({ queryKey }) =>
-      getCompletedUserProgressForSegmentFn({
-        data: { segmentId: queryKey[1] },
-      }),
-  });
+  const { data: progress } = useSuspenseQuery(
+    getCompletedUserProgressQuery(segment.id)
+  );
 
   const handleDeleteSegment = async () => {
     try {

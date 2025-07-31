@@ -18,6 +18,7 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 import { getAllProgressForUserUseCase } from '~/use-cases/progress';
 import { NavigationSkeleton } from '../-components/navigation-skeleton';
 import { MobileNavigationSkeleton } from '../-components/mobile-navigation-skeleton';
+import { getCompletedUserProgressQuery } from '~/lib/queries/progress';
 
 const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -48,13 +49,7 @@ export const Route = createFileRoute('/learn/$slug/_layout')({
     // });
     // console.log(segmentProgress);
     queryClient.ensureQueryData(modulesQueryOptions);
-    queryClient.ensureQueryData({
-      queryKey: ['progress', segment.id] as const,
-      queryFn: ({ queryKey }) =>
-        getCompletedUserProgressForSegmentFn({
-          data: { segmentId: queryKey[1] },
-        }),
-    });
+    queryClient.ensureQueryData(getCompletedUserProgressQuery(segment.id));
 
     return { segment, isPremium, progress, isAdmin };
   },
