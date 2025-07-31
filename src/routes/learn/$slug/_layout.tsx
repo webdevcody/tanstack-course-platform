@@ -1,23 +1,24 @@
-import { Outlet, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { SidebarProvider, useSidebar } from "~/components/ui/sidebar";
-import { Button } from "~/components/ui/button";
-import { Menu } from "lucide-react";
-import { MobileNavigation } from "~/routes/learn/-components/mobile-navigation";
-import { DesktopNavigation } from "~/routes/learn/-components/desktop-navigation";
-import { getSegmentInfoFn } from "./_layout.index";
-import { isAdminFn, isUserPremiumFn } from "~/fn/auth";
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
+import { SidebarProvider, useSidebar } from '~/components/ui/sidebar';
+import { Button } from '~/components/ui/button';
+import { Menu } from 'lucide-react';
+import { MobileNavigation } from '~/routes/learn/-components/mobile-navigation';
+import { DesktopNavigation } from '~/routes/learn/-components/desktop-navigation';
+import { getSegmentInfoFn } from './_layout.index';
+import { isAdminFn, isUserPremiumFn } from '~/fn/auth';
 import {
   SegmentProvider,
   useSegment,
-} from "~/routes/learn/-components/segment-context";
-import { useEffect } from "react";
-import { createServerFn } from "@tanstack/react-start";
-import { getModulesWithSegmentsUseCase } from "~/use-cases/modules";
-import { unauthenticatedMiddleware } from "~/lib/auth";
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { getAllProgressForUserUseCase } from "~/use-cases/progress";
-import { NavigationSkeleton } from "../-components/navigation-skeleton";
-import { MobileNavigationSkeleton } from "../-components/mobile-navigation-skeleton";
+} from '~/routes/learn/-components/segment-context';
+import { useEffect } from 'react';
+import { createServerFn } from '@tanstack/react-start';
+import { getModulesWithSegmentsUseCase } from '~/use-cases/modules';
+import { unauthenticatedMiddleware } from '~/lib/auth';
+import { queryOptions, useQuery } from '@tanstack/react-query';
+import { getAllProgressForUserUseCase } from '~/use-cases/progress';
+import { NavigationSkeleton } from '../-components/navigation-skeleton';
+import { MobileNavigationSkeleton } from '../-components/mobile-navigation-skeleton';
+import { getCompletedUserProgressQuery } from '~/lib/queries/progress';
 
 const getModulesWithSegmentsFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
@@ -26,24 +27,29 @@ const getModulesWithSegmentsFn = createServerFn()
   });
 
 export const modulesQueryOptions = queryOptions({
-  queryKey: ["modules"],
+  queryKey: ['modules'],
   queryFn: () => getModulesWithSegmentsFn(),
 });
 
-export const getProgressFn = createServerFn()
+export const getProgressForUserFn = createServerFn()
   .middleware([unauthenticatedMiddleware])
   .handler(async ({ context }) => {
     return context.userId ? getAllProgressForUserUseCase(context.userId) : [];
   });
 
-export const Route = createFileRoute("/learn/$slug/_layout")({
+export const Route = createFileRoute('/learn/$slug/_layout')({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
     const { segment } = await getSegmentInfoFn({ data: { slug: params.slug } });
     const isPremium = await isUserPremiumFn();
     const isAdmin = await isAdminFn();
-    const progress = await getProgressFn();
-    await queryClient.ensureQueryData(modulesQueryOptions);
+    const progress = await getProgressForUserFn();
+    // const segmentProgress = await getSegmentProgressFn({
+    //   data: { segmentId: segment.id },
+    // });
+    // console.log(segmentProgress);
+    queryClient.ensureQueryData(modulesQueryOptions);
+    queryClient.ensureQueryData(getCompletedUserProgressQuery(segment.id));
 
     return { segment, isPremium, progress, isAdmin };
   },
@@ -69,7 +75,7 @@ function LayoutContent() {
         ?.flatMap((module) => module.segments)
         .find((s) => s.id === currentSegmentId);
       if (newSegment && newSegment.slug !== segment.slug) {
-        navigate({ to: "/learn/$slug", params: { slug: newSegment.slug } });
+        navigate({ to: '/learn/$slug', params: { slug: newSegment.slug } });
       }
     }
   }, [
@@ -85,9 +91,9 @@ function LayoutContent() {
   const shouldRenderNavigation = !isModulesLoading && modulesWithSegments;
 
   return (
-    <div className="flex w-full">
+    <div className='flex w-full'>
       {/* Desktop Navigation */}
-      <div className="hidden lg:block w-80 xl:w-[380px] flex-shrink-0">
+      <div className='hidden lg:block w-80 xl:w-[380px] flex-shrink-0'>
         {shouldRenderNavigation ? (
           <DesktopNavigation
             modules={modulesWithSegments}
@@ -101,7 +107,7 @@ function LayoutContent() {
         )}
       </div>
 
-      <div className="flex-1 w-full min-w-0">
+      <div className='flex-1 w-full min-w-0'>
         {/* Mobile Navigation */}
         {shouldRenderNavigation ? (
           <MobileNavigation
@@ -115,7 +121,7 @@ function LayoutContent() {
           <MobileNavigationSkeleton />
         )}
 
-        <main className="w-full p-4 lg:p-6">
+        <main className='w-full p-4 lg:p-6'>
           <Outlet />
         </main>
       </div>

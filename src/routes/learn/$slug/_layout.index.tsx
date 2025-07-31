@@ -1,31 +1,31 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
-import { useEffect } from "react";
-import { getSegmentBySlugUseCase } from "~/use-cases/segments";
-import { getSegments } from "~/data-access/segments";
-import { type Segment } from "~/db/schema";
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { z } from 'zod';
+import { useEffect } from 'react';
+import { getSegmentBySlugUseCase } from '~/use-cases/segments';
+import { getSegments } from '~/data-access/segments';
+import { type Segment } from '~/db/schema';
 
-import { VideoPlayer } from "~/routes/learn/-components/video-player";
+import { VideoPlayer } from '~/routes/learn/-components/video-player';
 
-import { Toaster } from "~/components/ui/toaster";
+import { Toaster } from '~/components/ui/toaster';
 
-import { unauthenticatedMiddleware } from "~/lib/auth";
-import { isAdminFn, isUserPremiumFn } from "~/fn/auth";
-import { getAllProgressForUserUseCase } from "~/use-cases/progress";
-import { useSegment } from "../-components/segment-context";
-import { setLastWatchedSegment } from "~/utils/local-storage";
+import { unauthenticatedMiddleware } from '~/lib/auth';
+import { isAdminFn, isUserPremiumFn } from '~/fn/auth';
+import { getAllProgressForUserUseCase } from '~/use-cases/progress';
+import { useSegment } from '../-components/segment-context';
+import { setLastWatchedSegment } from '~/utils/local-storage';
 
-import { useAuth } from "~/hooks/use-auth";
+import { useAuth } from '~/hooks/use-auth';
 
-import { getCommentsQuery } from "~/lib/queries/comments";
-import { VideoHeader } from "./-components/video-header";
-import { VideoControls } from "./-components/video-controls";
-import { VideoContentTabsPanel } from "./-components/video-content-tabs-panel";
-import { UpgradePlaceholder } from "./-components/upgrade-placeholder";
-import { FloatingFeedbackButton } from "./-components/feedback-button";
+import { getCommentsQuery } from '~/lib/queries/comments';
+import { VideoHeader } from './-components/video-header';
+import { VideoControls } from './-components/video-controls';
+import { VideoContentTabsPanel } from './-components/video-content-tabs-panel';
+import { UpgradePlaceholder } from './-components/upgrade-placeholder';
+import { FloatingFeedbackButton } from './-components/feedback-button';
 
-export const Route = createFileRoute("/learn/$slug/_layout/")({
+export const Route = createFileRoute('/learn/$slug/_layout/')({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params }) => {
     const { segment, segments, progress } = await getSegmentInfoFn({
@@ -36,11 +36,11 @@ export const Route = createFileRoute("/learn/$slug/_layout/")({
     const isAdmin = await isAdminFn();
 
     if (segments.length === 0) {
-      throw redirect({ to: "/learn/no-segments" });
+      throw redirect({ to: '/learn/no-segments' });
     }
 
     if (!segment) {
-      throw redirect({ to: "/learn/not-found" });
+      throw redirect({ to: '/learn/not-found' });
     }
 
     return { segment, segments, progress, isPremium, isAdmin };
@@ -85,15 +85,15 @@ function ViewSegment({
   const showUpgradePanel = currentSegment.isPremium && !isPremium && !isAdmin;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-4">
+    <div className='max-w-5xl mx-auto space-y-4'>
       {/* Header Section */}
-      <VideoHeader currentSegment={currentSegment} isAdmin={isAdmin} />
+      <VideoHeader />
 
       {showUpgradePanel ? (
         <UpgradePlaceholder currentSegment={currentSegment} />
       ) : currentSegment.videoKey ? (
-        <div className="relative">
-          <div className="aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-elevation-3 border border-gray-200 dark:border-gray-700">
+        <div className='relative'>
+          <div className='aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-elevation-3 border border-gray-200 dark:border-gray-700'>
             <VideoPlayer segmentId={currentSegment.id} />
           </div>
         </div>

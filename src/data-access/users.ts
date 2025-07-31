@@ -1,7 +1,7 @@
-import { database } from "~/db";
-import { User, users } from "~/db/schema";
-import { eq } from "drizzle-orm";
-import { UserId } from "~/use-cases/types";
+import { database } from '~/db';
+import { User, users } from '~/db/schema';
+import { eq } from 'drizzle-orm';
+import { UserId } from '~/use-cases/types';
 
 export async function deleteUser(userId: UserId) {
   await database.delete(users).where(eq(users.id, userId));
@@ -44,4 +44,11 @@ export async function updateUserToPremium(userId: UserId) {
     .update(users)
     .set({ isPremium: true })
     .where(eq(users.id, userId));
+}
+
+export async function getTotalUsers(isPremium: boolean) {
+  return database.$count(
+    users,
+    isPremium ? eq(users.isPremium, isPremium) : undefined
+  );
 }

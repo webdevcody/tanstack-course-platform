@@ -1,14 +1,15 @@
-import { Segment } from "~/db/schema";
-import { UserId } from "./types";
+import { Segment } from '~/db/schema';
+import { UserId } from './types';
 import {
   getProgress,
   markAsWatched,
   getAllProgressForUser,
-} from "~/data-access/progress";
+  getSegmentCompletedProgress,
+} from '~/data-access/progress';
 
 export async function markAsWatchedUseCase(
   userId: UserId,
-  segmentId: Segment["id"]
+  segmentId: Segment['id']
 ) {
   const progress = await getProgress(userId, segmentId);
   if (!progress) {
@@ -18,4 +19,10 @@ export async function markAsWatchedUseCase(
 
 export async function getAllProgressForUserUseCase(userId: UserId) {
   return getAllProgressForUser(userId);
+}
+
+export async function getSegmentCompletedProgressUseCase(
+  segmentId: Segment['id']
+) {
+  return getSegmentCompletedProgress(segmentId);
 }
