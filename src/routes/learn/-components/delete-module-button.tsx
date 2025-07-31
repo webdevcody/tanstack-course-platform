@@ -1,4 +1,4 @@
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -88,12 +88,14 @@ export function DeleteModuleButton({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="flex gap-3 p-6 pt-0">
-          <AlertDialogCancel className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-200 border border-border rounded-md hover:bg-muted">
+          <AlertDialogCancel
+            className={buttonVariants({ variant: "gray-outline" })}
+          >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDeleteModule}
-            className="btn-gradient-red px-4 py-2 text-sm font-medium rounded-md"
+            className={buttonVariants({ variant: "destructive" })}
           >
             Delete Module
           </AlertDialogAction>

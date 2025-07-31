@@ -2,6 +2,8 @@
 
 - when deleting a segment the app crashes (I think it's related to logic for redirecting the user to a previous segment)
 - when reordering modules, the navigation buttons do not seem to navigate the correct order of modules... are we sorting the modules by order? are we correctly updating the order on modules when we re-arrange them?
+- clicking on the delete module button expands the accordion but it should prevent default
+- it's not possible to dismiss the delete dialog when clicking outside the dialog, but I would think a better UX would be to allow it. research what's good UX and fix if it is an issue
 
 # Features
 
@@ -16,3 +18,4 @@
 - the ability to pick custom lucide-icons for the modules
 - editing the segment should change the nested layout, not go to a new page
 - experiment with having "new segment" show a modal with the form
+- load up a testimonial modal / dialog when clicking the testimonial button instead of a separate page.
