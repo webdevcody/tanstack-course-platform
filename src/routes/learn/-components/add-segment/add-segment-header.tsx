@@ -26,7 +26,7 @@ export function AddSegmentHeader() {
               <Plus className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold">New Content</h2>
+              <h2 className="text-sm font-semibold">New Segment</h2>
               <p className="text-xs text-muted-foreground">
                 Create a learning segment
               </p>

@@ -58,3 +58,7 @@ export async function reorderModules(updates: { id: number; order: number }[]) {
     return results;
   });
 }
+
+export async function deleteModule(moduleId: number) {
+  return database.delete(modules).where(eq(modules.id, moduleId));
+}

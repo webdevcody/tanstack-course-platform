@@ -31,7 +31,7 @@ export function useEditSegment(segment: any) {
         const uploadResult = await uploadVideoWithPresignedUrl(
           videoKey,
           values.video,
-          progress => setUploadProgress(progress)
+          (progress) => setUploadProgress(progress)
         );
         videoDuration = uploadResult.duration;
       }

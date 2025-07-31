@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { z } from "zod";
 import { assertAuthenticatedFn } from "~/fn/auth";
 import {
   getUniqueModuleNamesFn,
@@ -9,9 +10,14 @@ import { Container } from "./-components/container";
 import { SegmentForm } from "./-components/segment-form";
 import { Plus } from "lucide-react";
 
+const addSegmentSearchSchema = z.object({
+  moduleTitle: z.string().optional(),
+});
+
 export const Route = createFileRoute("/learn/add")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
+  validateSearch: addSegmentSearchSchema,
   loader: async () => {
     const moduleNames = await getUniqueModuleNamesFn();
     return { moduleNames };
@@ -20,6 +26,7 @@ export const Route = createFileRoute("/learn/add")({
 
 function RouteComponent() {
   const { moduleNames } = Route.useLoaderData();
+  const search = Route.useSearch();
   const { onSubmit, isSubmitting, uploadProgress } = useAddSegment();
 
   return (
@@ -27,9 +34,9 @@ function RouteComponent() {
       <AddSegmentHeader />
       <Container>
         <SegmentForm
-          headerTitle="Create New Content"
+          headerTitle="Create New Segment"
           headerDescription="Add a new segment to your course with rich content and media"
-          buttonText="Create Content"
+          buttonText="Create Segment"
           loadingText="Creating..."
           buttonIcon={Plus}
           moduleNames={moduleNames}
@@ -40,7 +47,7 @@ function RouteComponent() {
             title: "",
             content: "",
             slug: "",
-            moduleTitle: "",
+            moduleTitle: search.moduleTitle || "",
             isPremium: false,
           }}
         />

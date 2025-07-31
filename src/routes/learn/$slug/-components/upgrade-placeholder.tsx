@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Badge } from "~/components/ui/badge";
-import { ArrowRight, CheckCircle, Lock, BookOpen } from "lucide-react";
+import { ArrowRight, CheckCircle, Lock } from "lucide-react";
 import { type Segment } from "~/db/schema";
 
 interface UpgradePlaceholderProps {
@@ -85,25 +85,6 @@ export function UpgradePlaceholder({
                 30-day money-back guarantee
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Additional info card */}
-      <div className="module-card p-6">
-        <div className="flex items-start gap-4">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-900 dark:to-theme-800">
-            <BookOpen className="h-5 w-5 text-theme-600 dark:text-theme-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-foreground mb-2">
-              What you'll learn
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              This premium lesson covers advanced concepts that will take your
-              skills to the next level. Join thousands of developers who have
-              upgraded their knowledge with our comprehensive curriculum.
-            </p>
           </div>
         </div>
       </div>

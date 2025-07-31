@@ -6,7 +6,6 @@ import { getSegmentBySlugUseCase } from '~/use-cases/segments';
 import { getSegments } from '~/data-access/segments';
 import { type Segment } from '~/db/schema';
 
-import { Navigation } from '~/routes/learn/-components/navigation';
 import { VideoPlayer } from '~/routes/learn/-components/video-player';
 
 import { Toaster } from '~/components/ui/toaster';
@@ -83,24 +82,22 @@ function ViewSegment({
   const user = useAuth();
   const isLoggedIn = !!user?.id;
 
-  // Show upgrade placeholder for premium segments if user is not premium and not admin
-  if (currentSegment.isPremium && !isPremium && !isAdmin) {
-    return <UpgradePlaceholder currentSegment={currentSegment} />;
-  }
+  const showUpgradePanel = currentSegment.isPremium && !isPremium && !isAdmin;
 
   return (
     <div className='max-w-5xl mx-auto space-y-4'>
       {/* Header Section */}
       <VideoHeader />
 
-      {/* Video Section */}
-      {currentSegment.videoKey && (
+      {showUpgradePanel ? (
+        <UpgradePlaceholder currentSegment={currentSegment} />
+      ) : currentSegment.videoKey ? (
         <div className='relative'>
           <div className='aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-elevation-3 border border-gray-200 dark:border-gray-700'>
             <VideoPlayer segmentId={currentSegment.id} />
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Navigation Section - Moved here after video */}
       <VideoControls
@@ -115,8 +112,6 @@ function ViewSegment({
         currentSegment={currentSegment}
         isLoggedIn={isLoggedIn}
       />
-
-      <Navigation prevSegment={null} nextSegment={null} />
     </div>
   );
 }

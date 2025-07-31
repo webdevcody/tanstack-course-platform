@@ -137,6 +137,7 @@ export function SegmentForm({
                       </FormLabel>
                       <FormControl>
                         <Input
+                          autoFocus
                           placeholder="Enter a compelling title"
                           className="text-base border-theme-200/40 dark:border-theme-800/40 focus:border-theme-500 dark:focus:border-theme-400 transition-colors duration-200 bg-gradient-to-r from-transparent to-theme-50/20 dark:to-theme-950/20"
                           {...field}

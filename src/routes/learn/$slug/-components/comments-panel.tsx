@@ -92,10 +92,7 @@ export function CommentsPanel({
             </div>
           }
         >
-          <CommentList
-            showCommentForm={showCommentForm}
-            onStartDiscussion={onStartDiscussion}
-          />
+          <CommentList onStartDiscussion={onStartDiscussion} />
         </Suspense>
       </div>
     </div>

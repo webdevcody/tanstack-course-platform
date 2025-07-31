@@ -31,6 +31,11 @@ export function VideoControls({
   const navigate = useNavigate();
 
   const nextSegment = useMemo(() => {
+    // Add safety check for segments
+    if (!segments || !Array.isArray(segments) || segments.length === 0) {
+      return null;
+    }
+
     // Find the current module and segment index
     const currentModule = segments.find(
       (segment) => segment.id === currentSegmentId
@@ -82,6 +87,11 @@ export function VideoControls({
   }, [currentSegmentId, segments]);
 
   const previousSegment = useMemo(() => {
+    // Add safety check for segments
+    if (!segments || !Array.isArray(segments) || segments.length === 0) {
+      return null;
+    }
+
     // Find the current module and segment index
     const currentModule = segments.find(
       (segment) => segment.id === currentSegmentId
@@ -145,14 +155,12 @@ export function VideoControls({
             setCurrentSegmentId(previousSegment.id);
           }
         }}
-        className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
       >
         <ArrowRight className="h-4 w-4 rotate-180" />
         Previous Lesson
       </Button>
 
       <Button
-        className="mt-4 module-card px-4 py-2 flex items-center gap-2 text-sm font-medium text-theme-700 dark:text-theme-300 hover:text-theme-800 dark:hover:text-theme-200 transition-all duration-200 hover:shadow-elevation-3"
         onClick={async () => {
           if (isLoggedIn) {
             await markedAsWatchedFn({

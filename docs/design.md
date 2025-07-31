@@ -56,19 +56,6 @@ This document outlines the comprehensive design system used for the learning pla
 
 ## 🧩 Component Patterns
 
-### Card System
-
-```css
-.module-card {
-  @apply relative overflow-hidden rounded-xl 
-         bg-gradient-to-br from-white to-gray-50/50 
-         dark:from-gray-900 dark:to-gray-800/50 
-         border border-gray-200/60 dark:border-gray-700/60 
-         shadow-elevation-2 hover:shadow-elevation-3 
-         transition-all duration-300;
-}
-```
-
 ### Button Variants
 
 - **Primary**: `btn-gradient` (Green gradient with glow effects)

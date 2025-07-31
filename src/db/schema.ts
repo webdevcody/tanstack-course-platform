@@ -175,9 +175,9 @@ export const segmentsRelations = relations(segments, ({ one, many }) => ({
 }));
 
 export const commentsRelations = relations(comments, ({ one, many }) => ({
-  user: one(users, {
+  profile: one(profiles, {
     fields: [comments.userId],
-    references: [users.id],
+    references: [profiles.userId],
   }),
   segment: one(segments, {
     fields: [comments.segmentId],
@@ -191,9 +191,9 @@ export const commentsRelations = relations(comments, ({ one, many }) => ({
   children: many(comments, {
     relationName: "parent",
   }),
-  repliedTo: one(users, {
+  repliedToProfile: one(profiles, {
     fields: [comments.repliedToId],
-    references: [users.id],
+    references: [profiles.userId],
   }),
 }));
 

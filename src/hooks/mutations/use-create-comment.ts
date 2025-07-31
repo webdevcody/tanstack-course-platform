@@ -23,8 +23,15 @@ export function useCreateComment() {
       const newComment: CommentsWithUser[number] = {
         id: Math.random(),
         content: variables.content,
-        user: user,
         userId: user.id,
+        profile: {
+          id: user.id,
+          displayName: user.email,
+          image: null,
+          userId: user.id,
+          imageId: null,
+          bio: "",
+        },
         segmentId: segment.id,
         createdAt: new Date(),
         updatedAt: new Date(),

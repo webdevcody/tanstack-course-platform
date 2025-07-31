@@ -8,11 +8,11 @@ export async function getComments(segmentId: number) {
   return database.query.comments.findMany({
     where: and(eq(comments.segmentId, segmentId), isNull(comments.parentId)),
     with: {
-      user: true,
+      profile: true,
       children: {
         with: {
-          user: true,
-          repliedTo: true,
+          profile: true,
+          repliedToProfile: true,
         },
       },
     },

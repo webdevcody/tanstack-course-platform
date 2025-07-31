@@ -14,6 +14,9 @@ import {
   Trophy,
   Code,
   RefreshCcw,
+  ArrowRight,
+  User,
+  ShoppingCart,
 } from "lucide-react";
 import { useAuth } from "~/hooks/use-auth";
 import { useContinueSlug } from "~/hooks/use-continue-slug";
@@ -111,7 +114,7 @@ function RouteComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(74,222,128,0.05)_0%,transparent_65%)] pointer-events-none" />
 
       <div className="container mx-auto py-12 px-4 relative z-10">
@@ -137,7 +140,7 @@ function RouteComponent() {
             </div> */}
           </div>
 
-          <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg border border-theme-400/20 shadow-[0_0_15px_rgba(74,222,128,0.1)] overflow-hidden">
+          <div className="module-card">
             <div className="p-8">
               <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-8">
@@ -227,6 +230,7 @@ function RouteComponent() {
                     {user ? (
                       !user.isPremium ? (
                         <Button size="lg" onClick={handlePurchase}>
+                          <ShoppingCart className="mr-2 h-4 w-4" />
                           Get Instant Access
                         </Button>
                       ) : (
@@ -234,21 +238,20 @@ function RouteComponent() {
                           to="/learn/$slug"
                           params={{ slug: continueSlug }}
                           className={buttonVariants({
-                            variant: "default",
+                            variant: "secondary",
                             size: "lg",
                           })}
                         >
                           Continue with Course
+                          <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       )
                     ) : (
                       <a
                         href={`/api/login/google?redirect_uri=${encodeURIComponent("/purchase")}`}
                       >
-                        <Button
-                          size="lg"
-                          className="w-full max-w-sm font-semibold bg-theme-400 hover:bg-theme-500 text-black text-lg py-6"
-                        >
+                        <Button size="lg">
+                          <User className="mr-2 h-4 w-4" />
                           Login to Purchase
                         </Button>
                       </a>
