@@ -4,9 +4,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "npm run docker:up && vite dev",
     "build": "vite build",
     "start": "npm run db:migrate && node .output/server/index.mjs",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
     "db:push": "drizzle-kit push --config=drizzle.config.ts",
     "db:migrate": "tsx ./src/db/migrate.ts",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",

@@ -63,7 +63,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
 
   const isEditingThis = editingCommentId === comment.id;
   const isReplyingToThis = replyingToCommentId === comment.id;
-  const isOwner = user && comment.user.email === user.email;
+  const isOwner = user && comment.profile.userId === user.id;
 
   const handleEdit = (commentId: number) => {
     setEditingCommentId(commentId);
@@ -153,7 +153,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
           segmentId: segment.id,
           content: replyContent,
           parentId: rootParentId,
-          repliedToId: comment.user.id,
+          repliedToId: comment.profile.userId,
         },
         {
           onSuccess: () => {
@@ -200,7 +200,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
               <div className="flex shrink-0 size-10 rounded-full overflow-hidden bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-800 dark:to-theme-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200">
                 <img
                   className="max-h-10 w-auto object-cover"
-                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${comment.user.email}&backgroundColor=6366f1&textColor=ffffff`}
+                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${comment.profile.displayName}&backgroundColor=6366f1&textColor=ffffff`}
                   alt="User avatar"
                 />
               </div>
@@ -210,7 +210,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <p className="text-sm font-semibold text-foreground truncate">
-                      {comment.user.email}
+                      {comment.profile.displayName}
                     </p>
 
                     {/* Visual separator */}
@@ -221,7 +221,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
                     </p>
 
                     {/* Reply indicator */}
-                    {comment.repliedTo && (
+                    {comment.repliedToProfile && (
                       <>
                         <span className="text-xs text-muted-foreground/60">
                           •
@@ -231,7 +231,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
                           <span className="text-xs text-muted-foreground">
                             replying to{" "}
                             <span className="font-medium text-theme-600 dark:text-theme-400 hover:text-theme-700 dark:hover:text-theme-300 transition-colors">
-                              {comment.repliedTo.email}
+                              {comment.repliedToProfile.displayName}
                             </span>
                           </span>
                         </div>
@@ -350,7 +350,7 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
                               <div className="flex shrink-0 size-8 rounded-full overflow-hidden bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-800 dark:to-theme-700 shadow-elevation-1">
                                 <img
                                   className="max-h-8 w-auto object-cover"
-                                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.email || "user"}&backgroundColor=6366f1&textColor=ffffff`}
+                                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.id || "user"}&backgroundColor=6366f1&textColor=ffffff`}
                                   alt="Your avatar"
                                 />
                               </div>
@@ -450,10 +450,8 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
 }
 
 export function CommentList({
-  showCommentForm,
   onStartDiscussion,
 }: {
-  showCommentForm?: boolean;
   onStartDiscussion?: () => void;
 }) {
   const { segment } = useLoaderData({ from: "/learn/$slug/_layout/" });
