@@ -7,6 +7,8 @@
 
 # Features
 
+- show confetti when a user completes a module
+- change "new video" to "complete module" when it's the last video in the module
 - add metric that users can see how many other users completed this segment (help drive more motivation maybe?)
 - add the ability for an admin to email all the premium users in the system to let them know new segments or modules are created. Add some type of MJLM editor / preview feature. This should use AWS SES. Provide a generic update template one can start editing. Hopefully support markdown to generate the MJML and send out the styled emails.
 - analytics for admins to see which students are finishing which segments

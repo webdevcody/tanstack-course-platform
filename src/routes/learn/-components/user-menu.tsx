@@ -3,6 +3,7 @@ import { Separator } from "~/components/ui/separator";
 import { Home, LogOut, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "~/hooks/use-auth";
+import { useProfile } from "~/hooks/use-profile";
 
 interface UserMenuProps {
   className?: string;
@@ -10,6 +11,7 @@ interface UserMenuProps {
 
 export function UserMenu({ className }: UserMenuProps) {
   const user = useAuth();
+  const { data: profile } = useProfile();
 
   if (!user) {
     return (
@@ -30,12 +32,19 @@ export function UserMenu({ className }: UserMenuProps) {
     <div className={className}>
       <div className="p-4 border-t space-y-3">
         {/* User Info */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-primary" />
-          </div>
+        <div className="flex items-center justify-center gap-3">
+          <img
+            className="size-10 rounded-full w-auto object-cover"
+            src={
+              profile?.image ??
+              `https://api.dicebear.com/9.x/initials/svg?seed=${profile?.displayName || "user"}&backgroundColor=6366f1&textColor=ffffff`
+            }
+            alt="Your avatar"
+          />
           <div className="min-w-0">
-            <p className="text-sm font-medium truncate">{user.email}</p>
+            <p className="text-sm font-medium truncate">
+              {profile?.displayName}
+            </p>
             {user.isPremium && (
               <p className="text-xs text-primary">Premium Member</p>
             )}

@@ -6,6 +6,7 @@ import { useLoaderData } from "@tanstack/react-router";
 import { useCreateComment } from "~/hooks/mutations/use-create-comment";
 import { toast } from "~/hooks/use-toast";
 import { Send, MessageSquarePlus, Sparkles } from "lucide-react";
+import { useProfile } from "~/hooks/use-profile";
 
 export function CommentForm({ autoFocus = false }: { autoFocus?: boolean }) {
   const [commentText, setCommentText] = useState("");
@@ -14,6 +15,7 @@ export function CommentForm({ autoFocus = false }: { autoFocus?: boolean }) {
   const user = useAuth();
   const { segment } = useLoaderData({ from: "/learn/$slug/_layout/" });
   const { mutate: createComment, isPending } = useCreateComment();
+  const { data: profile } = useProfile();
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -125,7 +127,10 @@ export function CommentForm({ autoFocus = false }: { autoFocus?: boolean }) {
               >
                 <img
                   className="max-h-10 w-auto object-cover"
-                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.email || "user"}&backgroundColor=6366f1&textColor=ffffff`}
+                  src={
+                    profile?.image ??
+                    `https://api.dicebear.com/9.x/initials/svg?seed=${profile?.displayName || "user"}&backgroundColor=6366f1&textColor=ffffff`
+                  }
                   alt="Your avatar"
                 />
               </div>

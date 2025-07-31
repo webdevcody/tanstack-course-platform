@@ -200,7 +200,10 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
               <div className="flex shrink-0 size-10 rounded-full overflow-hidden bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-800 dark:to-theme-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200">
                 <img
                   className="max-h-10 w-auto object-cover"
-                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${comment.profile.displayName}&backgroundColor=6366f1&textColor=ffffff`}
+                  src={
+                    comment.profile.image ??
+                    `https://api.dicebear.com/9.x/initials/svg?seed=${comment.profile.displayName}&backgroundColor=6366f1&textColor=ffffff`
+                  }
                   alt="User avatar"
                 />
               </div>
@@ -350,7 +353,10 @@ function CommentItem({ comment, level = 0 }: CommentItemProps) {
                               <div className="flex shrink-0 size-8 rounded-full overflow-hidden bg-gradient-to-br from-theme-100 to-theme-200 dark:from-theme-800 dark:to-theme-700 shadow-elevation-1">
                                 <img
                                   className="max-h-8 w-auto object-cover"
-                                  src={`https://api.dicebear.com/9.x/initials/svg?seed=${user?.id || "user"}&backgroundColor=6366f1&textColor=ffffff`}
+                                  src={
+                                    comment.profile.image ??
+                                    `https://api.dicebear.com/9.x/initials/svg?seed=${user?.id || "user"}&backgroundColor=6366f1&textColor=ffffff`
+                                  }
                                   alt="Your avatar"
                                 />
                               </div>

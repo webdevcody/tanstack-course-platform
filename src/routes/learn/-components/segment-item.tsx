@@ -46,7 +46,7 @@ export function SegmentItem({
 
         <button
           onClick={() => onSegmentClick(segment.id)}
-          className="flex items-center justify-between flex-1 text-left"
+          className="cursor-pointer flex items-center justify-between flex-1 text-left"
         >
           <div className="flex items-center gap-2">
             <div

@@ -104,7 +104,7 @@ export function ModulePanel({
                       <Plus className="h-3 w-3" />
                     </div>
                     <span className="text-sm font-medium group-hover/add-segment:text-theme-700 dark:group-hover/add-segment:text-theme-300 transition-colors duration-200">
-                      Add new segment
+                      New segment
                     </span>
                   </div>
                 </button>
